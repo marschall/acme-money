@@ -10,6 +10,8 @@ import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
 import javax.money.NumberValue;
 
+import static java.lang.Math.negateExact;
+
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
   /**
@@ -209,20 +211,20 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount negate() {
-    // TODO Auto-generated method stub
-    return null;
+    return new FractionMoney(negateExact(numerator), denominator, currency);
   }
 
   @Override
   public MonetaryAmount plus() {
-    // TODO Auto-generated method stub
-    return null;
+    if (this.numerator >= 0) {
+      return this;
+    }
+    return new FractionMoney(negateExact(this.numerator), denominator, getCurrency());
   }
 
   @Override
   public MonetaryAmount stripTrailingZeros() {
-    // TODO Auto-generated method stub
-    return null;
+    return this;
   }
 
 }
