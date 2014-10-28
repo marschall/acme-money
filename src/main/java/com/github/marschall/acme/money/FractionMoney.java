@@ -7,9 +7,16 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
+import javax.money.MonetaryContextBuilder;
 import javax.money.NumberValue;
 
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
+
+  /**
+   * the {@link MonetaryContext} used by this instance, e.g. on division.
+   */
+  static final MonetaryContext MONETARY_CONTEXT =
+      MonetaryContextBuilder.of(FractionMoney.class).setFixedScale(true).build();
 
   private final CurrencyUnit currency;
   
@@ -31,8 +38,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public NumberValue getNumber() {
-    // TODO Auto-generated method stub
-    return null;
+    return new FractionValue(this.numerator, this.denominator);
   }
 
   @Override
@@ -43,14 +49,12 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryContext getMonetaryContext() {
-    // TODO Auto-generated method stub
-    return null;
+    return MONETARY_CONTEXT;
   }
 
   @Override
   public MonetaryAmountFactory<? extends MonetaryAmount> getFactory() {
-    // TODO Auto-generated method stub
-    return null;
+    return new FractionMoneyBuilder().setAmount(this);
   }
 
   @Override
