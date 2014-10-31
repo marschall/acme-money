@@ -55,8 +55,7 @@ public final class FractionValue extends NumberValue {
     if (numberType == Fraction.class) {
       return (T) Fraction.of(this.numerator, this.denominator);
     }
-    // TODO Auto-generated method stub
-    return null;
+    return ConvertToNumber.of(numberType, this.numerator, this.denominator);
   }
 
   @Override
@@ -64,8 +63,7 @@ public final class FractionValue extends NumberValue {
     if (numberType == Fraction.class) {
       return (T) Fraction.of(this.numerator, this.denominator);
     }
-    // TODO Auto-generated method stub
-    return null;
+    return ConvertToNumber.ofExact(numberType, this.numerator, this.denominator);
   }
 
   @Override
