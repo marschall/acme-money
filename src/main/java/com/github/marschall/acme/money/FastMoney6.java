@@ -289,6 +289,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (isOne(divisor)) {
       return this;
     }
+    // FIXME
     return new FastMoney6(Math.round(this.number / divisor.doubleValue()), getCurrency());
   }
 

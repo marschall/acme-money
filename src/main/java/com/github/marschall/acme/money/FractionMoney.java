@@ -10,6 +10,8 @@ import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
 import javax.money.NumberValue;
 
+import org.javamoney.moneta.FastMoney;
+
 import static java.lang.Math.negateExact;
 
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
@@ -30,7 +32,10 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     this.currency = currency;
     this.numerator = numerator;
     this.denominator = denominator;
-    
+  }
+  
+  public static FractionMoney of(long numerator, long denominator, CurrencyUnit currency) {
+    return new FractionMoney(numerator, denominator, currency);
   }
 
   @Override
@@ -91,8 +96,13 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public int signum() {
-    // TODO Auto-generated method stub
-    return 0;
+    if (this.numerator > 0L) {
+      return 1;
+    } else if (this.numerator < 0L) {
+      return -1;
+    } else {
+      return 0;
+    }
   }
 
   @Override
@@ -200,13 +210,16 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public MonetaryAmount scaleByPowerOfTen(int power) {
     // TODO Auto-generated method stub
+    // TODO if denominator is power of ten divide
     return null;
   }
 
   @Override
   public MonetaryAmount abs() {
-    // TODO Auto-generated method stub
-    return null;
+    if (this.numerator >= 0) {
+      return this;
+    }
+    return new FractionMoney(negateExact(this.numerator), denominator, getCurrency());
   }
 
   @Override
@@ -225,6 +238,26 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public MonetaryAmount stripTrailingZeros() {
     return this;
+  }
+  
+  @Override
+  public int hashCode() {
+    // TODO unbox
+    return Objects.hash(currency, this.numerator, this.denominator);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof FractionMoney)) {
+      return false;
+    }
+    FractionMoney other = (FractionMoney) obj;
+    return this.currency.equals(other.currency)
+        && this.numerator == other.numerator
+        && this.denominator == other.denominator;
   }
 
 }

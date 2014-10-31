@@ -1,6 +1,7 @@
 package com.github.marschall.acme.money;
 
 import javax.money.NumberValue;
+import static java.lang.Math.*;
 
 public final class FractionValue extends NumberValue {
   
@@ -14,8 +15,7 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public Class<?> getNumberType() {
-    // TODO Auto-generated method stub
-    return null;
+    return Fraction.class;
   }
 
   @Override
@@ -32,14 +32,16 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public int intValueExact() {
-    // TODO Auto-generated method stub
-    return 0;
+    return toIntExact(longValueExact());
   }
 
   @Override
   public long longValueExact() {
-    // TODO Auto-generated method stub
-    return 0;
+    if (this.denominator == 1) {
+      return this.numerator;
+    } else {
+      throw new ArithmeticException("integer overflow");
+    }
   }
 
   @Override
@@ -74,26 +76,22 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public int intValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (int) (numerator / denominator);
   }
 
   @Override
   public long longValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return numerator / denominator;
   }
 
   @Override
   public float floatValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (float) numerator / (float) denominator;
   }
 
   @Override
   public double doubleValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (double) numerator / (double) denominator;
   }
 
 }
