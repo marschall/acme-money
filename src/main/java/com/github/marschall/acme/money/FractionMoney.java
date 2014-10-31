@@ -254,9 +254,21 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount scaleByPowerOfTen(int power) {
-    // TODO Auto-generated method stub
-    // TODO if denominator is power of ten divide
-    return null;
+    if (power == 0) {
+      return this;
+    } else if (power > 0) {
+      long n = this.numerator;
+      for (int i = 0; i < power; ++i) {
+        n = multiplyExact(n, 10L);
+      }
+      return FractionMoney.of(n, this.denominator, this.currency);
+    } else {
+      long d = this.denominator;
+      for (int i = power; i < 0; ++i) {
+        d = multiplyExact(d, 10L);
+      }
+      return FractionMoney.of(this.numerator, d, this.currency);
+    }
   }
 
   @Override
@@ -306,6 +318,11 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     return this.currency.equals(other.currency)
         && this.numerator == other.numerator
         && this.denominator == other.denominator;
+  }
+  
+  @Override
+  public String toString() {
+    return currency.toString() + ' ' + this.numerator + '/' + this.denominator;
   }
 
 }
