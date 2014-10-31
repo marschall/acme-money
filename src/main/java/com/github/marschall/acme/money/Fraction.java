@@ -1,6 +1,8 @@
 package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.FractionMath.gcd;
+import static java.lang.Math.multiplyExact;
+import static java.lang.Math.subtractExact;
 
 public final class Fraction extends Number implements Comparable<Fraction> {
   
@@ -61,7 +63,9 @@ public final class Fraction extends Number implements Comparable<Fraction> {
 
   @Override
   public int compareTo(Fraction o) {
-    throw new UnsupportedOperationException();
+    long ad = multiplyExact(this.numerator, o.denominator);
+    long bc = multiplyExact(this.denominator, o.numerator);
+    return Long.signum(subtractExact(ad, bc));
   }
 
 }

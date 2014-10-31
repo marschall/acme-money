@@ -37,10 +37,10 @@ public class FractionTest {
     assertEquals(0, f1.compareTo(f1));
     assertEquals(-1, f1.compareTo(f2));
     assertEquals(1, f2.compareTo(f1));
-    assertEquals(-1, f2.compareTo(f3));
-    assertEquals(1, f3.compareTo(f2));
-    assertEquals(-1, f1.compareTo(f3));
-    assertEquals(1, f3.compareTo(f1));
+    assertEquals(1, f2.compareTo(f3));
+    assertEquals(-1, f3.compareTo(f2));
+    assertEquals(1, f1.compareTo(f3));
+    assertEquals(-1, f3.compareTo(f1));
 
     Fraction f4 = Fraction.of(-3, 5); // -0.6
     Fraction f5 = Fraction.of(-2, 3); // -0.66
