@@ -1,5 +1,11 @@
 package com.github.marschall.acme.money;
 
+import static com.github.marschall.acme.money.FractionMath.gcd;
+import static java.lang.Math.negateExact;
+import static java.lang.Math.addExact;
+import static java.lang.Math.multiplyExact;
+import static java.lang.Math.subtractExact;
+
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -9,10 +15,6 @@ import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
 import javax.money.NumberValue;
-
-import org.javamoney.moneta.FastMoney;
-
-import static java.lang.Math.negateExact;
 
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
@@ -35,7 +37,22 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   }
   
   public static FractionMoney of(long numerator, long denominator, CurrencyUnit currency) {
-    return new FractionMoney(numerator, denominator, currency);
+    long n = numerator;
+    long d = denominator;
+    if (d < 0) {
+      if (d == Long.MIN_VALUE) {
+        throw new ArithmeticException("overflow");
+      } else {
+        d = -d;
+        n = -n;
+      }
+    }
+    long gcd = gcd(n, d);
+    if (gcd != 1) {
+      d = d / gcd;
+      n = n / gcd;
+    }
+    return new FractionMoney(n, d, currency);
   }
 
   @Override
@@ -104,23 +121,52 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
       return 0;
     }
   }
+  
+  private static Fraction convertTOFraction(MonetaryAmount amount) {
+    NumberValue numberValue = amount.getNumber();
+    Class<? extends Number> numberClass = numberValue.getNumberType().asSubclass(Number.class);
+    return ConvertFraction.of(numberValue.numberValueExact(numberClass));
+  }
 
   @Override
   public MonetaryAmount add(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return null;
+    long n;
+    long d;
+    if (amount instanceof FractionMoney) {
+      FractionMoney fractionMoney = (FractionMoney) amount;
+      n = fractionMoney.numerator;
+      d = fractionMoney.denominator;
+    } else {
+      Fraction fraction = convertTOFraction(amount);
+      n = fraction.getNumerator();
+      d = fraction.getDenominator();
+    }
+    return FractionMoney.of(
+        addExact(multiplyExact(this.numerator, d), multiplyExact(this.denominator, n)),
+        multiplyExact(this.denominator, d), currency);
   }
 
   @Override
   public MonetaryAmount subtract(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return null;
+    long n;
+    long d;
+    if (amount instanceof FractionMoney) {
+      FractionMoney fractionMoney = (FractionMoney) amount;
+      n = fractionMoney.numerator;
+      d = fractionMoney.denominator;
+    } else {
+      Fraction fraction = convertTOFraction(amount);
+      n = fraction.getNumerator();
+      d = fraction.getDenominator();
+    }
+    return FractionMoney.of(
+        subtractExact(multiplyExact(this.numerator, d), multiplyExact(this.denominator, n)),
+        multiplyExact(this.denominator, d), currency);
   }
 
   @Override
   public MonetaryAmount multiply(long multiplicand) {
-    // TODO Auto-generated method stub
-    return null;
+    return FractionMoney.of(multiplyExact(this.numerator, multiplicand), this.denominator, currency);
   }
 
   @Override
@@ -137,8 +183,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount divide(long divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return FractionMoney.of(this.numerator, multiplyExact(this.denominator, divisor), currency);
   }
 
   @Override
@@ -242,8 +287,11 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   
   @Override
   public int hashCode() {
-    // TODO unbox
-    return Objects.hash(currency, this.numerator, this.denominator);
+    int result = 17;
+    result = 31 * result + this.currency.hashCode();
+    result = 31 * result + Long.hashCode(this.numerator);
+    result = 31 * result + Long.hashCode(this.denominator);
+    return result;
   }
 
   @Override

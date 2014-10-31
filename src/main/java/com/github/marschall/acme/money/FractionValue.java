@@ -52,12 +52,18 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public <T extends Number> T numberValue(Class<T> numberType) {
+    if (numberType == Fraction.class) {
+      return (T) Fraction.of(this.numerator, this.denominator);
+    }
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public <T extends Number> T numberValueExact(Class<T> numberType) {
+    if (numberType == Fraction.class) {
+      return (T) Fraction.of(this.numerator, this.denominator);
+    }
     // TODO Auto-generated method stub
     return null;
   }

@@ -5,6 +5,11 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class FractionTest {
+  
+  @Test
+  public void testEquals() {
+    assertEquals(Fraction.of(1, 2), Fraction.of(1, 2));
+  }
 
   @Test
   public void normalizatin() {

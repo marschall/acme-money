@@ -15,6 +15,9 @@ final class FractionMath {
     if (initialM == Long.MIN_VALUE) {
       throw new ArithmeticException("overflow");
     }
+    if (initialK == 0) {
+      return initialM;
+    }
     long k = abs(initialK);
     long m = abs(initialM);
     while (k != m) {

@@ -67,5 +67,33 @@ public final class Fraction extends Number implements Comparable<Fraction> {
     long bc = multiplyExact(this.denominator, o.numerator);
     return Long.signum(subtractExact(ad, bc));
   }
+  
+  
+  
+  @Override
+  public int hashCode() {
+    int result = 17;
+    result = 31 * result + Long.hashCode(this.numerator);
+    result = 31 * result + Long.hashCode(this.denominator);
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof Fraction)) {
+      return false;
+    }
+    Fraction other = (Fraction) obj;
+    return this.numerator == other.numerator
+        && this.denominator == other.denominator;
+  }
+
+  @Override
+  public String toString() {
+    return "(" + this.numerator + '/' + this.denominator + ')';
+  }
 
 }
