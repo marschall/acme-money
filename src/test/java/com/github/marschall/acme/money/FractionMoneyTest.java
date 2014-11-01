@@ -12,12 +12,15 @@ import java.math.BigDecimal;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryCurrencies;
+import javax.money.MonetaryException;
 
 import org.junit.Test;
 
 public class FractionMoneyTest {
 
   protected static final CurrencyUnit CHF = MonetaryCurrencies.getCurrency("CHF");
+
+  protected static final CurrencyUnit EUR = MonetaryCurrencies.getCurrency("EUR");
 
 
   @Test
@@ -90,6 +93,19 @@ public class FractionMoneyTest {
   }
 
   @Test
+  public void compareDifferentCurrencies() {
+    FractionMoney chf = FractionMoney.of(1, 2, CHF);
+    FractionMoney eur = FractionMoney.of(1, 2, EUR);
+
+    try {
+      chf.isEqualTo(eur);
+      fail("can't compare different currencies");
+    } catch (MonetaryException e) {
+      // should reach here
+    }
+  }
+
+  @Test
   public void compareToFractionMoney() {
     FractionMoney smaller = FractionMoney.of(1, 2, CHF);
     FractionMoney bigger = FractionMoney.of(4, 3, CHF);
@@ -118,8 +134,12 @@ public class FractionMoneyTest {
   }
 
   @Test
-  public void compareToOtherMoney() {
+  public void compareToOtherMoneyEqual() {
+    FractionMoney fraction = FractionMoney.of(2, 1, CHF);
+    FastMoney6 fast6 = FastMoney6.of(2, CHF);
 
+    assertTrue(fraction.isEqualTo(fast6));
+    assertTrue(fast6.isEqualTo(fraction));
   }
 
   @Test
