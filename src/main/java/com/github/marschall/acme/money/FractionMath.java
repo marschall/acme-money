@@ -21,6 +21,10 @@ final class FractionMath {
     long k = abs(initialK);
     long m = abs(initialM);
     while (k != m) {
+      if (k == 1 || m == 1) {
+        return 1;
+      }
+      
       if (k > m) {
         k = k - m;
       } else {
