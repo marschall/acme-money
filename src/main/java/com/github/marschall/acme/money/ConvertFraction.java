@@ -61,7 +61,7 @@ enum ConvertFraction {
       return isScaleZero(result);
     }
   },
-  /** Default conversion based on String, if everything else ffailed. */
+  /** Default conversion based on String, if everything else failed. */
   DEFAULT {
     @Override
     Fraction getFraction(Number num) {

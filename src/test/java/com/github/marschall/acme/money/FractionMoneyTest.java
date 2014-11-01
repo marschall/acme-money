@@ -2,13 +2,16 @@ package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.HasValue.hasValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryCurrencies;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class FractionMoneyTest {
@@ -52,6 +55,27 @@ public class FractionMoneyTest {
   public void multiply() {
     FractionMoney money = FractionMoney.of(1, 4, CHF);
     assertThat(money.multiply(2L), hasValue(1L, 2L));
+    assertThat(money.multiply(2.0d), hasValue(1L, 2L));
+    
+    long l = 4037000499L;
+    
+    money = FractionMoney.of(l, 1, CHF);
+    try {
+      money.multiply((double) l);
+      fail("missed overflow");
+    } catch (ArithmeticException e) {
+      // should reach here
+    }
+  }
+  
+  @Test
+  @Ignore("runs forever")
+  public void gcdLimit() {
+    // FIXME
+    FractionMoney money = FractionMoney.of(Long.MAX_VALUE, 1, CHF);
+    assertNotNull(money);
+    money = FractionMoney.of(Long.MIN_VALUE, 1, CHF);
+    assertNotNull(money);
   }
 
   @Test

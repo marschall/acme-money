@@ -171,8 +171,11 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount multiply(double multiplicand) {
-    // TODO Auto-generated method stub
-    return null;
+    double n = this.numerator * multiplicand;
+    if (n > Long.MAX_VALUE || n < Long.MIN_VALUE) {
+      throw new ArithmeticException("overflow");
+    }
+    return FractionMoney.of((long) n, denominator, currency);
   }
 
   @Override
