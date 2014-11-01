@@ -69,9 +69,8 @@ public class FractionMoneyTest {
   }
   
   @Test
-  @Ignore("runs forever")
+  @Ignore("takes forever")
   public void gcdLimit() {
-    // FIXME
     FractionMoney money = FractionMoney.of(Long.MAX_VALUE, 1, CHF);
     assertNotNull(money);
     money = FractionMoney.of(Long.MIN_VALUE, 1, CHF);

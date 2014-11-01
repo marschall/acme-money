@@ -27,29 +27,35 @@ enum ConvertFraction {
   FLUCTUAGE {
     @Override
     Fraction getFraction(Number num) {
-      return new BigDecimal(num.toString());
+      return isScaleZero(new BigDecimal(num.toString()));
     }
   },
   /** Conversion from BigInteger. */
   BIGINTEGER {
     @Override
     Fraction getFraction(Number num) {
-      return new BigDecimal((BigInteger) num);
+      return Fraction.of(((BigInteger) num).longValueExact(), 1L);
     }
   },
   /** Conversion from NumberValue. */
   NUMBERVALUE {
     @Override
     Fraction getFraction(Number num) {
-      BigDecimal result = ((NumberValue)num).numberValue(BigDecimal.class);
+      BigDecimal result = ((NumberValue) num).numberValue(BigDecimal.class);
       return isScaleZero(result);
+    }
+  },
+  FRACTIONVALUE {
+    @Override
+    Fraction getFraction(Number num) {
+      return ((NumberValue) num).numberValue(Fraction.class);
     }
   },
   /** Conversion from BigDecimal. */
   BIGDECIMAL {
     @Override
     Fraction getFraction(Number num) {
-      BigDecimal result = ((BigDecimal)num);
+      BigDecimal result = (BigDecimal) num;
       return isScaleZero(result);
     }
   },
@@ -77,6 +83,8 @@ enum ConvertFraction {
   };
 
 
+  private static final BigDecimal TEN = BigDecimal.valueOf(10);
+
   abstract Fraction getFraction(Number num);
 
   static Fraction of(Number num) {
@@ -97,6 +105,9 @@ enum ConvertFraction {
     if (num instanceof NumberValue) {
       return NUMBERVALUE;
     }
+    if (num instanceof FractionValue) {
+      return FRACTIONVALUE;
+    }
     if (BigDecimal.class.equals(num.getClass())) {
       return BIGDECIMAL;
     }
@@ -116,14 +127,17 @@ enum ConvertFraction {
   private static List<Class<? extends Number>> FLOATINGS = Arrays.asList(
       Float.class, Double.class);
 
-  private static BigDecimal isScaleZero(BigDecimal result) {
-    if (result.signum() == 0) {
-      return BigDecimal.ZERO;
+  private static Fraction isScaleZero(BigDecimal d) {
+    if (d.signum() == 0) {
+      return Fraction.of(0L, 1L);
     }
-    if (result.scale() > 0) {
-      return result.stripTrailingZeros();
+    BigDecimal decimal = d;
+    if (decimal.scale() > 0) {
+      decimal = decimal.stripTrailingZeros();
     }
-    return result;
+    long denominator = TEN.pow(decimal.scale()).longValueExact();
+    long numerator = decimal.movePointRight(decimal.scale()).longValueExact();
+    return Fraction.of(numerator, denominator);
   }
 
 }
