@@ -2,8 +2,10 @@ package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.HasValue.hasValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
@@ -11,7 +13,6 @@ import java.math.BigDecimal;
 import javax.money.CurrencyUnit;
 import javax.money.MonetaryCurrencies;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class FractionMoneyTest {
@@ -56,9 +57,9 @@ public class FractionMoneyTest {
     FractionMoney money = FractionMoney.of(1, 4, CHF);
     assertThat(money.multiply(2L), hasValue(1L, 2L));
     assertThat(money.multiply(2.0d), hasValue(1L, 2L));
-    
+
     long l = 4037000499L;
-    
+
     money = FractionMoney.of(l, 1, CHF);
     try {
       money.multiply((double) l);
@@ -67,7 +68,7 @@ public class FractionMoneyTest {
       // should reach here
     }
   }
-  
+
   @Test
   public void gcdLimit() {
     FractionMoney money = FractionMoney.of(Long.MAX_VALUE, 1, CHF);
@@ -81,13 +82,46 @@ public class FractionMoneyTest {
     FractionMoney money = FractionMoney.of(1, 2, CHF);
     assertThat(money.divide(2L), hasValue(1L, 4L));
   }
-  
+
   @Test
   public void testToString() {
     FractionMoney money = FractionMoney.of(1, 2, CHF);
     assertEquals("CHF 1/2", money.toString());
   }
-  
+
+  @Test
+  public void compareToFractionMoney() {
+    FractionMoney smaller = FractionMoney.of(1, 2, CHF);
+    FractionMoney bigger = FractionMoney.of(4, 3, CHF);
+
+    assertTrue(smaller.isEqualTo(smaller));
+    assertFalse(smaller.isEqualTo(bigger));
+    assertTrue(smaller.isLessThan(bigger));
+    assertTrue(smaller.isLessThanOrEqualTo(bigger));
+    assertTrue(smaller.isLessThanOrEqualTo(smaller));
+    assertFalse(smaller.isGreaterThan(bigger));
+    assertFalse(smaller.isGreaterThanOrEqualTo(bigger));
+    assertTrue(smaller.isGreaterThanOrEqualTo(smaller));
+
+    assertTrue(bigger.isEqualTo(bigger));
+    assertFalse(bigger.isEqualTo(smaller));
+    assertFalse(bigger.isLessThan(smaller));
+    assertFalse(bigger.isLessThanOrEqualTo(smaller));
+    assertTrue(bigger.isLessThanOrEqualTo(bigger));
+    assertTrue(bigger.isGreaterThan(smaller));
+    assertTrue(bigger.isGreaterThanOrEqualTo(smaller));
+    assertTrue(bigger.isGreaterThanOrEqualTo(bigger));
+
+    assertEquals(0, smaller.compareTo(smaller));
+    assertEquals(-1, smaller.compareTo(bigger));
+    assertEquals(1, bigger.compareTo(smaller));
+  }
+
+  @Test
+  public void compareToOtherMoney() {
+
+  }
+
   @Test
   public void scaleByPowerOfTen() {
     FractionMoney money = FractionMoney.of(10L, 1L, CHF);

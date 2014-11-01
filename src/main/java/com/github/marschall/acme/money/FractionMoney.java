@@ -1,9 +1,9 @@
 package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.FractionMath.gcd;
-import static java.lang.Math.negateExact;
 import static java.lang.Math.addExact;
 import static java.lang.Math.multiplyExact;
+import static java.lang.Math.negateExact;
 import static java.lang.Math.subtractExact;
 
 import java.io.Serializable;
@@ -14,6 +14,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
+import javax.money.MonetaryException;
 import javax.money.NumberValue;
 
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
@@ -67,8 +68,35 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public int compareTo(MonetaryAmount o) {
-    // TODO Auto-generated method stub
-    return 0;
+    Objects.requireNonNull(o);
+    int compare = getCurrency().getCurrencyCode().compareTo(o.getCurrency().getCurrencyCode());
+    if (compare == 0) {
+        compare = this.compareValue(o);
+    }
+    return compare;
+  }
+  
+  private int compareValue(MonetaryAmount o) {
+    CurrencyUnit amountCurrency = o.getCurrency();
+    if (!this.currency.getCurrencyCode().equals(amountCurrency.getCurrencyCode())) {
+        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+    }
+    if (o instanceof FractionMoney) {
+      FractionMoney other = (FractionMoney) o;
+      long ad = multiplyExact(this.numerator, other.denominator);
+      long bc = multiplyExact(this.denominator, other.numerator);
+      return Long.signum(subtractExact(ad, bc));
+    }
+    Fraction fraction = getFraction(o);
+    long ad = multiplyExact(this.numerator, fraction.getDenominator());
+    long bc = multiplyExact(this.denominator, fraction.getNumerator());
+    return Long.signum(subtractExact(ad, bc));
+  }
+  
+  private static Fraction getFraction(MonetaryAmount o) {
+    NumberValue numberValue = o.getNumber();
+    Class<? extends Number> numberType = numberValue.getNumberType().asSubclass(Number.class);
+    return ConvertFraction.of(numberValue.numberValueExact(numberType));
   }
 
   @Override
@@ -83,32 +111,27 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public boolean isGreaterThan(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareValue(amount) > 0;
   }
 
   @Override
   public boolean isGreaterThanOrEqualTo(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareValue(amount) >= 0;
   }
 
   @Override
   public boolean isLessThan(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareValue(amount) < 0;
   }
 
   @Override
-  public boolean isLessThanOrEqualTo(MonetaryAmount amt) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean isLessThanOrEqualTo(MonetaryAmount amount) {
+    return this.compareValue(amount) <= 0;
   }
 
   @Override
   public boolean isEqualTo(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareValue(amount) == 0;
   }
 
   @Override
