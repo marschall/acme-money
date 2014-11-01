@@ -1,6 +1,7 @@
 package com.github.marschall.acme.money;
 
 import javax.money.NumberValue;
+
 import static java.lang.Math.*;
 
 public final class FractionValue extends NumberValue {
@@ -96,6 +97,11 @@ public final class FractionValue extends NumberValue {
   @Override
   public double doubleValue() {
     return (double) numerator / (double) denominator;
+  }
+
+  @Override
+  public String toString() {
+    return Long.toString(this.numerator) + '/' + this.denominator;
   }
 
 }

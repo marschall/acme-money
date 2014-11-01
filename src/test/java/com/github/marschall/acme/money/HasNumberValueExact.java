@@ -1,5 +1,7 @@
 package com.github.marschall.acme.money;
 
+import static com.github.marschall.acme.money.NumberEquality.numberEquals;
+
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
@@ -27,7 +29,8 @@ public class HasNumberValueExact extends TypeSafeMatcher<FractionValue> {
   @Override
   protected boolean matchesSafely(FractionValue item) {
     try {
-      return item.numberValueExact(this.value.getClass()).equals(this.value);
+      Number actual = item.numberValueExact(this.value.getClass());
+      return numberEquals(actual, this.value);
     } catch (ArithmeticException e) {
       return false;
     }

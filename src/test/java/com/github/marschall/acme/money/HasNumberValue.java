@@ -5,6 +5,8 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
+import static com.github.marschall.acme.money.NumberEquality.numberEquals;
+
 public final class HasNumberValue extends TypeSafeMatcher<FractionValue> {
   
   private final Number value;
@@ -27,7 +29,8 @@ public final class HasNumberValue extends TypeSafeMatcher<FractionValue> {
   @Override
   protected boolean matchesSafely(FractionValue item) {
     try {
-      return item.numberValue(this.value.getClass()).equals(this.value);
+      Number actual = item.numberValue(this.value.getClass());
+      return numberEquals(actual, this.value);
     } catch (ArithmeticException e) {
       return false;
     }

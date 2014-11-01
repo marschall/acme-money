@@ -93,7 +93,7 @@ public final class Fraction extends Number implements Comparable<Fraction> {
 
   @Override
   public String toString() {
-    return "(" + this.numerator + '/' + this.denominator + ')';
+    return Long.toString(this.numerator) + '/' + this.denominator;
   }
 
 }

@@ -251,7 +251,7 @@ enum ConvertToNumber {
     converterMap.put(BigInteger.class, new ConvertToBigInteger());
     converterMap.put(Float.class, new ConvertToFloat());
     converterMap.put(Double.class, new ConvertToDouble());
-    converterMap.put(Long.class, new ConvertToDouble());
+    converterMap.put(Long.class, new ConvertToLong());
     converterMap.put(Integer.class, new ConvertToInteger());
     converterMap.put(Short.class, new ConvertToShort());
     converterMap.put(Byte.class, new ConvertToByte());
