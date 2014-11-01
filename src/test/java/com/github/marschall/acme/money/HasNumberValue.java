@@ -7,7 +7,7 @@ import org.hamcrest.TypeSafeMatcher;
 
 import static com.github.marschall.acme.money.NumberEquality.numberEquals;
 
-public final class HasNumberValue extends TypeSafeMatcher<FractionValue> {
+final class HasNumberValue extends TypeSafeMatcher<FractionValue> {
   
   private final Number value;
 
@@ -16,7 +16,7 @@ public final class HasNumberValue extends TypeSafeMatcher<FractionValue> {
   }
   
   @Factory
-  public static Matcher<FractionValue> hasNumberValue(Number value) {
+  static Matcher<FractionValue> hasNumberValue(Number value) {
     return new HasNumberValue(value);
   }
 

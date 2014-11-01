@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -138,6 +139,34 @@ public class FractionValueTest {
     value = new FractionValue(Long.MAX_VALUE, 1);
     assertThat(value, hasNumberValue((float) Long.MAX_VALUE));
     assertThat(value, hasNumberValueExcat((float) Long.MAX_VALUE));
+  }
+
+  @Test
+  public void convertToBigDecimal() {
+    FractionValue value = new FractionValue(3, 2);
+    assertThat(value, hasNumberValue(new BigDecimal("1.5")));
+    assertThat(value, hasNumberValueExcat(new BigDecimal("1.5")));
+
+    value = new FractionValue(-3, 2);
+    assertThat(value, hasNumberValue(new BigDecimal("-1.5")));
+    assertThat(value, hasNumberValueExcat(new BigDecimal("-1.5")));
+    
+    value = new FractionValue(1, 3);
+    assertThat(value, hasNumberValue(new BigDecimal("0.333333")));
+    assertThat(value, hasNoNumberValueExact(BigDecimal.class));
+  }
+  
+
+
+  @Test
+  public void convertToBigInteger() {
+    FractionValue value = new FractionValue(10, 1);
+    assertThat(value, hasNumberValue(BigInteger.valueOf(10L)));
+    assertThat(value, hasNumberValueExcat(BigInteger.valueOf(10L)));
+
+    value = new FractionValue(5, 2);
+    assertThat(value, hasNumberValue(BigInteger.valueOf(2L)));
+    assertThat(value, hasNoNumberValueExact(BigInteger.class));
   }
   
   @Test

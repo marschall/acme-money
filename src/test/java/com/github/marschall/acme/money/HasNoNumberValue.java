@@ -5,7 +5,7 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-public final class HasNoNumberValue extends TypeSafeMatcher<FractionValue> {
+final class HasNoNumberValue extends TypeSafeMatcher<FractionValue> {
   
   private final Class<? extends Number> clazz;
   
@@ -14,7 +14,7 @@ public final class HasNoNumberValue extends TypeSafeMatcher<FractionValue> {
   }
   
   @Factory
-  public static Matcher<FractionValue> hasNoNumberValue(Class<? extends Number> clazz) {
+  static Matcher<FractionValue> hasNoNumberValue(Class<? extends Number> clazz) {
     return new HasNoNumberValue(clazz);
   }
 

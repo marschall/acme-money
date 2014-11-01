@@ -7,7 +7,7 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-public class HasNumberValueExact extends TypeSafeMatcher<FractionValue> {
+final class HasNumberValueExact extends TypeSafeMatcher<FractionValue> {
   
   private final Number value;
 
@@ -16,7 +16,7 @@ public class HasNumberValueExact extends TypeSafeMatcher<FractionValue> {
   }
   
   @Factory
-  public static Matcher<FractionValue> hasNumberValueExcat(Number value) {
+  static Matcher<FractionValue> hasNumberValueExcat(Number value) {
     return new HasNumberValueExact(value);
   }
 

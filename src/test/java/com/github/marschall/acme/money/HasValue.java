@@ -7,7 +7,7 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-public final class HasValue extends TypeSafeMatcher<MonetaryAmount> {
+final class HasValue extends TypeSafeMatcher<MonetaryAmount> {
   
   private final long numerator;
   private final long denominator;
@@ -18,7 +18,7 @@ public final class HasValue extends TypeSafeMatcher<MonetaryAmount> {
   }
 
   @Factory
-  public static Matcher<MonetaryAmount> hasValue(long numerator, long denominator) {
+  static Matcher<MonetaryAmount> hasValue(long numerator, long denominator) {
     return new HasValue(numerator, denominator);
   }
 
