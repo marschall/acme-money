@@ -69,14 +69,12 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public long getAmountFractionNumerator() {
-    // TODO Auto-generated method stub
-    return 0;
+    return this.numerator % this.denominator;
   }
 
   @Override
   public long getAmountFractionDenominator() {
-    // TODO Auto-generated method stub
-    return 0;
+    return this.denominator;
   }
 
   @Override

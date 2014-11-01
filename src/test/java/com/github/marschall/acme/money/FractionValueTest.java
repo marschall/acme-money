@@ -4,11 +4,14 @@ import static com.github.marschall.acme.money.HasNoNumberValue.hasNoNumberValue;
 import static com.github.marschall.acme.money.HasNoNumberValueExact.hasNoNumberValueExact;
 import static com.github.marschall.acme.money.HasNumberValue.hasNumberValue;
 import static com.github.marschall.acme.money.HasNumberValueExact.hasNumberValueExcat;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.javamoney.moneta.spi.DefaultNumberValue;
 import org.junit.Test;
 
 public class FractionValueTest {
@@ -135,6 +138,45 @@ public class FractionValueTest {
     value = new FractionValue(Long.MAX_VALUE, 1);
     assertThat(value, hasNumberValue((float) Long.MAX_VALUE));
     assertThat(value, hasNumberValueExcat((float) Long.MAX_VALUE));
+  }
+  
+  @Test
+  public void getAmountFraction() {
+    BigDecimal d = new BigDecimal("0.5");
+    DefaultNumberValue v = new DefaultNumberValue(d);
+    assertEquals(5L, v.getAmountFractionNumerator());
+    assertEquals(10L, v.getAmountFractionDenominator());
+    
+    d = new BigDecimal("1.5");
+    v = new DefaultNumberValue(d);
+    assertEquals(5L, v.getAmountFractionNumerator());
+    assertEquals(10L, v.getAmountFractionDenominator());
+    
+    d = new BigDecimal("-0.5");
+    v = new DefaultNumberValue(d);
+    assertEquals(-5L, v.getAmountFractionNumerator());
+    assertEquals(10L, v.getAmountFractionDenominator());
+    
+    d = new BigDecimal("-1.5");
+    v = new DefaultNumberValue(d);
+    assertEquals(-5L, v.getAmountFractionNumerator());
+    assertEquals(10L, v.getAmountFractionDenominator());
+    
+    FractionValue f = new FractionValue(1, 2);
+    assertEquals(1L, f.getAmountFractionNumerator());
+    assertEquals(2L, f.getAmountFractionDenominator());
+    
+    f = new FractionValue(3, 2);
+    assertEquals(1L, f.getAmountFractionNumerator());
+    assertEquals(2L, f.getAmountFractionDenominator());
+    
+    f = new FractionValue(-1, 2);
+    assertEquals(-1L, f.getAmountFractionNumerator());
+    assertEquals(2L, f.getAmountFractionDenominator());
+    
+    f = new FractionValue(-3, 2);
+    assertEquals(-1L, f.getAmountFractionNumerator());
+    assertEquals(2L, f.getAmountFractionDenominator());
   }
 
 }
