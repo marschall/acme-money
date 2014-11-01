@@ -30,10 +30,10 @@ final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
   }
 
   @Override
-  protected FractionMoney create(Number number, CurrencyUnit currency,
-      MonetaryContext monetaryContext) {
-    // TODO Auto-generated method stub
-    return null;
+  protected FractionMoney create(Number number, CurrencyUnit currency, MonetaryContext monetaryContext) {
+    Fraction fraction = ConvertToFraction.of(number);
+    // TODO optimize gcd away
+    return FractionMoney.of(fraction.getNumerator(), fraction.getDenominator(), currency);
   }
 
   @Override

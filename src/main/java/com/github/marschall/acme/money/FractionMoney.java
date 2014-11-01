@@ -97,7 +97,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   private static Fraction getFraction(MonetaryAmount o) {
     NumberValue numberValue = o.getNumber();
     Class<? extends Number> numberType = numberValue.getNumberType().asSubclass(Number.class);
-    return ConvertFraction.of(numberValue.numberValueExact(numberType));
+    return ConvertToFraction.of(numberValue.numberValueExact(numberType));
   }
 
   @Override
@@ -149,7 +149,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   private static Fraction convertTOFraction(MonetaryAmount amount) {
     NumberValue numberValue = amount.getNumber();
     Class<? extends Number> numberClass = numberValue.getNumberType().asSubclass(Number.class);
-    return ConvertFraction.of(numberValue.numberValueExact(numberClass));
+    return ConvertToFraction.of(numberValue.numberValueExact(numberClass));
   }
 
   @Override
@@ -201,7 +201,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount multiply(Number multiplicand) {
-    Fraction fraction = ConvertFraction.of(multiplicand);
+    Fraction fraction = ConvertToFraction.of(multiplicand);
     long n = multiplyExact(this.numerator, fraction.getNumerator());
     long d = multiplyExact(this.denominator, fraction.getDenominator());
     return FractionMoney.of(n, d, currency);
@@ -220,7 +220,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount divide(Number divisor) {
-    Fraction fraction = ConvertFraction.of(divisor);
+    Fraction fraction = ConvertToFraction.of(divisor);
     long n = multiplyExact(this.numerator, fraction.getDenominator());
     long d = multiplyExact(this.denominator, fraction.getNumerator());
     return FractionMoney.of(n, d, currency);

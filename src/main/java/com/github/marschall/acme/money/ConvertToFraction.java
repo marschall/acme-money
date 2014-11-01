@@ -15,7 +15,7 @@ import org.javamoney.moneta.spi.ConvertBigDecimal;
 import org.omg.CosNaming.IstringHelper;
 
 
-enum ConvertFraction {
+enum ConvertToFraction {
   /** Conversion from integral numeric types, short, int, long. */
   INTEGER {
     @Override
@@ -95,7 +95,7 @@ enum ConvertFraction {
     return factory(num).getFraction(num);
   }
 
-  private static ConvertFraction factory(Number num) {
+  private static ConvertToFraction factory(Number num) {
     if (INSTEGERS.contains(num.getClass())) {
       return INTEGER;
     }

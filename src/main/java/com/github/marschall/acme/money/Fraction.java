@@ -68,8 +68,6 @@ public final class Fraction extends Number implements Comparable<Fraction> {
     return Long.signum(subtractExact(ad, bc));
   }
   
-  
-  
   @Override
   public int hashCode() {
     int result = 17;
