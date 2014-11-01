@@ -7,6 +7,13 @@ final class FractionMath {
   private FractionMath() {
     throw new AssertionError("not instantiable");
   }
+  
+  static long toLongExact(double value) {
+    if ((long) value != value) {
+        throw new ArithmeticException("integer overflow");
+    }
+    return (long) value;
+  }
 
   static long gcd(long initialK, long initialM) {
     if (initialK == Long.MIN_VALUE) {

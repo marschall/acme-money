@@ -1,6 +1,7 @@
 package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.FractionMath.gcd;
+import static com.github.marschall.acme.money.FractionMath.toLongExact;
 import static java.lang.Math.addExact;
 import static java.lang.Math.multiplyExact;
 import static java.lang.Math.negateExact;
@@ -195,16 +196,15 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public MonetaryAmount multiply(double multiplicand) {
     double n = this.numerator * multiplicand;
-    if (n > Long.MAX_VALUE || n < Long.MIN_VALUE) {
-      throw new ArithmeticException("overflow");
-    }
-    return FractionMoney.of((long) n, denominator, currency);
+    return FractionMoney.of(toLongExact(n), denominator, currency);
   }
 
   @Override
   public MonetaryAmount multiply(Number multiplicand) {
-    // TODO Auto-generated method stub
-    return null;
+    Fraction fraction = ConvertFraction.of(multiplicand);
+    long n = multiplyExact(this.numerator, fraction.getNumerator());
+    long d = multiplyExact(this.denominator, fraction.getDenominator());
+    return FractionMoney.of(n, d, currency);
   }
 
   @Override
@@ -214,14 +214,16 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount divide(double divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    double d = this.denominator * divisor;
+    return FractionMoney.of(this.numerator, toLongExact(d), currency);
   }
 
   @Override
   public MonetaryAmount divide(Number divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    Fraction fraction = ConvertFraction.of(divisor);
+    long n = multiplyExact(this.numerator, fraction.getDenominator());
+    long d = multiplyExact(this.denominator, fraction.getNumerator());
+    return FractionMoney.of(n, d, currency);
   }
 
   @Override
