@@ -17,15 +17,17 @@ package com.github.marschall.acme.money;
 
 import java.math.RoundingMode;
 
-import javax.money.*;
+import javax.money.CurrencyUnit;
+import javax.money.MonetaryContext;
+import javax.money.MonetaryContextBuilder;
+import javax.money.NumberValue;
 
-import org.javamoney.moneta.FastMoney;
 import org.javamoney.moneta.spi.AbstractAmountBuilder;
 
 class FastMoney6AmountBuilder extends AbstractAmountBuilder<FastMoney6>{
 
   static final MonetaryContext DEFAULT_CONTEXT =
-      MonetaryContextBuilder.of(FastMoney.class).setPrecision(19).setMaxScale(FastMoney6.SCALE).setFixedScale(true)
+      MonetaryContextBuilder.of(FastMoney6.class).setPrecision(19).setMaxScale(FastMoney6.SCALE).setFixedScale(true)
       .set(RoundingMode.HALF_EVEN).build();
   static final MonetaryContext MAX_CONTEXT = DEFAULT_CONTEXT;
 
@@ -35,8 +37,8 @@ class FastMoney6AmountBuilder extends AbstractAmountBuilder<FastMoney6>{
   }
 
   @Override
-  public Class<FastMoney> getAmountType(){
-    return FastMoney.class;
+  public Class<FastMoney6> getAmountType(){
+    return FastMoney6.class;
   }
 
   @Override

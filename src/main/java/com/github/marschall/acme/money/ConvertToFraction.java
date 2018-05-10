@@ -11,9 +11,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.money.NumberValue;
 
-import org.javamoney.moneta.spi.ConvertBigDecimal;
-import org.omg.CosNaming.IstringHelper;
-
 
 enum ConvertToFraction {
   /** Conversion from integral numeric types, short, int, long. */
