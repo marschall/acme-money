@@ -1,18 +1,18 @@
 package com.github.marschall.acme.money;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class FractionTest {
-  
+class FractionTest {
+
   @Test
-  public void testEquals() {
+  void testEquals() {
     assertEquals(Fraction.of(1, 2), Fraction.of(1, 2));
   }
 
   @Test
-  public void normalizatin() {
+  void normalizatin() {
     Fraction f = Fraction.of(-1, -2);
     assertEquals(1L, f.getNumerator());
     assertEquals(2L, f.getDenominator());
@@ -23,7 +23,7 @@ public class FractionTest {
   }
 
   @Test
-  public void gdc() {
+  void gdc() {
     Fraction f = Fraction.of(2, 4);
     assertEquals(1L, f.getNumerator());
     assertEquals(2L, f.getDenominator());
@@ -34,7 +34,7 @@ public class FractionTest {
   }
 
   @Test
-  public void compareTo() {
+  void compareTo() {
     Fraction f1 = Fraction.of(3, 5); // 0.6
     Fraction f2 = Fraction.of(2, 3); // 0.66
     Fraction f3 = Fraction.of(1, 2); // 0.5
@@ -49,7 +49,7 @@ public class FractionTest {
 
     Fraction f4 = Fraction.of(-3, 5); // -0.6
     Fraction f5 = Fraction.of(-2, 3); // -0.66
-    
+
     assertEquals(1, f1.compareTo(f4));
     assertEquals(-1, f4.compareTo(f1));
     assertEquals(0, f4.compareTo(f4));

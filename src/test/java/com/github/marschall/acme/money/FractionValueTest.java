@@ -4,8 +4,8 @@ import static com.github.marschall.acme.money.HasNoNumberValue.hasNoNumberValue;
 import static com.github.marschall.acme.money.HasNoNumberValueExact.hasNoNumberValueExact;
 import static com.github.marschall.acme.money.HasNumberValue.hasNumberValue;
 import static com.github.marschall.acme.money.HasNumberValueExact.hasNumberValueExcat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,12 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.javamoney.moneta.spi.DefaultNumberValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class FractionValueTest {
+class FractionValueTest {
 
   @Test
-  public void convertToInteger() {
+  void convertToInteger() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(10));
     assertThat(value, hasNumberValueExcat(10));
@@ -41,7 +41,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToAtomicInteger() {
+  void convertToAtomicInteger() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(new AtomicInteger(10)));
     assertThat(value, hasNumberValueExcat(new AtomicInteger(10)));
@@ -60,7 +60,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToLong() {
+  void convertToLong() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(10L));
     assertThat(value, hasNumberValueExcat(10L));
@@ -71,7 +71,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToAtomicLong() {
+  void convertToAtomicLong() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(new AtomicLong(10)));
     assertThat(value, hasNumberValueExcat(new AtomicLong(10)));
@@ -82,7 +82,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToShort() {
+  void convertToShort() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(Short.valueOf((short) 10)));
     assertThat(value, hasNumberValueExcat(Short.valueOf((short) 10)));
@@ -101,7 +101,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToByte() {
+  void convertToByte() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(Byte.valueOf((byte) 10)));
     assertThat(value, hasNumberValueExcat(Byte.valueOf((byte) 10)));
@@ -120,7 +120,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToDouble() {
+  void convertToDouble() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(10.0d));
     assertThat(value, hasNumberValueExcat(10.0d));
@@ -131,7 +131,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToFloat() {
+  void convertToFloat() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(10.0f));
     assertThat(value, hasNumberValueExcat(10.0f));
@@ -142,7 +142,7 @@ public class FractionValueTest {
   }
 
   @Test
-  public void convertToBigDecimal() {
+  void convertToBigDecimal() {
     FractionValue value = new FractionValue(3, 2);
     assertThat(value, hasNumberValue(new BigDecimal("1.5")));
     assertThat(value, hasNumberValueExcat(new BigDecimal("1.5")));
@@ -150,16 +150,16 @@ public class FractionValueTest {
     value = new FractionValue(-3, 2);
     assertThat(value, hasNumberValue(new BigDecimal("-1.5")));
     assertThat(value, hasNumberValueExcat(new BigDecimal("-1.5")));
-    
+
     value = new FractionValue(1, 3);
     assertThat(value, hasNumberValue(new BigDecimal("0.333333")));
     assertThat(value, hasNoNumberValueExact(BigDecimal.class));
   }
-  
+
 
 
   @Test
-  public void convertToBigInteger() {
+  void convertToBigInteger() {
     FractionValue value = new FractionValue(10, 1);
     assertThat(value, hasNumberValue(BigInteger.valueOf(10L)));
     assertThat(value, hasNumberValueExcat(BigInteger.valueOf(10L)));
@@ -168,41 +168,41 @@ public class FractionValueTest {
     assertThat(value, hasNumberValue(BigInteger.valueOf(2L)));
     assertThat(value, hasNoNumberValueExact(BigInteger.class));
   }
-  
+
   @Test
-  public void getAmountFraction() {
+  void getAmountFraction() {
     BigDecimal d = new BigDecimal("0.5");
     DefaultNumberValue v = new DefaultNumberValue(d);
     assertEquals(5L, v.getAmountFractionNumerator());
     assertEquals(10L, v.getAmountFractionDenominator());
-    
+
     d = new BigDecimal("1.5");
     v = new DefaultNumberValue(d);
     assertEquals(5L, v.getAmountFractionNumerator());
     assertEquals(10L, v.getAmountFractionDenominator());
-    
+
     d = new BigDecimal("-0.5");
     v = new DefaultNumberValue(d);
     assertEquals(-5L, v.getAmountFractionNumerator());
     assertEquals(10L, v.getAmountFractionDenominator());
-    
+
     d = new BigDecimal("-1.5");
     v = new DefaultNumberValue(d);
     assertEquals(-5L, v.getAmountFractionNumerator());
     assertEquals(10L, v.getAmountFractionDenominator());
-    
+
     FractionValue f = new FractionValue(1, 2);
     assertEquals(1L, f.getAmountFractionNumerator());
     assertEquals(2L, f.getAmountFractionDenominator());
-    
+
     f = new FractionValue(3, 2);
     assertEquals(1L, f.getAmountFractionNumerator());
     assertEquals(2L, f.getAmountFractionDenominator());
-    
+
     f = new FractionValue(-1, 2);
     assertEquals(-1L, f.getAmountFractionNumerator());
     assertEquals(2L, f.getAmountFractionDenominator());
-    
+
     f = new FractionValue(-3, 2);
     assertEquals(-1L, f.getAmountFractionNumerator());
     assertEquals(2L, f.getAmountFractionDenominator());

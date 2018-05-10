@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.money.CurrencyUnit;
+import javax.money.Monetary;
 import javax.money.MonetaryAmount;
-import javax.money.MonetaryCurrencies;
 import javax.money.format.AmountFormatContext;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryParseException;
@@ -18,7 +18,7 @@ import javax.money.format.MonetaryParseException;
  */
 class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
 
-  private ToStringMonetaryAmountFormatStyle style;
+  private final ToStringMonetaryAmountFormatStyle style;
 
   private ToStringMonetaryAmountFormat(ToStringMonetaryAmountFormatStyle style) {
     this.style = Objects.requireNonNull(style);
@@ -38,7 +38,7 @@ class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
   }
 
   @Override
-  public AmountFormatContext getAmountFormatContext() {
+  public AmountFormatContext getContext() {
     throw new UnsupportedOperationException(
         "ToStringMonetaryAmountFormat does not the method suport getAmountFormatContext()");
   }
@@ -54,24 +54,25 @@ class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
   @Override
   public MonetaryAmount parse(CharSequence text)
       throws MonetaryParseException {
-    ParserMonetaryAmount amount = parserMonetaryAmount(text);
-    return style.to(amount);
+    ParserMonetaryAmount amount = this.parserMonetaryAmount(text);
+    return this.style.to(amount);
   }
 
   private ParserMonetaryAmount parserMonetaryAmount(CharSequence text) {
     String[] array = Objects.requireNonNull(text).toString().split(" ");
-    CurrencyUnit currencyUnit = MonetaryCurrencies.getCurrency(array[0]);
+    CurrencyUnit currencyUnit = Monetary.getCurrency(array[0]);
     BigDecimal number = new BigDecimal(array[1]);
     return new ParserMonetaryAmount(currencyUnit, number);
   }
+
   private class ParserMonetaryAmount {
     public ParserMonetaryAmount(CurrencyUnit currencyUnit, BigDecimal number) {
       this.currencyUnit = currencyUnit;
       this.number = number;
     }
 
-    private CurrencyUnit currencyUnit;
-    private BigDecimal number;
+    private final CurrencyUnit currencyUnit;
+    private final BigDecimal number;
   }
 
   /**

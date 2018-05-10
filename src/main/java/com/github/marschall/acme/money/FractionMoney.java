@@ -27,17 +27,17 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
       MonetaryContextBuilder.of(FractionMoney.class).setFixedScale(true).build();
 
   private final CurrencyUnit currency;
-  
+
   private final long numerator;
   private final long denominator;
-  
+
   private FractionMoney(long numerator, long denominator, CurrencyUnit currency) {
     Objects.requireNonNull(currency, "currency");
     this.currency = currency;
     this.numerator = numerator;
     this.denominator = denominator;
   }
-  
+
   public static FractionMoney of(long numerator, long denominator, CurrencyUnit currency) {
     long n = numerator;
     long d = denominator;
@@ -70,13 +70,13 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public int compareTo(MonetaryAmount o) {
     Objects.requireNonNull(o);
-    int compare = getCurrency().getCurrencyCode().compareTo(o.getCurrency().getCurrencyCode());
+    int compare = this.getCurrency().getCurrencyCode().compareTo(o.getCurrency().getCurrencyCode());
     if (compare == 0) {
         compare = this.compareValue(o);
     }
     return compare;
   }
-  
+
   private int compareValue(MonetaryAmount o) {
     CurrencyUnit amountCurrency = o.getCurrency();
     if (!this.currency.getCurrencyCode().equals(amountCurrency.getCurrencyCode())) {
@@ -93,7 +93,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     long bc = multiplyExact(this.denominator, fraction.getNumerator());
     return Long.signum(subtractExact(ad, bc));
   }
-  
+
   private static Fraction getFraction(MonetaryAmount o) {
     NumberValue numberValue = o.getNumber();
     Class<? extends Number> numberType = numberValue.getNumberType().asSubclass(Number.class);
@@ -101,7 +101,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   }
 
   @Override
-  public MonetaryContext getMonetaryContext() {
+  public MonetaryContext getContext() {
     return MONETARY_CONTEXT;
   }
 
@@ -145,7 +145,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
       return 0;
     }
   }
-  
+
   private static Fraction convertTOFraction(MonetaryAmount amount) {
     NumberValue numberValue = amount.getNumber();
     Class<? extends Number> numberClass = numberValue.getNumberType().asSubclass(Number.class);
@@ -167,7 +167,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     }
     return FractionMoney.of(
         addExact(multiplyExact(this.numerator, d), multiplyExact(this.denominator, n)),
-        multiplyExact(this.denominator, d), currency);
+        multiplyExact(this.denominator, d), this.currency);
   }
 
   @Override
@@ -185,18 +185,18 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     }
     return FractionMoney.of(
         subtractExact(multiplyExact(this.numerator, d), multiplyExact(this.denominator, n)),
-        multiplyExact(this.denominator, d), currency);
+        multiplyExact(this.denominator, d), this.currency);
   }
 
   @Override
   public MonetaryAmount multiply(long multiplicand) {
-    return FractionMoney.of(multiplyExact(this.numerator, multiplicand), this.denominator, currency);
+    return FractionMoney.of(multiplyExact(this.numerator, multiplicand), this.denominator, this.currency);
   }
 
   @Override
   public MonetaryAmount multiply(double multiplicand) {
     double n = this.numerator * multiplicand;
-    return FractionMoney.of(toLongExact(n), denominator, currency);
+    return FractionMoney.of(toLongExact(n), this.denominator, this.currency);
   }
 
   @Override
@@ -204,18 +204,18 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     Fraction fraction = ConvertToFraction.of(multiplicand);
     long n = multiplyExact(this.numerator, fraction.getNumerator());
     long d = multiplyExact(this.denominator, fraction.getDenominator());
-    return FractionMoney.of(n, d, currency);
+    return FractionMoney.of(n, d, this.currency);
   }
 
   @Override
   public MonetaryAmount divide(long divisor) {
-    return FractionMoney.of(this.numerator, multiplyExact(this.denominator, divisor), currency);
+    return FractionMoney.of(this.numerator, multiplyExact(this.denominator, divisor), this.currency);
   }
 
   @Override
   public MonetaryAmount divide(double divisor) {
     double d = this.denominator * divisor;
-    return FractionMoney.of(this.numerator, toLongExact(d), currency);
+    return FractionMoney.of(this.numerator, toLongExact(d), this.currency);
   }
 
   @Override
@@ -223,7 +223,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     Fraction fraction = ConvertToFraction.of(divisor);
     long n = multiplyExact(this.numerator, fraction.getDenominator());
     long d = multiplyExact(this.denominator, fraction.getNumerator());
-    return FractionMoney.of(n, d, currency);
+    return FractionMoney.of(n, d, this.currency);
   }
 
   @Override
@@ -304,12 +304,12 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     if (this.numerator >= 0) {
       return this;
     }
-    return new FractionMoney(negateExact(this.numerator), denominator, getCurrency());
+    return new FractionMoney(negateExact(this.numerator), this.denominator, this.getCurrency());
   }
 
   @Override
   public MonetaryAmount negate() {
-    return new FractionMoney(negateExact(numerator), denominator, currency);
+    return new FractionMoney(negateExact(this.numerator), this.denominator, this.currency);
   }
 
   @Override
@@ -317,20 +317,20 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     if (this.numerator >= 0) {
       return this;
     }
-    return new FractionMoney(negateExact(this.numerator), denominator, getCurrency());
+    return new FractionMoney(negateExact(this.numerator), this.denominator, this.getCurrency());
   }
 
   @Override
   public MonetaryAmount stripTrailingZeros() {
     return this;
   }
-  
+
   @Override
   public int hashCode() {
     int result = 17;
-    result = 31 * result + this.currency.hashCode();
-    result = 31 * result + Long.hashCode(this.numerator);
-    result = 31 * result + Long.hashCode(this.denominator);
+    result = (31 * result) + this.currency.hashCode();
+    result = (31 * result) + Long.hashCode(this.numerator);
+    result = (31 * result) + Long.hashCode(this.denominator);
     return result;
   }
 
@@ -344,13 +344,13 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
     }
     FractionMoney other = (FractionMoney) obj;
     return this.currency.equals(other.currency)
-        && this.numerator == other.numerator
-        && this.denominator == other.denominator;
+        && (this.numerator == other.numerator)
+        && (this.denominator == other.denominator);
   }
-  
+
   @Override
   public String toString() {
-    return currency.toString() + ' ' + this.numerator + '/' + this.denominator;
+    return this.currency.toString() + ' ' + this.numerator + '/' + this.denominator;
   }
 
 }

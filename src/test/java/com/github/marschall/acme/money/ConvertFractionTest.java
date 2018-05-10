@@ -1,73 +1,74 @@
 package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.ConvertsToFraction.convertsToFraction;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ConvertFractionTest {
+
+class ConvertFractionTest {
 
   @Test
-  public void floats() {
+  void floats() {
     assertThat(1.5f, convertsToFraction(Fraction.of(3, 2)));
     assertThat(-1.5f, convertsToFraction(Fraction.of(-3, 2)));
   }
 
   @Test
-  public void integers() {
+  void integers() {
     assertThat(10, convertsToFraction(Fraction.of(10, 1)));
     assertThat(-10, convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void bytes() {
+  void bytes() {
     assertThat((byte) 10, convertsToFraction(Fraction.of(10, 1)));
     assertThat((byte) -10, convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void shorts() {
+  void shorts() {
     assertThat((short) 10, convertsToFraction(Fraction.of(10, 1)));
     assertThat((short) -10, convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void atomicIntegers() {
+  void atomicIntegers() {
     assertThat(new AtomicInteger(10), convertsToFraction(Fraction.of(10, 1)));
     assertThat(new AtomicInteger(-10), convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void atomicLongs() {
+  void atomicLongs() {
     assertThat(new AtomicLong(10L), convertsToFraction(Fraction.of(10, 1)));
     assertThat(new AtomicLong(-10L), convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void longs() {
+  void longs() {
     assertThat(10L, convertsToFraction(Fraction.of(10, 1)));
     assertThat(-10L, convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void bigDecimals() {
+  void bigDecimals() {
     assertThat(new BigDecimal("1.5"), convertsToFraction(Fraction.of(3, 2)));
     assertThat(new BigDecimal("-1.5"), convertsToFraction(Fraction.of(-3, 2)));
   }
 
   @Test
-  public void bigIntegers() {
+  void bigIntegers() {
     assertThat(BigInteger.valueOf(10L), convertsToFraction(Fraction.of(10, 1)));
     assertThat(BigInteger.valueOf(-10L), convertsToFraction(Fraction.of(-10, 1)));
   }
 
   @Test
-  public void doubles() {
+  void doubles() {
     assertThat(1.5d, convertsToFraction(Fraction.of(3, 2)));
     assertThat(-1.5d, convertsToFraction(Fraction.of(-3, 2)));
   }

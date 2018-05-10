@@ -1,14 +1,14 @@
 package com.github.marschall.acme.money;
 
+import static java.lang.Math.toIntExact;
+
 import javax.money.NumberValue;
 
-import static java.lang.Math.*;
+final class FractionValue extends NumberValue {
 
-public final class FractionValue extends NumberValue {
-  
   private final long numerator;
   private final long denominator;
-  
+
   FractionValue(long numerator, long denominator) {
     this.numerator = numerator;
     this.denominator = denominator;
@@ -33,7 +33,7 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public int intValueExact() {
-    return toIntExact(longValueExact());
+    return toIntExact(this.longValueExact());
   }
 
   @Override
@@ -79,22 +79,22 @@ public final class FractionValue extends NumberValue {
 
   @Override
   public int intValue() {
-    return (int) (numerator / denominator);
+    return (int) (this.numerator / this.denominator);
   }
 
   @Override
   public long longValue() {
-    return numerator / denominator;
+    return this.numerator / this.denominator;
   }
 
   @Override
   public float floatValue() {
-    return (float) numerator / (float) denominator;
+    return (float) this.numerator / (float) this.denominator;
   }
 
   @Override
   public double doubleValue() {
-    return (double) numerator / (double) denominator;
+    return (double) this.numerator / (double) this.denominator;
   }
 
   @Override
