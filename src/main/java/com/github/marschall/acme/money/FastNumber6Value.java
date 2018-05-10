@@ -16,9 +16,9 @@ final class FastNumber6Value extends NumberValue {
   public Class<?> getNumberType() {
     return BigDecimal.class;
   }
-  
+
   private BigDecimal getBigDecimal() {
-    return BigDecimal.valueOf(this.value).movePointLeft(FastMoney6.SCALE);
+    return BigDecimal.valueOf(this.value, FastMoney6.SCALE);
   }
 
   @Override

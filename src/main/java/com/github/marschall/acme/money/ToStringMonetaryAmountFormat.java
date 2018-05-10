@@ -3,7 +3,6 @@ package com.github.marschall.acme.money;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
@@ -16,7 +15,7 @@ import javax.money.format.MonetaryParseException;
  * class to format and parse a text string such as 'EUR 25.25' or vice versa.
  * @author otaviojava
  */
-class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
+final class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
 
   private final ToStringMonetaryAmountFormatStyle style;
 
@@ -24,8 +23,7 @@ class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
     this.style = Objects.requireNonNull(style);
   }
 
-  public static ToStringMonetaryAmountFormat of(
-      ToStringMonetaryAmountFormatStyle style) {
+  static ToStringMonetaryAmountFormat of(ToStringMonetaryAmountFormatStyle style) {
     return new ToStringMonetaryAmountFormat(style);
   }
 
@@ -44,16 +42,13 @@ class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
   }
 
   @Override
-  public void print(Appendable appendable, MonetaryAmount amount)
-      throws IOException {
-    appendable.append(Optional.ofNullable(amount)
-        .map(MonetaryAmount::toString).orElse("null"));
+  public void print(Appendable appendable, MonetaryAmount amount) throws IOException {
+    appendable.append(amount.toString());
 
   }
 
   @Override
-  public MonetaryAmount parse(CharSequence text)
-      throws MonetaryParseException {
+  public MonetaryAmount parse(CharSequence text) throws MonetaryParseException {
     ParserMonetaryAmount amount = this.parserMonetaryAmount(text);
     return this.style.to(amount);
   }
@@ -86,6 +81,7 @@ class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
         return FastMoney6.of(amount.number, amount.currencyUnit);
       }
     };
+
     abstract MonetaryAmount to(ParserMonetaryAmount amount);
   }
 

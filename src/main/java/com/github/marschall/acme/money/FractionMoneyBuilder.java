@@ -11,7 +11,10 @@ import org.javamoney.moneta.spi.AbstractAmountBuilder;
 final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
 
   static final MonetaryContext DEFAULT_CONTEXT =
-      MonetaryContextBuilder.of(FractionMoney.class).setFixedScale(true).build();
+      MonetaryContextBuilder.of(FractionMoney.class)
+      .setFixedScale(false)
+      .build();
+
   static final MonetaryContext MAX_CONTEXT = DEFAULT_CONTEXT;
 
   @Override

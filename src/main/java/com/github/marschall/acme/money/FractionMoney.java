@@ -24,7 +24,9 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
    * the {@link MonetaryContext} used by this instance, e.g. on division.
    */
   static final MonetaryContext MONETARY_CONTEXT =
-      MonetaryContextBuilder.of(FractionMoney.class).setFixedScale(true).build();
+      MonetaryContextBuilder.of(FractionMoney.class)
+      .setFixedScale(false)
+      .build();
 
   private final CurrencyUnit currency;
 

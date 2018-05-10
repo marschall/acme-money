@@ -5,15 +5,15 @@ import static java.lang.Math.multiplyExact;
 import static java.lang.Math.subtractExact;
 
 public final class Fraction extends Number implements Comparable<Fraction> {
-  
+
   private final long numerator;
   private final long denominator;
-  
+
   private Fraction(long numerator, long denominator) {
     this.numerator = numerator;
     this.denominator = denominator;
   }
-  
+
   public static Fraction of(long numerator, long denominator) {
     long n = numerator;
     long d = denominator;
@@ -35,30 +35,30 @@ public final class Fraction extends Number implements Comparable<Fraction> {
 
   @Override
   public int intValue() {
-    return (int) (numerator / denominator);
+    return (int) (this.numerator / this.denominator);
   }
 
   @Override
   public long longValue() {
-    return numerator / denominator;
+    return this.numerator / this.denominator;
   }
 
   @Override
   public float floatValue() {
-    return (float) numerator / (float) denominator;
+    return (float) this.numerator / (float) this.denominator;
   }
 
   @Override
   public double doubleValue() {
-    return (double) numerator / (double) denominator;
+    return (double) this.numerator / (double) this.denominator;
   }
-  
+
   long getNumerator() {
-    return numerator;
+    return this.numerator;
   }
-  
-  public long getDenominator() {
-    return denominator;
+
+  long getDenominator() {
+    return this.denominator;
   }
 
   @Override
@@ -67,12 +67,12 @@ public final class Fraction extends Number implements Comparable<Fraction> {
     long bc = multiplyExact(this.denominator, o.numerator);
     return Long.signum(subtractExact(ad, bc));
   }
-  
+
   @Override
   public int hashCode() {
     int result = 17;
-    result = 31 * result + Long.hashCode(this.numerator);
-    result = 31 * result + Long.hashCode(this.denominator);
+    result = (31 * result) + Long.hashCode(this.numerator);
+    result = (31 * result) + Long.hashCode(this.denominator);
     return result;
   }
 
@@ -85,8 +85,8 @@ public final class Fraction extends Number implements Comparable<Fraction> {
       return false;
     }
     Fraction other = (Fraction) obj;
-    return this.numerator == other.numerator
-        && this.denominator == other.denominator;
+    return (this.numerator == other.numerator)
+        && (this.denominator == other.denominator);
   }
 
   @Override
