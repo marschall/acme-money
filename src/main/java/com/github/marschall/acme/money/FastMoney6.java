@@ -31,6 +31,8 @@ import com.github.marschall.acme.money.ToStringMonetaryAmountFormat.ToStringMone
  */
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
+  private static final String PROVIDER_NAME = "acme";
+
   /**
    * The logger used.
    */
@@ -59,6 +61,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
           .setMaxScale(SCALE)
           .setFixedScale(true)
           .setPrecision(19)
+          .setProviderName(PROVIDER_NAME)
           .build();
 
   /**

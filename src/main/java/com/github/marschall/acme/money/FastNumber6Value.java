@@ -31,16 +31,27 @@ final class FastNumber6Value extends NumberValue {
     return FastMoney6.SCALE;
   }
 
+  private boolean hasDecimalPlaces() {
+    long remainder = this.value % 1000000L;
+    return remainder != 0;
+  }
+
+  private void checkNoDecimalPlaces() {
+    if (this.hasDecimalPlaces()) {
+      throw new ArithmeticException("decimal places present");
+    }
+  }
+
   @Override
   public int intValueExact() {
-    // TODO Auto-generated method stub
-    return 0;
+    this.checkNoDecimalPlaces();
+    return Math.toIntExact(this.value / 1000000L);
   }
 
   @Override
   public long longValueExact() {
-    // TODO Auto-generated method stub
-    return 0;
+    this.checkNoDecimalPlaces();
+    return this.value / 1000000L;
   }
 
   @Override
