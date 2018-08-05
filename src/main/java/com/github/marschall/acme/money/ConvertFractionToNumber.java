@@ -8,43 +8,43 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-enum ConvertToNumber {
+enum ConvertFractionToNumber {
 
   INSTANCE;
 
   public static <T extends Number> T of(Class<T> numberType, long numerator, long denominator) {
     return INSTANCE.convert(numberType, numerator, denominator);
   }
-  
+
   public static <T extends Number> T ofExact(Class<T> numberType, long numerator, long denominator) {
     return INSTANCE.convertExact(numberType, numerator, denominator);
   }
-  
+
   public <T extends Number> T convert(Class<T> numberType, long numerator, long denominator) {
-    FractionConverter<T> converter = getConverter(numberType);
+    FastNumber6Converter<T> converter = this.getConverter(numberType);
     return converter.convert(numerator, denominator);
   }
-  
+
   public <T extends Number> T convertExact(Class<T> numberType, long numerator, long denominator) {
-    FractionConverter<T> converter = getConverter(numberType);
+    FastNumber6Converter<T> converter = this.getConverter(numberType);
     return converter.convertExact(numerator, denominator);
   }
 
-  private <T extends Number> FractionConverter<T> getConverter(Class<T> numberType) {
+  private <T extends Number> FastNumber6Converter<T> getConverter(Class<T> numberType) {
     @SuppressWarnings("unchecked")
-    FractionConverter<T> converter = this.converterMap.get(numberType);
+    FastNumber6Converter<T> converter = this.converterMap.get(numberType);
     if (converter == null) {
       new IllegalArgumentException("Unsupported numeric type: " + numberType);
     }
     return converter;
   }
 
-  interface FractionConverter<N extends Number> {
+  interface FastNumber6Converter<N extends Number> {
     N convert(long numerator, long denominator);
     N convertExact(long numerator, long denominator);
   }
 
-  static final class ConvertToDouble implements FractionConverter<Double> {
+  static final class ConvertToDouble implements FastNumber6Converter<Double> {
 
     @Override
     public Double convert(long numerator, long denominator) {
@@ -53,8 +53,8 @@ enum ConvertToNumber {
 
     @Override
     public Double convertExact(long numerator, long denominator) {
-      Double converted = convert(numerator, denominator);
-      if ((converted * denominator / numerator) == 1.0d) {
+      Double converted = this.convert(numerator, denominator);
+      if (((converted * denominator) / numerator) == 1.0d) {
         return converted;
       } else {
         throw new ArithmeticException("overflow");
@@ -63,7 +63,7 @@ enum ConvertToNumber {
 
   }
 
-  static final class ConvertToFloat implements FractionConverter<Float> {
+  static final class ConvertToFloat implements FastNumber6Converter<Float> {
 
     @Override
     public Float convert(long numerator, long denominator) {
@@ -72,8 +72,8 @@ enum ConvertToNumber {
 
     @Override
     public Float convertExact(long numerator, long denominator) {
-      Float converted = convert(numerator, denominator);
-      if ((converted * denominator / numerator) == 1.0f) {
+      Float converted = this.convert(numerator, denominator);
+      if (((converted * denominator) / numerator) == 1.0f) {
         return converted;
       } else {
         throw new ArithmeticException("overflow");
@@ -82,7 +82,7 @@ enum ConvertToNumber {
 
   }
 
-  static final class ConvertToLong implements FractionConverter<Long> {
+  static final class ConvertToLong implements FastNumber6Converter<Long> {
 
     @Override
     public Long convert(long numerator, long denominator) {
@@ -94,12 +94,12 @@ enum ConvertToNumber {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
     }
 
   }
 
-  static final class ConvertToAtomictLong implements FractionConverter<AtomicLong> {
+  static final class ConvertToAtomictLong implements FastNumber6Converter<AtomicLong> {
 
     @Override
     public AtomicLong convert(long numerator, long denominator) {
@@ -111,18 +111,18 @@ enum ConvertToNumber {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
 
     }
 
   }
 
-  static final class ConvertToInteger implements FractionConverter<Integer> {
+  static final class ConvertToInteger implements FastNumber6Converter<Integer> {
 
     @Override
     public Integer convert(long numerator, long denominator) {
       long value = numerator / denominator;
-      if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+      if ((value > Integer.MAX_VALUE) || (value < Integer.MIN_VALUE)) {
         throw new ArithmeticException("overflow");
       } else {
         return (int) value;
@@ -134,17 +134,17 @@ enum ConvertToNumber {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
     }
 
   }
 
-  static final class ConvertToAtomictInteger implements FractionConverter<AtomicInteger> {
+  static final class ConvertToAtomictInteger implements FastNumber6Converter<AtomicInteger> {
 
     @Override
     public AtomicInteger convert(long numerator, long denominator) {
       long value = numerator / denominator;
-      if (value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+      if ((value > Integer.MAX_VALUE) || (value < Integer.MIN_VALUE)) {
         throw new ArithmeticException("overflow");
       } else {
         return new AtomicInteger((int) value);
@@ -156,17 +156,17 @@ enum ConvertToNumber {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
     }
 
   }
 
-  static final class ConvertToShort implements FractionConverter<Short> {
+  static final class ConvertToShort implements FastNumber6Converter<Short> {
 
     @Override
     public Short convert(long numerator, long denominator) {
       long value = numerator / denominator;
-      if (value > Short.MAX_VALUE || value < Short.MIN_VALUE) {
+      if ((value > Short.MAX_VALUE) || (value < Short.MIN_VALUE)) {
         throw new ArithmeticException("overflow");
       } else {
         return (short) value;
@@ -178,85 +178,85 @@ enum ConvertToNumber {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
     }
 
   }
-  
-  static final class ConvertToByte implements FractionConverter<Byte> {
-    
+
+  static final class ConvertToByte implements FastNumber6Converter<Byte> {
+
     @Override
     public Byte convert(long numerator, long denominator) {
       long value = numerator / denominator;
-      if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
+      if ((value > Byte.MAX_VALUE) || (value < Byte.MIN_VALUE)) {
         throw new ArithmeticException("overflow");
       } else {
         return (byte) value;
       }
     }
-    
+
     @Override
     public Byte convertExact(long numerator, long denominator) {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
     }
-    
+
   }
-  
-  static final class ConvertToBigInteger implements FractionConverter<BigInteger> {
-    
+
+  static final class ConvertToBigInteger implements FastNumber6Converter<BigInteger> {
+
     @Override
     public BigInteger convert(long numerator, long denominator) {
       long value = numerator / denominator;
       return BigInteger.valueOf(value);
     }
-    
+
     @Override
     public BigInteger convertExact(long numerator, long denominator) {
       if (denominator != 1) {
         throw new ArithmeticException("overflow");
       }
-      return convert(numerator, denominator);
+      return this.convert(numerator, denominator);
     }
-    
+
   }
-  
-  static final class ConvertToBigDecimal implements FractionConverter<BigDecimal> {
-    
+
+  static final class ConvertToBigDecimal implements FastNumber6Converter<BigDecimal> {
+
     @Override
     public BigDecimal convert(long numerator, long denominator) {
       BigDecimal divisor = BigDecimal.valueOf(denominator);
       BigDecimal dividend = BigDecimal.valueOf(numerator);
-      int scale = 6;
-      RoundingMode roundingMode = RoundingMode.HALF_EVEN;
+      int scale = 6; //FIXME
+      RoundingMode roundingMode = RoundingMode.HALF_EVEN;  //FIXME
       return dividend.divide(divisor, scale, roundingMode);
     }
-    
+
     @Override
     public BigDecimal convertExact(long numerator, long denominator) {
       BigDecimal divisor = BigDecimal.valueOf(denominator);
       BigDecimal dividend = BigDecimal.valueOf(numerator);
       return dividend.divide(divisor);
     }
-    
+
   }
-  
-  private Map<Class<? extends Number>, FractionConverter> converterMap;
+
+  private Map<Class<? extends Number>, FastNumber6Converter> converterMap;
 
   {
-    converterMap = new HashMap<>(10);
-    converterMap.put(BigDecimal.class, new ConvertToBigDecimal());
-    converterMap.put(BigInteger.class, new ConvertToBigInteger());
-    converterMap.put(Float.class, new ConvertToFloat());
-    converterMap.put(Double.class, new ConvertToDouble());
-    converterMap.put(Long.class, new ConvertToLong());
-    converterMap.put(Integer.class, new ConvertToInteger());
-    converterMap.put(Short.class, new ConvertToShort());
-    converterMap.put(Byte.class, new ConvertToByte());
-    converterMap.put(AtomicInteger.class, new ConvertToAtomictInteger());
-    converterMap.put(AtomicLong.class, new ConvertToAtomictLong());
+    this.converterMap = new HashMap<>(10);
+    this.converterMap.put(BigDecimal.class, new ConvertToBigDecimal());
+    this.converterMap.put(BigInteger.class, new ConvertToBigInteger());
+    this.converterMap.put(Float.class, new ConvertToFloat());
+    this.converterMap.put(Double.class, new ConvertToDouble());
+    this.converterMap.put(Long.class, new ConvertToLong());
+    this.converterMap.put(Integer.class, new ConvertToInteger());
+    this.converterMap.put(Short.class, new ConvertToShort());
+    this.converterMap.put(Byte.class, new ConvertToByte());
+    this.converterMap.put(AtomicInteger.class, new ConvertToAtomictInteger());
+    this.converterMap.put(AtomicLong.class, new ConvertToAtomictLong());
   }
 
 }

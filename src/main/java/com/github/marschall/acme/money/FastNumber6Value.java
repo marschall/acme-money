@@ -1,10 +1,13 @@
 package com.github.marschall.acme.money;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import javax.money.NumberValue;
 
 final class FastNumber6Value extends NumberValue {
+
+  private static final long serialVersionUID = 1L;
 
   private final long value;
 
@@ -14,7 +17,7 @@ final class FastNumber6Value extends NumberValue {
 
   @Override
   public Class<?> getNumberType() {
-    return BigDecimal.class;
+    return FastNumber6.class;
   }
 
   private BigDecimal getBigDecimal() {
@@ -32,7 +35,7 @@ final class FastNumber6Value extends NumberValue {
   }
 
   private boolean hasDecimalPlaces() {
-    long remainder = this.value % 1000000L;
+    long remainder = this.value % FastMoney6.DIVISOR;
     return remainder != 0;
   }
 
@@ -43,15 +46,21 @@ final class FastNumber6Value extends NumberValue {
   }
 
   @Override
+  public NumberValue round(MathContext mathContext) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
   public int intValueExact() {
     this.checkNoDecimalPlaces();
-    return Math.toIntExact(this.value / 1000000L);
+    return Math.toIntExact(this.value / FastMoney6.DIVISOR);
   }
 
   @Override
   public long longValueExact() {
     this.checkNoDecimalPlaces();
-    return this.value / 1000000L;
+    return this.value / FastMoney6.DIVISOR;
   }
 
   @Override
@@ -61,12 +70,18 @@ final class FastNumber6Value extends NumberValue {
 
   @Override
   public <T extends Number> T numberValue(Class<T> numberType) {
+    if (numberType == FastNumber6.class) {
+      return numberType.cast(new FastNumber6(this.value));
+    }
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public <T extends Number> T numberValueExact(Class<T> numberType) {
+    if (numberType == FastNumber6.class) {
+      return numberType.cast(new FastNumber6(this.value));
+    }
     // TODO Auto-generated method stub
     return null;
   }
@@ -90,17 +105,17 @@ final class FastNumber6Value extends NumberValue {
 
   @Override
   public long longValue() {
-    return this.value / 1000000L;
+    return this.value / FastMoney6.DIVISOR;
   }
 
   @Override
   public float floatValue() {
-    return this.value / 1000000.0f;
+    return this.value / (float) FastMoney6.DIVISOR;
   }
 
   @Override
   public double doubleValue() {
-    return this.value / 1000000.0d;
+    return this.value / (double) FastMoney6.DIVISOR;
   }
 
 }

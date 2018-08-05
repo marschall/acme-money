@@ -31,6 +31,8 @@ import com.github.marschall.acme.money.ToStringMonetaryAmountFormat.ToStringMone
  */
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   private static final String PROVIDER_NAME = "acme";
 
   /**
@@ -47,6 +49,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * The numeric part of this amount.
    */
   private final long number;
+
+  static final long DIVISOR = 1000000L;
 
   /**
    * The current scale represented by the number.
@@ -199,6 +203,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     Objects.requireNonNull(o);
     int compare = this.getCurrency().getCurrencyCode().compareTo(o.getCurrency().getCurrencyCode());
     if (compare == 0) {
+      // TODO fast path
       compare = this.getNumber().numberValue(BigDecimal.class).compareTo(o.getNumber().numberValue(BigDecimal.class));
     }
     return compare;
@@ -237,6 +242,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (amount.isZero()) {
       return this;
     }
+    // TODO fast path
     return new FastMoney6(Math.addExact(this.number, this.getInternalNumber(amount.getNumber(), false)), this.getCurrency());
   }
 
@@ -366,14 +372,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     return this.number <= 0L;
   }
 
-  public int getScale() {
-    return FastMoney6.SCALE;
-  }
-
-  public int getPrecision() {
-    return this.getNumber().numberValue(BigDecimal.class).precision();
-  }
-
   @Override
   public int signum() {
     return Long.signum(this.number);
@@ -382,34 +380,22 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   @Override
   public boolean isLessThan(MonetaryAmount amount) {
     this.checkAmountParameter(amount);
+    // TODO fast path
     return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) < 0;
-  }
-
-  public boolean isLessThan(Number number) {
-    this.checkNumber(number);
-    return this.getBigDecimal().compareTo(MoneyUtils.getBigDecimal(number)) < 0;
   }
 
   @Override
   public boolean isLessThanOrEqualTo(MonetaryAmount amount) {
     this.checkAmountParameter(amount);
+    // TODO fast path
     return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) <= 0;
-  }
-
-  public boolean isLessThanOrEqualTo(Number number) {
-    this.checkNumber(number);
-    return this.getBigDecimal().compareTo(MoneyUtils.getBigDecimal(number)) <= 0;
   }
 
   @Override
   public boolean isGreaterThan(MonetaryAmount amount) {
     this.checkAmountParameter(amount);
+    // TODO fast path
     return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) > 0;
-  }
-
-  public boolean isGreaterThan(Number number) {
-    this.checkNumber(number);
-    return this.getBigDecimal().compareTo(MoneyUtils.getBigDecimal(number)) > 0;
   }
 
   @Override
@@ -418,24 +404,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) >= 0;
   }
 
-  public boolean isGreaterThanOrEqualTo(Number number) {
-    this.checkNumber(number);
-    return this.getBigDecimal().compareTo(MoneyUtils.getBigDecimal(number)) >= 0;
-  }
-
   @Override
   public boolean isEqualTo(MonetaryAmount amount) {
     this.checkAmountParameter(amount);
+    // TODO fast path
     return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) == 0;
-  }
-
-  public boolean hasSameNumberAs(Number number) {
-    this.checkNumber(number);
-    try {
-      return this.number == this.getInternalNumber(number, false);
-    } catch (ArithmeticException e) {
-      return false;
-    }
   }
 
   @Override
@@ -592,6 +565,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 stripTrailingZeros() {
+    // TODO not really correct
     return this;
   }
 
@@ -603,7 +577,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (multiplicand == 0) {
       return new FastMoney6(0L, this.currency);
     }
-    return new FastMoney6(multiplicand * this.number, this.currency);
+    return new FastMoney6(Math.multiplyExact(this.number, multiplicand), this.currency);
   }
 
   @Override

@@ -2,6 +2,7 @@ package com.github.marschall.acme.money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
@@ -19,8 +20,6 @@ class FastMoney6Test {
   @Test
   void money() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
-    assertEquals(19, money.getPrecision());
-    assertEquals(6, money.getScale());
   }
 
   @Test
@@ -30,6 +29,7 @@ class FastMoney6Test {
 
     assertNotNull(factory.getMaxNumber());
     assertNotNull(factory.getMinNumber());
+    assertSame(FastMoney6.class, factory.getAmountType());
   }
 
   @Test

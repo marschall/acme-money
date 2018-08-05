@@ -2,6 +2,8 @@ package com.github.marschall.acme.money;
 
 import static java.lang.Math.toIntExact;
 
+import java.math.MathContext;
+
 import javax.money.NumberValue;
 
 final class FractionValue extends NumberValue {
@@ -32,6 +34,13 @@ final class FractionValue extends NumberValue {
   }
 
   @Override
+  public NumberValue round(MathContext mathContext) {
+    // TODO Auto-generated method stub
+    // TODO round to 10^-x
+    return null;
+  }
+
+  @Override
   public int intValueExact() {
     return toIntExact(this.longValueExact());
   }
@@ -54,17 +63,17 @@ final class FractionValue extends NumberValue {
   @Override
   public <T extends Number> T numberValue(Class<T> numberType) {
     if (numberType == Fraction.class) {
-      return (T) Fraction.of(this.numerator, this.denominator);
+      return numberType.cast(Fraction.of(this.numerator, this.denominator));
     }
-    return ConvertToNumber.of(numberType, this.numerator, this.denominator);
+    return ConvertFractionToNumber.of(numberType, this.numerator, this.denominator);
   }
 
   @Override
   public <T extends Number> T numberValueExact(Class<T> numberType) {
     if (numberType == Fraction.class) {
-      return (T) Fraction.of(this.numerator, this.denominator);
+      return numberType.cast(Fraction.of(this.numerator, this.denominator));
     }
-    return ConvertToNumber.ofExact(numberType, this.numerator, this.denominator);
+    return ConvertFractionToNumber.ofExact(numberType, this.numerator, this.denominator);
   }
 
   @Override

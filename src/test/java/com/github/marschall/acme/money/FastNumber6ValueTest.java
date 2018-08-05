@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
@@ -17,6 +19,13 @@ class FastNumber6ValueTest {
 
   private static NumberValue numberValue(Number number) {
     return FastMoney6.of(number, CHF).getNumber();
+  }
+
+  @Test
+  void round() {
+    BigDecimal bigDecimal = new BigDecimal("1.123");
+    assertEquals("1.123", bigDecimal.round(new MathContext(6, RoundingMode.UNNECESSARY)));
+    assertEquals("1.1", bigDecimal.round(new MathContext(1, RoundingMode.DOWN)));
   }
 
   @Test
