@@ -6,10 +6,12 @@ import static java.lang.Math.subtractExact;
 
 public final class Fraction extends Number implements Comparable<Fraction> {
 
-  private final long numerator;
-  private final long denominator;
+  private static final long serialVersionUID = 2L;
 
-  private Fraction(long numerator, long denominator) {
+  final long numerator;
+  final long denominator;
+
+  Fraction(long numerator, long denominator) {
     this.numerator = numerator;
     this.denominator = denominator;
   }

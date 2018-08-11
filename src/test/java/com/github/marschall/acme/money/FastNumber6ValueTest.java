@@ -1,5 +1,7 @@
 package com.github.marschall.acme.money;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -23,9 +25,9 @@ class FastNumber6ValueTest {
 
   @Test
   void round() {
-    BigDecimal bigDecimal = new BigDecimal("1.123");
-    assertEquals("1.123", bigDecimal.round(new MathContext(6, RoundingMode.UNNECESSARY)));
-    assertEquals("1.1", bigDecimal.round(new MathContext(1, RoundingMode.DOWN)));
+    BigDecimal bigDecimal = new BigDecimal("123.456");
+    assertThat(bigDecimal.round(new MathContext(6, RoundingMode.UNNECESSARY)), comparesEqualTo(new BigDecimal("123.456")));
+    assertThat(bigDecimal.round(new MathContext(5, RoundingMode.DOWN)), comparesEqualTo(new BigDecimal("123.45")));
   }
 
   @Test

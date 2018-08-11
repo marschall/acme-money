@@ -20,6 +20,8 @@ import javax.money.NumberValue;
 
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
+  private static final long serialVersionUID = 2L;
+
   /**
    * the {@link MonetaryContext} used by this instance, e.g. on division.
    */
@@ -30,10 +32,10 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   private final CurrencyUnit currency;
 
-  private final long numerator;
-  private final long denominator;
+  final long numerator;
+  final long denominator;
 
-  private FractionMoney(long numerator, long denominator, CurrencyUnit currency) {
+  FractionMoney(long numerator, long denominator, CurrencyUnit currency) {
     Objects.requireNonNull(currency, "currency");
     this.currency = currency;
     this.numerator = numerator;

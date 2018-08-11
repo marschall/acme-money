@@ -2,6 +2,7 @@ package com.github.marschall.acme.money;
 
 import static java.lang.Math.negateExact;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -31,7 +32,7 @@ import com.github.marschall.acme.money.ToStringMonetaryAmountFormat.ToStringMone
  */
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
   private static final String PROVIDER_NAME = "acme";
 
@@ -48,7 +49,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   /**
    * The numeric part of this amount.
    */
-  private final long number;
+  final long value;
 
   static final long DIVISOR = 1000000L;
 
@@ -89,7 +90,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
 
   /**
-   * Creates a new instance os {@link FastMoney6}.
+   * Creates a new instance of {@link FastMoney6}.
    *
    * @param currency the currency, not null.
    * @param number   the amount, not null.
@@ -98,11 +99,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     Objects.requireNonNull(currency, "Currency is required.");
     this.currency = currency;
     Objects.requireNonNull(number, "Number is required.");
-    this.number = this.getInternalNumber(number, allowInternalRounding);
+    this.value = this.getInternalNumber(number, allowInternalRounding);
   }
 
   /**
-   * Creates a new instance os {@link FastMoney6}.
+   * Creates a new instance of {@link FastMoney6}.
    *
    * @param currency    the currency, not null.
    * @param numberValue the numeric value, not null.
@@ -111,40 +112,26 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     Objects.requireNonNull(currency, "Currency is required.");
     this.currency = currency;
     Objects.requireNonNull(numberValue, "Number is required.");
-    this.number = this.getInternalNumber(numberValue.numberValue(BigDecimal.class), allowInternalRounding);
+    this.value = this.getInternalNumber(numberValue.numberValue(BigDecimal.class), allowInternalRounding);
   }
 
   /**
-   * Creates a new instance os {@link FastMoney6}.
+   * Creates a new instance of {@link FastMoney6}.
    *
    * @param number   The internal number value
    * @param currency the currency, not null.
    */
-  private FastMoney6(long number, CurrencyUnit currency) {
+  FastMoney6(long number, CurrencyUnit currency) {
     Objects.requireNonNull(currency, "Currency is required.");
     this.currency = currency;
-    this.number = number;
+    this.value = number;
   }
 
-  /**
-   * Returns the amount’s currency, modelled as {@link CurrencyUnit}.
-   * Implementations may co-variantly change the return type to a more
-   * specific implementation of {@link CurrencyUnit} if desired.
-   *
-   * @return the currency, never {@code null}
-   * @see javax.money.MonetaryAmount#getCurrency()
-   */
   @Override
   public CurrencyUnit getCurrency() {
     return this.currency;
   }
 
-  /**
-   * Access the {@link MonetaryContext} used by this instance.
-   *
-   * @return the {@link MonetaryContext} used, never null.
-   * @see javax.money.MonetaryAmount#getContext()
-   */
   @Override
   public MonetaryContext getContext() {
     return MONETARY_CONTEXT;
@@ -211,7 +198,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.currency, this.number);
+    return Objects.hash(this.currency, this.value);
   }
 
   @Override
@@ -221,7 +208,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     }
     if (obj instanceof FastMoney6) {
       FastMoney6 other = (FastMoney6) obj;
-      return Objects.equals(this.currency, other.currency) && Objects.equals(this.number, other.number);
+      return Objects.equals(this.currency, other.currency) && Objects.equals(this.value, other.value);
     }
     return false;
   }
@@ -243,7 +230,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     // TODO fast path
-    return new FastMoney6(Math.addExact(this.number, this.getInternalNumber(amount.getNumber(), false)), this.getCurrency());
+    return new FastMoney6(Math.addExact(this.value, this.getInternalNumber(amount.getNumber(), false)), this.getCurrency());
   }
 
   private void checkAmountParameter(MonetaryAmount amount) {
@@ -265,7 +252,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     // FIXME
-    return new FastMoney6(Math.round(this.number / divisor.doubleValue()), this.getCurrency());
+    return new FastMoney6(Math.round(this.value / divisor.doubleValue()), this.getCurrency());
   }
 
   @Override
@@ -296,20 +283,20 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     // FIXME
-    return new FastMoney6(Math.round(this.number * multiplicand.doubleValue()), this.getCurrency());
+    return new FastMoney6(Math.round(this.value * multiplicand.doubleValue()), this.getCurrency());
   }
 
   @Override
   public FastMoney6 negate() {
-    return new FastMoney6(negateExact(this.number), this.getCurrency());
+    return new FastMoney6(negateExact(this.value), this.getCurrency());
   }
 
   @Override
   public FastMoney6 plus() {
-    if (this.number >= 0) {
+    if (this.value >= 0) {
       return this;
     }
-    return new FastMoney6(negateExact(this.number), this.getCurrency());
+    return new FastMoney6(negateExact(this.value), this.getCurrency());
   }
 
   @Override
@@ -319,7 +306,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     long subtrahendAsLong = this.getInternalNumber(subtrahend.getNumber(), false);
-    return new FastMoney6(Math.addExact(this.number, negateExact(subtrahendAsLong)), this.getCurrency());
+    return new FastMoney6(Math.addExact(this.value, negateExact(subtrahendAsLong)), this.getCurrency());
   }
 
   @Override
@@ -328,7 +315,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (this.isOne(divisor)) {
       return new FastMoney6(0, this.getCurrency());
     }
-    return new FastMoney6(this.number % this.getInternalNumber(divisor, true), this.getCurrency());
+    return new FastMoney6(this.value % this.getInternalNumber(divisor, true), this.getCurrency());
   }
 
   private boolean isOne(Number number) {
@@ -349,32 +336,32 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public boolean isZero() {
-    return this.number == 0L;
+    return this.value == 0L;
   }
 
   @Override
   public boolean isPositive() {
-    return this.number > 0L;
+    return this.value > 0L;
   }
 
   @Override
   public boolean isPositiveOrZero() {
-    return this.number >= 0L;
+    return this.value >= 0L;
   }
 
   @Override
   public boolean isNegative() {
-    return this.number < 0L;
+    return this.value < 0L;
   }
 
   @Override
   public boolean isNegativeOrZero() {
-    return this.number <= 0L;
+    return this.value <= 0L;
   }
 
   @Override
   public int signum() {
-    return Long.signum(this.number);
+    return Long.signum(this.value);
   }
 
   @Override
@@ -413,7 +400,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public NumberValue getNumber() {
-    return new FastNumber6Value(this.number);
+    return new FastNumberValue6(this.value);
   }
 
   @Override
@@ -513,7 +500,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       .of(ToStringMonetaryAmountFormatStyle.FAST_MONEY_6);
 
   private BigDecimal getBigDecimal() {
-    return BigDecimal.valueOf(this.number).movePointLeft(SCALE);
+    return BigDecimal.valueOf(this.value).movePointLeft(SCALE);
   }
 
   @Override
@@ -524,7 +511,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (amount == 0.0) {
       return new FastMoney6(0, this.currency);
     }
-    return new FastMoney6(Math.round(this.number * amount), this.currency);
+    return new FastMoney6(Math.round(this.value * amount), this.currency);
   }
 
   @Override
@@ -532,7 +519,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (amount == 1L) {
       return this;
     }
-    return new FastMoney6(this.number / amount, this.currency);
+    return new FastMoney6(this.value / amount, this.currency);
   }
 
   @Override
@@ -540,7 +527,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (number == 1.0d) {
       return this;
     }
-    return new FastMoney6(Math.round(this.number / number), this.getCurrency());
+    return new FastMoney6(Math.round(this.value / number), this.getCurrency());
   }
 
   @Override
@@ -577,7 +564,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (multiplicand == 0) {
       return new FastMoney6(0L, this.currency);
     }
-    return new FastMoney6(Math.multiplyExact(this.number, multiplicand), this.currency);
+    return new FastMoney6(Math.multiplyExact(this.value, multiplicand), this.currency);
   }
 
   @Override
@@ -599,6 +586,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   @Override
   public MonetaryAmountFactory<FastMoney6> getFactory() {
     return new FastMoney6AmountBuilder().setAmount(this);
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new Ser(this);
   }
 
 }

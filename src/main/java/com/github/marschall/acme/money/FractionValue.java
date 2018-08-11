@@ -8,8 +8,10 @@ import javax.money.NumberValue;
 
 final class FractionValue extends NumberValue {
 
-  private final long numerator;
-  private final long denominator;
+  private static final long serialVersionUID = 2L;
+
+  final long numerator;
+  final long denominator;
 
   FractionValue(long numerator, long denominator) {
     this.numerator = numerator;

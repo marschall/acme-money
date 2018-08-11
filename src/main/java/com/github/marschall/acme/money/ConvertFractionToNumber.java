@@ -229,9 +229,8 @@ enum ConvertFractionToNumber {
     public BigDecimal convert(long numerator, long denominator) {
       BigDecimal divisor = BigDecimal.valueOf(denominator);
       BigDecimal dividend = BigDecimal.valueOf(numerator);
-      int scale = 6; //FIXME
       RoundingMode roundingMode = RoundingMode.HALF_EVEN;  //FIXME
-      return dividend.divide(divisor, scale, roundingMode);
+      return dividend.divide(divisor, FastMoney6.SCALE, roundingMode);
     }
 
     @Override

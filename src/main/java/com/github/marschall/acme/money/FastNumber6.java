@@ -1,10 +1,12 @@
 package com.github.marschall.acme.money;
 
+import java.io.ObjectStreamException;
+
 public final class FastNumber6 extends Number implements Comparable<FastNumber6> {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
-  private final long value;
+  final long value;
 
   FastNumber6(long value) {
     this.value = value;
@@ -40,6 +42,10 @@ public final class FastNumber6 extends Number implements Comparable<FastNumber6>
       return 0;
     }
     return Long.compare(this.value, other.value);
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new Ser(this);
   }
 
 }

@@ -1,27 +1,23 @@
 package com.github.marschall.acme.money;
 
-import java.math.BigDecimal;
+import java.io.ObjectStreamException;
 import java.math.MathContext;
 
 import javax.money.NumberValue;
 
-final class FastNumber6Value extends NumberValue {
+final class FastNumberValue6 extends NumberValue {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
-  private final long value;
+  final long value;
 
-  FastNumber6Value(long value) {
+  FastNumberValue6(long value) {
     this.value = value;
   }
 
   @Override
   public Class<?> getNumberType() {
     return FastNumber6.class;
-  }
-
-  private BigDecimal getBigDecimal() {
-    return BigDecimal.valueOf(this.value, FastMoney6.SCALE);
   }
 
   @Override
@@ -64,17 +60,11 @@ final class FastNumber6Value extends NumberValue {
   }
 
   @Override
-  public double doubleValueExact() {
-    return this.doubleValue();
-  }
-
-  @Override
   public <T extends Number> T numberValue(Class<T> numberType) {
     if (numberType == FastNumber6.class) {
       return numberType.cast(new FastNumber6(this.value));
     }
-    // TODO Auto-generated method stub
-    return null;
+    return ConvertFastNumber6ToNumber.of(numberType, this, this.value);
   }
 
   @Override
@@ -82,8 +72,7 @@ final class FastNumber6Value extends NumberValue {
     if (numberType == FastNumber6.class) {
       return numberType.cast(new FastNumber6(this.value));
     }
-    // TODO Auto-generated method stub
-    return null;
+    return ConvertFastNumber6ToNumber.ofExact(numberType, this, this.value);
   }
 
   @Override
@@ -116,6 +105,20 @@ final class FastNumber6Value extends NumberValue {
   @Override
   public double doubleValue() {
     return this.value / (double) FastMoney6.DIVISOR;
+  }
+
+  @Override
+  public double doubleValueExact() {
+    double converted = this.doubleValue();
+    if ((converted * FastMoney6.DIVISOR) == this.value) {
+      return converted;
+    } else {
+      throw new ArithmeticException("no exact representation");
+    }
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new Ser(this);
   }
 
 }
