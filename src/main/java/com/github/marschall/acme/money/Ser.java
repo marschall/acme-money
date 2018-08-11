@@ -48,7 +48,7 @@ final class Ser implements Externalizable {
       case TYPE_FAST_MONEY_6:
         out.writeByte(TYPE_FAST_NUMBER_6);
         out.writeLong(((FastMoney6) this.value).value);
-        out.writeObject(((FastMoney6) this.value).getCurrency());
+        out.writeObject(((FastMoney6) this.value).currency);
         break;
 
       case TYPE_FAST_NUMBER_6:

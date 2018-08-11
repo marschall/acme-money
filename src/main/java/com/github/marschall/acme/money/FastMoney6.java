@@ -44,7 +44,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   /**
    * The currency of this amount.
    */
-  private final CurrencyUnit currency;
+  final CurrencyUnit currency;
 
   /**
    * The numeric part of this amount.
@@ -97,8 +97,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    */
   private FastMoney6(Number number, CurrencyUnit currency, boolean allowInternalRounding) {
     Objects.requireNonNull(currency, "Currency is required.");
-    this.currency = currency;
     Objects.requireNonNull(number, "Number is required.");
+    this.currency = currency;
     this.value = this.getInternalNumber(number, allowInternalRounding);
   }
 
@@ -110,8 +110,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    */
   private FastMoney6(NumberValue numberValue, CurrencyUnit currency, boolean allowInternalRounding) {
     Objects.requireNonNull(currency, "Currency is required.");
-    this.currency = currency;
     Objects.requireNonNull(numberValue, "Number is required.");
+    this.currency = currency;
     this.value = this.getInternalNumber(numberValue.numberValue(BigDecimal.class), allowInternalRounding);
   }
 
@@ -206,11 +206,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (obj == this) {
       return true;
     }
-    if (obj instanceof FastMoney6) {
-      FastMoney6 other = (FastMoney6) obj;
-      return Objects.equals(this.currency, other.currency) && Objects.equals(this.value, other.value);
+    if (!(obj instanceof FastMoney6)) {
+      return false;
     }
-    return false;
+    FastMoney6 other = (FastMoney6) obj;
+    return (this.value == other.value) && this.currency.equals(other.currency);
   }
 
   @Override
@@ -313,7 +313,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   public FastMoney6 remainder(Number divisor) {
     this.checkNumber(divisor);
     if (this.isOne(divisor)) {
-      return new FastMoney6(0, this.getCurrency());
+      return new FastMoney6(0L, this.getCurrency());
     }
     return new FastMoney6(this.value % this.getInternalNumber(divisor, true), this.getCurrency());
   }
@@ -331,6 +331,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 scaleByPowerOfTen(int n) {
+    // TODO
     return new FastMoney6(this.getNumber().numberValue(BigDecimal.class).scaleByPowerOfTen(n), this.getCurrency(), true);
   }
 
@@ -456,13 +457,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   @Override
   public <R> R query(MonetaryQuery<R> query) {
     Objects.requireNonNull(query);
-    try {
-      return query.queryFrom(this);
-    } catch (MonetaryException | ArithmeticException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new MonetaryException("Query failed: " + query, e);
-    }
+    return query.queryFrom(this);
   }
 
   public static FastMoney6 from(MonetaryAmount amount) {
