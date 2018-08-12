@@ -43,12 +43,12 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    */
   final long value;
 
-  static final long DIVISOR = 1000000L;
-
   /**
    * The current scale represented by the number.
    */
   static final int SCALE = 6;
+
+  static final long DIVISOR = DecimalMath.pow10(1L, SCALE);
 
   /**
    * the {@link MonetaryContext} used by this instance, e.g. on division.
