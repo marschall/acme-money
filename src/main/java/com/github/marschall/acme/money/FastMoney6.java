@@ -6,7 +6,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.money.CurrencyUnit;
@@ -22,7 +21,6 @@ import javax.money.NumberValue;
 import javax.money.UnknownCurrencyException;
 import javax.money.format.MonetaryAmountFormat;
 
-import org.javamoney.moneta.spi.MonetaryConfig;
 import org.javamoney.moneta.spi.MoneyUtils;
 
 import com.github.marschall.acme.money.ToStringMonetaryAmountFormat.ToStringMonetaryAmountFormatStyle;
@@ -419,6 +417,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * @throws java.lang.ArithmeticException If the number exceeds the capabilities of this class.
    */
   protected void checkNumber(Number number) {
+    // TODO why
     Objects.requireNonNull(number, "Number is required.");
     // numeric check for overflow...
     if (number.longValue() > MAX_BD.longValue()) {
@@ -427,18 +426,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     BigDecimal bd = MoneyUtils.getBigDecimal(number);
     if (bd.precision() > MAX_BD.precision()) {
       throw new ArithmeticException("Precision exceeds maximal precision: " + MAX_BD.precision());
-    }
-    if (bd.scale() > SCALE) {
-      if (Boolean.parseBoolean(MonetaryConfig.getConfig()
-          .getOrDefault("org.javamoney.moneta.FastMoney.enforceScaleCompatibility",
-              "false"))) {
-        throw new ArithmeticException("Scale of " + bd + " exceeds maximal scale: " + SCALE);
-      } else {
-        if (LOG.isLoggable(Level.FINEST)) {
-          LOG.finest("Scale exceeds maximal scale of FastMoney (" + SCALE +
-              "), implicit rounding will be applied to " + number);
-        }
-      }
     }
   }
 
