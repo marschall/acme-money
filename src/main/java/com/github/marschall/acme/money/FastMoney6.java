@@ -6,7 +6,6 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
@@ -33,11 +32,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   private static final long serialVersionUID = 2L;
 
   private static final String PROVIDER_NAME = "acme";
-
-  /**
-   * The logger used.
-   */
-  private static final Logger LOG = Logger.getLogger(FastMoney6.class.getName());
 
   /**
    * The currency of this amount.
@@ -329,8 +323,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 scaleByPowerOfTen(int n) {
-    // TODO
-    return new FastMoney6(this.getNumber().numberValue(BigDecimal.class).scaleByPowerOfTen(n), this.getCurrency(), true);
+    if (n == 0) {
+      return this;
+    }
+    return new FastMoney6(DecimalMath.pow10(this.value, n), this.currency);
   }
 
   @Override

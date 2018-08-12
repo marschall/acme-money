@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import java.math.BigDecimal;
+
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
@@ -54,6 +56,19 @@ class FastMoney6Test {
     MonetaryContext context = money.getContext();
 
     validateContext(context);
+  }
+
+  @Test
+  void scaleByPowerOfTen() {
+    FastMoney6 money = FastMoney6.of(2L, CHF);
+
+    assertEquals(FastMoney6.of(BigDecimal.valueOf(2L).scaleByPowerOfTen(2), CHF), money.scaleByPowerOfTen(2));
+    assertEquals(FastMoney6.of(BigDecimal.valueOf(2L).scaleByPowerOfTen(1), CHF), money.scaleByPowerOfTen(1));
+    assertEquals(FastMoney6.of(BigDecimal.valueOf(2L).scaleByPowerOfTen(0), CHF), money.scaleByPowerOfTen(0));
+    assertEquals(FastMoney6.of(BigDecimal.valueOf(2L).scaleByPowerOfTen(-2), CHF), money.scaleByPowerOfTen(-2));
+
+    // TODO overflow
+    // TODO underflow
   }
 
   private static void validateContext(MonetaryContext context) {
