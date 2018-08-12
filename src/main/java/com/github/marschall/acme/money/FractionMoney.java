@@ -7,6 +7,7 @@ import static java.lang.Math.multiplyExact;
 import static java.lang.Math.negateExact;
 import static java.lang.Math.subtractExact;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -355,6 +356,10 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public String toString() {
     return this.currency.toString() + ' ' + this.numerator + '/' + this.denominator;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new Ser(this);
   }
 
 }

@@ -4,6 +4,8 @@ import static com.github.marschall.acme.money.FractionMath.gcd;
 import static java.lang.Math.multiplyExact;
 import static java.lang.Math.subtractExact;
 
+import java.io.ObjectStreamException;
+
 public final class Fraction extends Number implements Comparable<Fraction> {
 
   private static final long serialVersionUID = 2L;
@@ -94,6 +96,10 @@ public final class Fraction extends Number implements Comparable<Fraction> {
   @Override
   public String toString() {
     return Long.toString(this.numerator) + '/' + this.denominator;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new Ser(this);
   }
 
 }

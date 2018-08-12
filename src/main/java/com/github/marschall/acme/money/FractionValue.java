@@ -2,6 +2,7 @@ package com.github.marschall.acme.money;
 
 import static java.lang.Math.toIntExact;
 
+import java.io.ObjectStreamException;
 import java.math.MathContext;
 
 import javax.money.NumberValue;
@@ -111,6 +112,10 @@ final class FractionValue extends NumberValue {
   @Override
   public String toString() {
     return Long.toString(this.numerator) + '/' + this.denominator;
+  }
+
+  private Object writeReplace() throws ObjectStreamException {
+    return new Ser(this);
   }
 
 }

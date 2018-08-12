@@ -42,6 +42,24 @@ final class Ser implements Externalizable {
     this.value = numberValue;
   }
 
+  Ser(FractionMoney money) {
+    Objects.requireNonNull(money, "money");
+    this.type = TYPE_FRACTION_MONEY;
+    this.value = money;
+  }
+
+  Ser(Fraction number) {
+    Objects.requireNonNull(number, "number");
+    this.type = TYPE_FRACTION;
+    this.value = number;
+  }
+
+  Ser(FractionValue numberValue) {
+    Objects.requireNonNull(numberValue, "numberValue");
+    this.type = TYPE_FRACTION_VALUE;
+    this.value = numberValue;
+  }
+
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
     switch (this.type) {
