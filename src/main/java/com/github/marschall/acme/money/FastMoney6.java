@@ -2,6 +2,7 @@ package com.github.marschall.acme.money;
 
 import static java.lang.Math.negateExact;
 
+import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -13,7 +14,6 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
-import javax.money.MonetaryException;
 import javax.money.MonetaryOperator;
 import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
@@ -311,10 +311,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   private boolean isOne(Number number) {
+    // TODO
     BigDecimal bd = MoneyUtils.getBigDecimal(number);
     try {
       return (bd.scale() == 0) && (bd.longValueExact() == 1L);
-    } catch (Exception e) {
+    } catch (ArithmeticException e) {
       // The only way to end up here is that longValueExact throws an ArithmeticException,
       // so the amount is definitively not equal to 1.
       return false;
@@ -323,6 +324,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 scaleByPowerOfTen(int n) {
+    // not really correct, different scale
     if (n == 0) {
       return this;
     }
@@ -403,6 +405,13 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     return this.currency.toString() + ' ' + this.getBigDecimal();
   }
 
+  void toStringOn(Appendable appendable) throws IOException {
+    appendable.append(this.currency.toString());
+    appendable.append(' ');
+    // TODO maybe decimal format
+    appendable.append(this.getBigDecimal().toString());
+  }
+
   // Internal helper methods
 
   /**
@@ -427,14 +436,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 with(MonetaryOperator operator) {
-    Objects.requireNonNull(operator);
-    try {
-      return FastMoney6.class.cast(operator.apply(this));
-    } catch (ArithmeticException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new MonetaryException("Operator failed: " + operator, e);
-    }
+    Objects.requireNonNull(operator, "operator");
+    MonetaryAmount result = operator.apply(this);
+    Objects.requireNonNull(result, "result");
+    return FastMoney6.class.cast(result);
   }
 
   @Override
@@ -530,7 +535,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 stripTrailingZeros() {
-    // TODO not really correct
+    // not really correct, different scale
     return this;
   }
 
