@@ -1,16 +1,13 @@
 package com.github.marschall.acme.money;
 
-import javax.money.CurrencyUnit;
 import javax.money.MonetaryContext;
 import javax.money.NumberValue;
 
-import org.javamoney.moneta.spi.AbstractAmountBuilder;
-
-class FastMoney6AmountBuilder extends AbstractAmountBuilder<FastMoney6>{
+final class FastMoney6AmountBuilder extends AbstractAmountBuilder<FastMoney6>{
 
   @Override
-  protected FastMoney6 create(Number number, CurrencyUnit currency, MonetaryContext monetaryContext){
-    return FastMoney6.of(number, currency);
+  public FastMoney6 create(){
+    return FastMoney6.of(this.number, this.currency);
   }
 
   @Override
@@ -29,12 +26,7 @@ class FastMoney6AmountBuilder extends AbstractAmountBuilder<FastMoney6>{
   }
 
   @Override
-  protected MonetaryContext loadDefaultMonetaryContext(){
-    return FastMoney6.MONETARY_CONTEXT;
-  }
-
-  @Override
-  protected MonetaryContext loadMaxMonetaryContext(){
+  public MonetaryContext getDefaultMonetaryContext() {
     return FastMoney6.MONETARY_CONTEXT;
   }
 

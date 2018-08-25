@@ -1,12 +1,9 @@
 package com.github.marschall.acme.money;
 
-import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
 import javax.money.NumberValue;
-
-import org.javamoney.moneta.spi.AbstractAmountBuilder;
 
 final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
 
@@ -33,20 +30,15 @@ final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
   }
 
   @Override
-  protected FractionMoney create(Number number, CurrencyUnit currency, MonetaryContext monetaryContext) {
-    Fraction fraction = ConvertToFraction.of(number);
+  public FractionMoney create() {
+    Fraction fraction = ConvertToFraction.of(this.number);
     // TODO optimize gcd away
-    return FractionMoney.of(fraction.getNumerator(), fraction.getDenominator(), currency);
+    return FractionMoney.of(fraction.getNumerator(), fraction.getDenominator(), this.currency);
   }
 
   @Override
-  protected MonetaryContext loadDefaultMonetaryContext() {
+  public MonetaryContext getDefaultMonetaryContext() {
     return DEFAULT_CONTEXT;
-  }
-
-  @Override
-  protected MonetaryContext loadMaxMonetaryContext() {
-    return MAX_CONTEXT;
   }
 
 }
