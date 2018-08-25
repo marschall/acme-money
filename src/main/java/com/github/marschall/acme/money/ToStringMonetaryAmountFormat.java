@@ -12,8 +12,7 @@ import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryParseException;
 
 /**
- * class to format and parse a text string such as 'EUR 25.25' or vice versa.
- * @author otaviojava
+ * Formats and parses a text string such as 'EUR 25.25'.
  */
 final class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
 
@@ -29,9 +28,7 @@ final class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
 
   @Override
   public String queryFrom(MonetaryAmount amount) {
-    if (Objects.isNull(amount)) {
-      return null;
-    }
+    Objects.requireNonNull(amount, "amount");
     return amount.toString();
   }
 
@@ -43,31 +40,38 @@ final class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
 
   @Override
   public void print(Appendable appendable, MonetaryAmount amount) throws IOException {
-    appendable.append(amount.toString());
-
+    Objects.requireNonNull(amount, "amount");
+    if (amount instanceof FastMoney6) {
+      ((FastMoney6) amount).toStringOn(appendable);
+    } else {
+      appendable.append(amount.toString());
+    }
   }
 
   @Override
   public MonetaryAmount parse(CharSequence text) throws MonetaryParseException {
-    ParserMonetaryAmount amount = this.parserMonetaryAmount(text);
+    ParsedMonetaryAmount amount = this.parserMonetaryAmount(text);
     return this.style.to(amount);
   }
 
-  private ParserMonetaryAmount parserMonetaryAmount(CharSequence text) {
+  private ParsedMonetaryAmount parserMonetaryAmount(CharSequence text) {
     String[] array = Objects.requireNonNull(text).toString().split(" ");
     CurrencyUnit currencyUnit = Monetary.getCurrency(array[0]);
     BigDecimal number = new BigDecimal(array[1]);
-    return new ParserMonetaryAmount(currencyUnit, number);
+    return new ParsedMonetaryAmount(currencyUnit, number);
   }
 
-  private class ParserMonetaryAmount {
-    public ParserMonetaryAmount(CurrencyUnit currencyUnit, BigDecimal number) {
+  static final class ParsedMonetaryAmount {
+
+    ParsedMonetaryAmount(CurrencyUnit currencyUnit, BigDecimal number) {
       this.currencyUnit = currencyUnit;
       this.number = number;
     }
 
-    private final CurrencyUnit currencyUnit;
-    private final BigDecimal number;
+    final CurrencyUnit currencyUnit;
+
+    final BigDecimal number;
+
   }
 
   /**
@@ -77,12 +81,12 @@ final class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
   enum ToStringMonetaryAmountFormatStyle {
     FAST_MONEY_6 {
       @Override
-      MonetaryAmount to(ParserMonetaryAmount amount) {
+      MonetaryAmount to(ParsedMonetaryAmount amount) {
         return FastMoney6.of(amount.number, amount.currencyUnit);
       }
     };
 
-    abstract MonetaryAmount to(ParserMonetaryAmount amount);
+    abstract MonetaryAmount to(ParsedMonetaryAmount amount);
   }
 
 }
