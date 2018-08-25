@@ -7,46 +7,43 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-enum ConvertFastNumber6ToNumber {
-
-  INSTANCE;
+final class ConvertFastNumber6ToNumber {
 
   static <T extends Number> T of(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
-    return INSTANCE.convert(numberType, numberValue, value6);
+    return convert(numberType, numberValue, value6);
   }
 
   static <T extends Number> T ofExact(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
-    return INSTANCE.convertExact(numberType, numberValue, value6);
+    return convertExact(numberType, numberValue, value6);
   }
 
-  <T extends Number> T convert(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
-    FastNumber6Converter<T> converter = this.getConverter(numberType);
-    return converter.convert(numberValue, value6);
+  static <T extends Number> T convert(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
+    FastNumber6Converter converter = getConverter(numberType);
+    return numberType.cast(converter.convert(numberValue, value6));
   }
 
-  <T extends Number> T convertExact(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
-    FastNumber6Converter<T> converter = this.getConverter(numberType);
-    return converter.convertExact(numberValue, value6);
+  static <T extends Number>  T convertExact(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
+    FastNumber6Converter converter = getConverter(numberType);
+    return numberType.cast(converter.convertExact(numberValue, value6));
   }
 
-  private <T extends Number> FastNumber6Converter<T> getConverter(Class<T> numberType) {
-    @SuppressWarnings("unchecked")
-    FastNumber6Converter<T> converter = this.converterMap.get(numberType);
+  private static FastNumber6Converter getConverter(Class<?> numberType) {
+    FastNumber6Converter converter = CONVERTER_MAP.get(numberType);
     if (converter == null) {
       new IllegalArgumentException("Unsupported numeric type: " + numberType);
     }
     return converter;
   }
 
-  interface FastNumber6Converter<N extends Number> {
+  interface FastNumber6Converter {
 
-    N convert(FastNumberValue6 numberValue, long value6);
+    Number convert(FastNumberValue6 numberValue, long value6);
 
-    N convertExact(FastNumberValue6 numberValue, long value6);
+    Number convertExact(FastNumberValue6 numberValue, long value6);
 
   }
 
-  static final class ConvertToDouble implements FastNumber6Converter<Double> {
+  static final class ConvertToDouble implements FastNumber6Converter {
 
     @Override
     public Double convert(FastNumberValue6 numberValue, long value6) {
@@ -60,7 +57,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToFloat implements FastNumber6Converter<Float> {
+  static final class ConvertToFloat implements FastNumber6Converter {
 
     @Override
     public Float convert(FastNumberValue6 numberValue, long value6) {
@@ -79,7 +76,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToLong implements FastNumber6Converter<Long> {
+  static final class ConvertToLong implements FastNumber6Converter {
 
     @Override
     public Long convert(FastNumberValue6 numberValue, long value6) {
@@ -93,7 +90,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToAtomictLong implements FastNumber6Converter<AtomicLong> {
+  static final class ConvertToAtomictLong implements FastNumber6Converter {
 
     @Override
     public AtomicLong convert(FastNumberValue6 numberValue, long value6) {
@@ -107,7 +104,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToInteger implements FastNumber6Converter<Integer> {
+  static final class ConvertToInteger implements FastNumber6Converter {
 
     @Override
     public Integer convert(FastNumberValue6 numberValue, long value6) {
@@ -121,7 +118,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToAtomictInteger implements FastNumber6Converter<AtomicInteger> {
+  static final class ConvertToAtomictInteger implements FastNumber6Converter {
 
     @Override
     public AtomicInteger convert(FastNumberValue6 numberValue, long value6) {
@@ -135,7 +132,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToShort implements FastNumber6Converter<Short> {
+  static final class ConvertToShort implements FastNumber6Converter {
 
     @Override
     public Short convert(FastNumberValue6 numberValue, long value6) {
@@ -155,7 +152,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToByte implements FastNumber6Converter<Byte> {
+  static final class ConvertToByte implements FastNumber6Converter {
 
     @Override
     public Byte convert(FastNumberValue6 numberValue, long value6) {
@@ -175,7 +172,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToBigInteger implements FastNumber6Converter<BigInteger> {
+  static final class ConvertToBigInteger implements FastNumber6Converter {
 
     @Override
     public BigInteger convert(FastNumberValue6 numberValue, long value6) {
@@ -189,7 +186,7 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToBigDecimal implements FastNumber6Converter<BigDecimal> {
+  static final class ConvertToBigDecimal implements FastNumber6Converter {
 
     @Override
     public BigDecimal convert(FastNumberValue6 numberValue, long value6) {
@@ -203,20 +200,20 @@ enum ConvertFastNumber6ToNumber {
 
   }
 
-  private Map<Class<? extends Number>, FastNumber6Converter> converterMap;
+  private static final Map<Class<? extends Number>, FastNumber6Converter> CONVERTER_MAP;
 
-  {
-    this.converterMap = new HashMap<>(10);
-    this.converterMap.put(BigDecimal.class, new ConvertToBigDecimal());
-    this.converterMap.put(BigInteger.class, new ConvertToBigInteger());
-    this.converterMap.put(Float.class, new ConvertToFloat());
-    this.converterMap.put(Double.class, new ConvertToDouble());
-    this.converterMap.put(Long.class, new ConvertToLong());
-    this.converterMap.put(Integer.class, new ConvertToInteger());
-    this.converterMap.put(Short.class, new ConvertToShort());
-    this.converterMap.put(Byte.class, new ConvertToByte());
-    this.converterMap.put(AtomicInteger.class, new ConvertToAtomictInteger());
-    this.converterMap.put(AtomicLong.class, new ConvertToAtomictLong());
+  static {
+    CONVERTER_MAP = new HashMap<>(10);
+    CONVERTER_MAP.put(BigDecimal.class, new ConvertToBigDecimal());
+    CONVERTER_MAP.put(BigInteger.class, new ConvertToBigInteger());
+    CONVERTER_MAP.put(Float.class, new ConvertToFloat());
+    CONVERTER_MAP.put(Double.class, new ConvertToDouble());
+    CONVERTER_MAP.put(Long.class, new ConvertToLong());
+    CONVERTER_MAP.put(Integer.class, new ConvertToInteger());
+    CONVERTER_MAP.put(Short.class, new ConvertToShort());
+    CONVERTER_MAP.put(Byte.class, new ConvertToByte());
+    CONVERTER_MAP.put(AtomicInteger.class, new ConvertToAtomictInteger());
+    CONVERTER_MAP.put(AtomicLong.class, new ConvertToAtomictLong());
   }
 
 }
