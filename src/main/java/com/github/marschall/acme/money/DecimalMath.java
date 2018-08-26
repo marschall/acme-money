@@ -36,4 +36,22 @@ final class DecimalMath {
     return result;
   }
 
+  private static int log10if(int i) {
+    return (i >= 1000000000) ? 9
+            : (i >= 100000000) ? 8
+                    : (i >= 10000000) ? 7
+                            : (i >= 1000000) ? 6
+                                    : (i >= 100000) ? 5
+                                            : (i >= 10000) ? 4
+                                                    : (i >= 1000) ? 3
+                                                            : (i >= 100) ? 2
+                                                                    : (i >= 10)
+                                                                            ? 1
+                                                                            : 0;
+  }
+
+  private static int log10loop(int i) {
+    return 0;
+  }
+
 }
