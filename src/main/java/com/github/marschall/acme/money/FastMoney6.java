@@ -179,12 +179,28 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   @Override
   public int compareTo(MonetaryAmount o) {
     Objects.requireNonNull(o);
-    int compare = this.getCurrency().getCurrencyCode().compareTo(o.getCurrency().getCurrencyCode());
-    if (compare == 0) {
-      // TODO fast path
-      compare = this.getNumber().numberValue(BigDecimal.class).compareTo(o.getNumber().numberValue(BigDecimal.class));
+    int compare = this.getCurrency().compareTo(o.getCurrency());
+    if (compare != 0) {
+      return compare;
     }
-    return compare;
+    if (o instanceof FastMoney6) {
+      return Long.compare(this.value, ((FastMoney6) o).value);
+    } else {
+      return this.getBigDecimal().compareTo(o.getNumber().numberValue(BigDecimal.class));
+    }
+  }
+
+  private int compareAmountTo(MonetaryAmount o) {
+    Objects.requireNonNull(o);
+    CurrencyUnit amountCurrency = o.getCurrency();
+    if (!this.currency.equals(amountCurrency)) {
+        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+    }
+    if (o instanceof FastMoney6) {
+      return Long.compare(this.value, ((FastMoney6) o).value);
+    } else {
+      return this.getBigDecimal().compareTo(o.getNumber().numberValue(BigDecimal.class));
+    }
   }
 
   @Override
@@ -223,22 +239,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     // TODO fast path
     return new FastMoney6(Math.addExact(this.value, this.getInternalNumber(amount.getNumber(), false)), this.getCurrency());
   }
-
-  private void checkAmountParameter(MonetaryAmount amount) {
-    Objects.requireNonNull(amount, "amount");
-    CurrencyUnit amountCurrency = amount.getCurrency();
-    if (!this.currency.getCurrencyCode().equals(amountCurrency.getCurrencyCode())) {
-        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
-    }
-    if (amount.getNumber().getScale() > SCALE) {
-      throw new ArithmeticException("Parameter exceeds maximal scale: " + SCALE);
-    }
-    if (amount.getNumber().getPrecision() > MAX_BD.precision()) {
-      throw new ArithmeticException("Parameter exceeds maximal precision: " + SCALE);
-    }
-  }
-
-
   @Override
   public FastMoney6 divide(Number divisor) {
     this.checkNumber(divisor);
@@ -299,6 +299,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (subtrahend.isZero()) {
       return this;
     }
+    // TODO fast path
     long subtrahendAsLong = this.getInternalNumber(subtrahend.getNumber(), false);
     return new FastMoney6(Math.addExact(this.value, negateExact(subtrahendAsLong)), this.getCurrency());
   }
@@ -365,36 +366,27 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public boolean isLessThan(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
-    // TODO fast path
-    return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) < 0;
+    return this.compareAmountTo(amount) < 0;
   }
 
   @Override
   public boolean isLessThanOrEqualTo(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
-    // TODO fast path
-    return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) <= 0;
+    return this.compareAmountTo(amount) <= 0;
   }
 
   @Override
   public boolean isGreaterThan(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
-    // TODO fast path
-    return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) > 0;
+    return this.compareAmountTo(amount) > 0;
   }
 
   @Override
   public boolean isGreaterThanOrEqualTo(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
-    return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) >= 0;
+    return this.compareAmountTo(amount) >= 0;
   }
 
   @Override
   public boolean isEqualTo(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
-    // TODO fast path
-    return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class)) == 0;
+    return this.compareAmountTo(amount) == 0;
   }
 
   @Override
@@ -416,6 +408,21 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   // Internal helper methods
 
+  private void checkAmountParameter(MonetaryAmount amount) {
+    Objects.requireNonNull(amount, "amount");
+    CurrencyUnit amountCurrency = amount.getCurrency();
+    if (!this.currency.equals(amountCurrency)) {
+        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+    }
+    // TODO why
+    if (amount.getNumber().getScale() > SCALE) {
+      throw new ArithmeticException("Parameter exceeds maximal scale: " + SCALE);
+    }
+    if (amount.getNumber().getPrecision() > MAX_BD.precision()) {
+      throw new ArithmeticException("Parameter exceeds maximal precision: " + SCALE);
+    }
+  }
+
   /**
    * Internal method to check for correct number parameter.
    *
@@ -423,7 +430,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * @throws NullPointerException          If the number is null
    * @throws java.lang.ArithmeticException If the number exceeds the capabilities of this class.
    */
-  protected void checkNumber(Number number) {
+  private void checkNumber(Number number) {
     // TODO why
     Objects.requireNonNull(number, "Number is required.");
     // numeric check for overflow...

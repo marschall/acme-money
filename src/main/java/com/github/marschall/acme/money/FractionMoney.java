@@ -75,16 +75,16 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public int compareTo(MonetaryAmount o) {
     Objects.requireNonNull(o);
-    int compare = this.getCurrency().getCurrencyCode().compareTo(o.getCurrency().getCurrencyCode());
-    if (compare == 0) {
-        compare = this.compareValue(o);
+    int compare = this.getCurrency().compareTo(o.getCurrency());
+    if (compare != 0) {
+      return compare;
     }
-    return compare;
+    return this.compareValue(o);
   }
 
   private int compareValue(MonetaryAmount o) {
     CurrencyUnit amountCurrency = o.getCurrency();
-    if (!this.currency.getCurrencyCode().equals(amountCurrency.getCurrencyCode())) {
+    if (!this.currency.equals(amountCurrency)) {
         throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
     }
     if (o instanceof FractionMoney) {
