@@ -77,14 +77,12 @@ final class FastNumberValue6 extends NumberValue {
 
   @Override
   public long getAmountFractionNumerator() {
-    // TODO Auto-generated method stub
-    return 0;
+    return this.value % FastMoney6.DIVISOR;
   }
 
   @Override
   public long getAmountFractionDenominator() {
-    // TODO Auto-generated method stub
-    return 0;
+    return FastMoney6.DIVISOR;
   }
 
   @Override

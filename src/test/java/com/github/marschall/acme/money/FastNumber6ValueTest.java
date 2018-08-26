@@ -55,4 +55,31 @@ class FastNumber6ValueTest {
     assertThrows(ArithmeticException.class, () -> numberValue3.longValueExact());
   }
 
+  @Test
+  void getAmountFraction() {
+    NumberValue numberValue = numberValue(new BigDecimal("-123.456789"));
+    assertEquals(-456789L, numberValue.getAmountFractionNumerator());
+    assertEquals(1_000_000L, numberValue.getAmountFractionDenominator());
+
+    numberValue = numberValue(new BigDecimal("123.456789"));
+    assertEquals(456789L, numberValue.getAmountFractionNumerator());
+    assertEquals(1_000_000L, numberValue.getAmountFractionDenominator());
+
+    numberValue = numberValue(new BigDecimal("-123.000009"));
+    assertEquals(-9L, numberValue.getAmountFractionNumerator());
+    assertEquals(1_000_000L, numberValue.getAmountFractionDenominator());
+
+    numberValue = numberValue(new BigDecimal("123.000009"));
+    assertEquals(9L, numberValue.getAmountFractionNumerator());
+    assertEquals(1_000_000L, numberValue.getAmountFractionDenominator());
+
+    numberValue = numberValue(new BigDecimal("-123.900000"));
+    assertEquals(-900_000L, numberValue.getAmountFractionNumerator());
+    assertEquals(1_000_000L, numberValue.getAmountFractionDenominator());
+
+    numberValue = numberValue(new BigDecimal("123.900000"));
+    assertEquals(900_000L, numberValue.getAmountFractionNumerator());
+    assertEquals(1_000_000L, numberValue.getAmountFractionDenominator());
+  }
+
 }
