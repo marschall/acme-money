@@ -22,6 +22,22 @@ class MoneyCompatibilityTest {
   }
 
   @Test
+  void divideToIntegralValue() {
+    FastMoney original = FastMoney.of(new BigDecimal("8.4"), "EUR");
+    FastMoney divided = original.divideToIntegralValue(2L);
+    assertThat(divided.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(4L)));
+    assertEquals(5, divided.getScale());
+  }
+
+  @Test
+  void divideToIntegralValueNegative() {
+    FastMoney original = FastMoney.of(new BigDecimal("8.4"), "EUR");
+    FastMoney divided = original.divideToIntegralValue(-2L);
+    assertThat(divided.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(-4L)));
+    assertEquals(5, divided.getScale());
+  }
+
+  @Test
   void multiplyNumberCheck1() {
     BigDecimal multiplicand = new BigDecimal("0.1");
     BigDecimal multiplier = new BigDecimal("92233720368548");

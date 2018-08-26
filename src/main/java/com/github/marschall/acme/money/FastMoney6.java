@@ -14,13 +14,12 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
+import javax.money.MonetaryException;
 import javax.money.MonetaryOperator;
 import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
 import javax.money.UnknownCurrencyException;
 import javax.money.format.MonetaryAmountFormat;
-
-import org.javamoney.moneta.spi.MoneyUtils;
 
 import com.github.marschall.acme.money.ToStringMonetaryAmountFormat.ToStringMonetaryAmountFormatStyle;
 
@@ -130,16 +129,16 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   private long getInternalNumber(Number number, boolean allowInternalRounding) {
-    BigDecimal bd = MoneyUtils.getBigDecimal(number);
-    if (!allowInternalRounding && (bd.scale() > SCALE)) {
+    BigDecimal bigDecimal = ConvertToBigDecimal.convert(number).stripTrailingZeros();
+    if (!allowInternalRounding && (bigDecimal.scale() > SCALE)) {
       throw new ArithmeticException(number + " can not be represented by this class, scale > " + SCALE);
     }
-    if (bd.compareTo(MIN_BD) < 0) {
+    if (bigDecimal.compareTo(MIN_BD) < 0) {
       throw new ArithmeticException("Overflow: " + number + " < " + MIN_BD);
-    } else if (bd.compareTo(MAX_BD) > 0) {
+    } else if (bigDecimal.compareTo(MAX_BD) > 0) {
       throw new ArithmeticException("Overflow: " + number + " > " + MAX_BD);
     }
-    return bd.movePointRight(SCALE).longValue();
+    return bigDecimal.movePointRight(SCALE).longValue();
   }
 
 
@@ -226,8 +225,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   private void checkAmountParameter(MonetaryAmount amount) {
-    MoneyUtils.checkAmountParameter(amount, this.currency);
-    // numeric check for overflow...
+    Objects.requireNonNull(amount, "amount");
+    CurrencyUnit amountCurrency = amount.getCurrency();
+    if (!this.currency.getCurrencyCode().equals(amountCurrency.getCurrencyCode())) {
+        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+    }
     if (amount.getNumber().getScale() > SCALE) {
       throw new ArithmeticException("Parameter exceeds maximal scale: " + SCALE);
     }
@@ -253,7 +255,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (this.isOne(divisor)) {
       return new FastMoney6[]{this, FastMoney6.of(0, this.getCurrency())};
     }
-    BigDecimal div = MoneyUtils.getBigDecimal(divisor);
+    BigDecimal div = ConvertToBigDecimal.convert(divisor);
     BigDecimal[] res = this.getBigDecimal().divideAndRemainder(div);
     return new FastMoney6[]{new FastMoney6(res[0], this.getCurrency(), true), new FastMoney6(res[1], this.getCurrency(), true)};
   }
@@ -264,7 +266,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (this.isOne(divisor)) {
       return this;
     }
-    BigDecimal div = MoneyUtils.getBigDecimal(divisor);
+    BigDecimal div = ConvertToBigDecimal.convert(divisor);
     return new FastMoney6(this.getBigDecimal().divideToIntegralValue(div), this.getCurrency(), false);
   }
 
@@ -312,9 +314,9 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   private boolean isOne(Number number) {
     // TODO
-    BigDecimal bd = MoneyUtils.getBigDecimal(number);
+    BigDecimal bigDecimal = ConvertToBigDecimal.convert(number);
     try {
-      return (bd.scale() == 0) && (bd.longValueExact() == 1L);
+      return (bigDecimal.scale() == 0) && (bigDecimal.longValueExact() == 1L);
     } catch (ArithmeticException e) {
       // The only way to end up here is that longValueExact throws an ArithmeticException,
       // so the amount is definitively not equal to 1.
@@ -428,8 +430,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (number.longValue() > MAX_BD.longValue()) {
       throw new ArithmeticException("Value exceeds maximal value: " + MAX_BD);
     }
-    BigDecimal bd = MoneyUtils.getBigDecimal(number);
-    if (bd.precision() > MAX_BD.precision()) {
+    BigDecimal bigDecimal = ConvertToBigDecimal.convert(number);
+    if (bigDecimal.precision() > MAX_BD.precision()) {
       throw new ArithmeticException("Precision exceeds maximal precision: " + MAX_BD.precision());
     }
   }
@@ -555,7 +557,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (divisor == 1L) {
       return this;
     }
-    return this.divideToIntegralValue(MoneyUtils.getBigDecimal(divisor));
+    if (divisor == 0L) {
+      throw new ArithmeticException("division by zero");
+    }
+    long result = (this.value / divisor) / DIVISOR * DIVISOR;
+    return new FastMoney6(result, this.currency);
   }
 
   @Override
@@ -563,7 +569,15 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (divisor == 1.0d) {
       return this;
     }
-    return this.divideToIntegralValue(MoneyUtils.getBigDecimal(divisor));
+    if (divisor == 0.0d || divisor == -0.0d) {
+      throw new ArithmeticException("division by zero");
+    }
+    // TODO NaN infinity
+    if (Double.isNaN(divisor)|| Double.isInfinite(divisor)) {
+        throw new IllegalArgumentException();
+    }
+    long result = (long) (Math.floor(this.value / divisor) * DIVISOR);
+    return new FastMoney6(result, this.currency);
   }
 
   @Override

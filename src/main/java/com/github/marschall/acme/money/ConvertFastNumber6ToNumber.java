@@ -118,7 +118,7 @@ final class ConvertFastNumber6ToNumber {
 
   }
 
-  static final class ConvertToAtomictInteger implements FastNumber6Converter {
+  static final class ConvertToAtomicInteger implements FastNumber6Converter {
 
     @Override
     public AtomicInteger convert(FastNumberValue6 numberValue, long value6) {
@@ -212,7 +212,7 @@ final class ConvertFastNumber6ToNumber {
     CONVERTER_MAP.put(Integer.class, new ConvertToInteger());
     CONVERTER_MAP.put(Short.class, new ConvertToShort());
     CONVERTER_MAP.put(Byte.class, new ConvertToByte());
-    CONVERTER_MAP.put(AtomicInteger.class, new ConvertToAtomictInteger());
+    CONVERTER_MAP.put(AtomicInteger.class, new ConvertToAtomicInteger());
     CONVERTER_MAP.put(AtomicLong.class, new ConvertToAtomictLong());
   }
 

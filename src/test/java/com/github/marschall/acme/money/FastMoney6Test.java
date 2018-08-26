@@ -1,5 +1,7 @@
 package com.github.marschall.acme.money;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -11,6 +13,7 @@ import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 
+import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -69,6 +72,20 @@ class FastMoney6Test {
 
     // TODO overflow
     // TODO underflow
+  }
+
+  @Test
+  void divideToIntegralValue() {
+    FastMoney6 original = FastMoney6.of(new BigDecimal("8.4"), "EUR");
+    FastMoney6 divided = original.divideToIntegralValue(2L);
+    assertThat(divided.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(4L)));
+  }
+
+  @Test
+  void divideToIntegralValueNegative() {
+    FastMoney6 original = FastMoney6.of(new BigDecimal("8.4"), "EUR");
+    FastMoney6 divided = original.divideToIntegralValue(-2L);
+    assertThat(divided.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(-4L)));
   }
 
   private static void validateContext(MonetaryContext context) {
