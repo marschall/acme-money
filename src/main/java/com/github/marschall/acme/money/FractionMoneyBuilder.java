@@ -31,7 +31,7 @@ final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
 
   @Override
   public FractionMoney create() {
-    Fraction fraction = ConvertToFraction.of(this.number);
+    Fraction fraction = ConvertToFraction.convert(this.number);
     // TODO optimize gcd away
     return FractionMoney.of(fraction.getNumerator(), fraction.getDenominator(), this.currency);
   }

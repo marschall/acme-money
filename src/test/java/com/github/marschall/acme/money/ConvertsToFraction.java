@@ -26,7 +26,7 @@ final class ConvertsToFraction extends TypeSafeMatcher<Number> {
 
   @Override
   protected boolean matchesSafely(Number item) {
-    return ConvertToFraction.of(item).equals(this.fraction);
+    return ConvertToFraction.convert(item).equals(this.fraction);
   }
 
 }

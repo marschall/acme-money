@@ -22,7 +22,7 @@ final class ConvertToBigDecimal {
   private static BigDecimalConverter getConverter(Class<?> numberType) {
     BigDecimalConverter converter = CONVERTER_MAP.get(numberType);
     if (converter == null) {
-      new IllegalArgumentException("Unsupported numeric type: " + numberType);
+      throw new IllegalArgumentException("Unsupported numeric type: " + numberType);
     }
     return converter;
   }
@@ -51,7 +51,7 @@ final class ConvertToBigDecimal {
 
   }
 
-  static final class ConvertToLong implements BigDecimalConverter {
+  static final class ConvertLong implements BigDecimalConverter {
 
     @Override
     public BigDecimal convert(Number number) {
@@ -60,7 +60,7 @@ final class ConvertToBigDecimal {
 
   }
 
-  static final class ConvertToAtomictLong implements BigDecimalConverter {
+  static final class ConvertAtomictLong implements BigDecimalConverter {
 
     @Override
     public BigDecimal convert(Number number) {
@@ -69,7 +69,7 @@ final class ConvertToBigDecimal {
 
   }
 
-  static final class ConvertToInteger implements BigDecimalConverter {
+  static final class ConvertInteger implements BigDecimalConverter {
 
     @Override
     public BigDecimal convert(Number number) {
@@ -78,7 +78,7 @@ final class ConvertToBigDecimal {
 
   }
 
-  static final class ConvertToAtomictInteger implements BigDecimalConverter {
+  static final class ConvertAtomictInteger implements BigDecimalConverter {
 
     @Override
     public BigDecimal convert(Number number) {
@@ -87,7 +87,7 @@ final class ConvertToBigDecimal {
 
   }
 
-  static final class ConvertToShort implements BigDecimalConverter {
+  static final class ConvertShort implements BigDecimalConverter {
 
     @Override
     public BigDecimal convert(Number number) {
@@ -96,7 +96,7 @@ final class ConvertToBigDecimal {
 
   }
 
-  static final class ConvertToByte implements BigDecimalConverter {
+  static final class ConvertByte implements BigDecimalConverter {
 
     @Override
     public BigDecimal convert(Number number) {
@@ -114,6 +114,8 @@ final class ConvertToBigDecimal {
 
   }
 
+  // TODO Fraction
+
   private static final Map<Class<? extends Number>, BigDecimalConverter> CONVERTER_MAP;
 
   static {
@@ -121,12 +123,12 @@ final class ConvertToBigDecimal {
     CONVERTER_MAP.put(BigInteger.class, new ConvertBigInteger());
     CONVERTER_MAP.put(Float.class, new ConvertFloat());
     CONVERTER_MAP.put(Double.class, new ConvertDouble());
-    CONVERTER_MAP.put(Long.class, new ConvertToLong());
-    CONVERTER_MAP.put(Integer.class, new ConvertToInteger());
-    CONVERTER_MAP.put(Short.class, new ConvertToShort());
-    CONVERTER_MAP.put(Byte.class, new ConvertToByte());
-    CONVERTER_MAP.put(AtomicInteger.class, new ConvertToAtomictInteger());
-    CONVERTER_MAP.put(AtomicLong.class, new ConvertToAtomictLong());
+    CONVERTER_MAP.put(Long.class, new ConvertLong());
+    CONVERTER_MAP.put(Integer.class, new ConvertInteger());
+    CONVERTER_MAP.put(Short.class, new ConvertShort());
+    CONVERTER_MAP.put(Byte.class, new ConvertByte());
+    CONVERTER_MAP.put(AtomicInteger.class, new ConvertAtomictInteger());
+    CONVERTER_MAP.put(AtomicLong.class, new ConvertAtomictLong());
   }
 
 }

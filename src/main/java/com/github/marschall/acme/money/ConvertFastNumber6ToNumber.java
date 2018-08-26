@@ -30,7 +30,7 @@ final class ConvertFastNumber6ToNumber {
   private static FastNumber6Converter getConverter(Class<?> numberType) {
     FastNumber6Converter converter = CONVERTER_MAP.get(numberType);
     if (converter == null) {
-      new IllegalArgumentException("Unsupported numeric type: " + numberType);
+      throw new IllegalArgumentException("Unsupported numeric type: " + numberType);
     }
     return converter;
   }
