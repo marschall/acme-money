@@ -129,6 +129,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   private long getInternalNumber(Number number, boolean allowInternalRounding) {
+    // TODO
     BigDecimal bigDecimal = ConvertToBigDecimal.convert(number).stripTrailingZeros();
     if (!allowInternalRounding && (bigDecimal.scale() > SCALE)) {
       throw new ArithmeticException(number + " can not be represented by this class, scale > " + SCALE);
@@ -458,10 +459,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   public static FastMoney6 from(MonetaryAmount amount) {
-    if (FastMoney6.class.isInstance(amount)) {
-      return FastMoney6.class.cast(amount);
+    if (amount instanceof FastMoney6) {
+      return (FastMoney6) amount;
     }
-    return new FastMoney6(amount.getNumber(), amount.getCurrency(), false);
+    return of(amount.getNumber(), amount.getCurrency());
   }
 
   /**
