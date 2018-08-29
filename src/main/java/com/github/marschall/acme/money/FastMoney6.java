@@ -589,7 +589,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public MonetaryAmountFactory<FastMoney6> getFactory() {
-    return new FastMoney6AmountBuilder().setAmount(this);
+    return new FastMoney6AmountFactory().setAmount(this);
   }
 
   private Object writeReplace() throws ObjectStreamException {

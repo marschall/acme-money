@@ -3,7 +3,7 @@ package com.github.marschall.acme.money;
 import javax.money.MonetaryContext;
 import javax.money.NumberValue;
 
-final class FastMoney6AmountBuilder extends AbstractAmountBuilder<FastMoney6>{
+final class FastMoney6AmountFactory extends AbstractAmountFactory<FastMoney6>{
 
   @Override
   public FastMoney6 create(){

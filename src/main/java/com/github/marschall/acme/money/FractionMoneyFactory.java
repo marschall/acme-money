@@ -5,7 +5,7 @@ import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
 import javax.money.NumberValue;
 
-final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
+final class FractionMoneyFactory extends AbstractAmountFactory<FractionMoney> {
 
   static final MonetaryContext DEFAULT_CONTEXT =
       MonetaryContextBuilder.of(FractionMoney.class)
@@ -34,6 +34,11 @@ final class FractionMoneyBuilder extends AbstractAmountBuilder<FractionMoney> {
     Fraction fraction = ConvertToFraction.convert(this.number);
     // TODO optimize gcd away
     return FractionMoney.of(fraction.getNumerator(), fraction.getDenominator(), this.currency);
+  }
+
+  @Override
+  public MonetaryContext getMaximalMonetaryContext() {
+    return MAX_CONTEXT;
   }
 
   @Override

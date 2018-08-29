@@ -7,7 +7,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 
-abstract class AbstractAmountBuilder<T extends MonetaryAmount> implements MonetaryAmountFactory<T> {
+abstract class AbstractAmountFactory<T extends MonetaryAmount> implements MonetaryAmountFactory<T> {
 
   CurrencyUnit currency;
   Number number;

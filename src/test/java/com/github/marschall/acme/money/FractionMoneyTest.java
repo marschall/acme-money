@@ -2,6 +2,7 @@ package com.github.marschall.acme.money;
 
 import static com.github.marschall.acme.money.HasValue.hasValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -143,6 +144,17 @@ class FractionMoneyTest {
     assertThat(money.scaleByPowerOfTen(2), hasValue(1000L, 1L));
     assertEquals(new BigDecimal("0.01"), new BigDecimal("10").scaleByPowerOfTen(-3).stripTrailingZeros());
     assertThat(money.scaleByPowerOfTen(-3), hasValue(1L, 100L));
+  }
+
+  @Test
+  void monetary() {
+    FractionMoney money = Monetary.getAmountFactory(FractionMoney.class)
+      .setCurrency(CHF)
+      .setNumber(new BigDecimal("-1.23"))
+      .create();
+
+    assertEquals(CHF.getCurrencyCode(), money.getCurrency().getCurrencyCode());
+    assertThat(money.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("-1.23")));
   }
 
 }

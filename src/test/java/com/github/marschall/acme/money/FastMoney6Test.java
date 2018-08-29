@@ -13,7 +13,6 @@ import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 
-import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -25,6 +24,17 @@ class FastMoney6Test {
   @Test
   void money() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
+  }
+
+  @Test
+  void monetary() {
+    FastMoney6 money = Monetary.getAmountFactory(FastMoney6.class)
+      .setCurrency(CHF)
+      .setNumber(new BigDecimal("-1.23"))
+      .create();
+
+    assertEquals(CHF.getCurrencyCode(), money.getCurrency().getCurrencyCode());
+    assertThat(money.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("-1.23")));
   }
 
   @Test

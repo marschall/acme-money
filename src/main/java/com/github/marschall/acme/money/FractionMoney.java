@@ -112,7 +112,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmountFactory<? extends MonetaryAmount> getFactory() {
-    return new FractionMoneyBuilder().setAmount(this);
+    return new FractionMoneyFactory().setAmount(this);
   }
 
   @Override
