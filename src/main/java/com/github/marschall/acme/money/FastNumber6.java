@@ -37,6 +37,23 @@ public final class FastNumber6 extends Number implements Comparable<FastNumber6>
   }
 
   @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof FastNumber6)) {
+      return false;
+    }
+    FastNumber6 other = (FastNumber6) obj;
+    return this.value == other.value;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(this.value);
+  }
+
+  @Override
   public String toString() {
     return DecimalMath.fastNumber6ToString(this.value);
   }

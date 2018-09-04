@@ -82,4 +82,25 @@ class MoneyCompatibilityTest {
     oneEur.abs();
   }
 
+  @Test
+  void scaleByPowerOfTen() {
+    BigDecimal original = BigDecimal.valueOf(16, 5);
+    FastMoney money = FastMoney.of(original, "EUR");
+    FastMoney scaled = money.scaleByPowerOfTen(-1);
+    assertThat(scaled.scaleByPowerOfTen(1).getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(original));
+  }
+
+  @Test
+  void divideAndRemainder() {
+    BigDecimal original = BigDecimal.ONE;
+    FastMoney money = FastMoney.of(original, "EUR");
+    BigDecimal divisor = new BigDecimal("0.333333");
+    FastMoney[] result = money.divideAndRemainder(divisor);
+    FastMoney quotient = result[0];
+    FastMoney remainder = result[1];
+    assertThat(quotient.getNumber().numberValueExact(BigDecimal.class)
+            .multiply(divisor)
+            .add(remainder.getNumber().numberValueExact(BigDecimal.class)), comparesEqualTo(original));
+  }
+
 }

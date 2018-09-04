@@ -24,6 +24,18 @@ final class ConvertToFastLong6 {
     return converter;
   }
 
+  static ArithmeticException scaleTooBig(Number number) {
+    return new ArithmeticException(number + " can not be represented by this class, scale > " + FastMoney6.SCALE);
+  }
+
+  static ArithmeticException valueTooLarge(Number number) {
+    return new ArithmeticException("Overflow: " + number + " > " + FastMoney6.MAX_BD);
+  }
+
+  static ArithmeticException valueTooSmall(Number number) {
+    return new ArithmeticException("Overflow: " + number + " < " + FastMoney6.MIN_BD);
+  }
+
   interface FastLong6Converter {
 
     long convert(Number number);
@@ -35,8 +47,11 @@ final class ConvertToFastLong6 {
     @Override
     public long convert(Number number) {
       double doubleValue = number.doubleValue() * FastMoney6.DIVISOR;
-      if ((doubleValue > FastMoney6.MAX_DOUBLE) || (doubleValue < FastMoney6.MIN_DOUBLE)) {
-        throw new ArithmeticException();
+      if (doubleValue > FastMoney6.MAX_DOUBLE) {
+        throw valueTooLarge(number);
+      }
+      if (doubleValue < FastMoney6.MIN_DOUBLE) {
+        throw valueTooSmall(number);
       }
       return Math.round(doubleValue);
     }
@@ -72,27 +87,15 @@ final class ConvertToFastLong6 {
         // strip trailing zeros only if we have to
         bigDecimal = bigDecimal.stripTrailingZeros();
         if (bigDecimal.scale() > FastMoney6.SCALE) {
-          throw scaleTooBig(bigDecimal);
+          throw scaleTooBig(number);
         }
       }
       if (bigDecimal.compareTo(FastMoney6.MIN_BD) < 0) {
-        throw valueTooSmall(bigDecimal);
+        throw valueTooSmall(number);
       } else if (bigDecimal.compareTo(FastMoney6.MAX_BD) > 0) {
-        throw valueTooLarge(bigDecimal);
+        throw valueTooLarge(number);
       }
       return bigDecimal.movePointRight(FastMoney6.SCALE).longValue();
-    }
-
-    private static ArithmeticException scaleTooBig(BigDecimal bigDecimal) {
-      return new ArithmeticException(bigDecimal + " can not be represented by this class, scale > " + FastMoney6.SCALE);
-    }
-
-    private static ArithmeticException valueTooLarge(BigDecimal bigDecimal) {
-      return new ArithmeticException("Overflow: " + bigDecimal + " > " + FastMoney6.MAX_BD);
-    }
-
-    private static ArithmeticException valueTooSmall(BigDecimal bigDecimal) {
-      return new ArithmeticException("Overflow: " + bigDecimal + " < " + FastMoney6.MIN_BD);
     }
 
   }
