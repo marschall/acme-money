@@ -37,6 +37,11 @@ public final class FastNumber6 extends Number implements Comparable<FastNumber6>
   }
 
   @Override
+  public String toString() {
+    return DecimalMath.fastNumber6ToString(this.value);
+  }
+
+  @Override
   public int compareTo(FastNumber6 other) {
     if (other == this) {
       return 0;

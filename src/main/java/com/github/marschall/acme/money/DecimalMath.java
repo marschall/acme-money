@@ -1,9 +1,16 @@
 package com.github.marschall.acme.money;
 
+import java.math.BigDecimal;
+
 final class DecimalMath {
 
   private DecimalMath() {
     throw new AssertionError("not instantiable");
+  }
+
+  static String fastNumber6ToString(long number6) {
+    // TODO
+    return BigDecimal.valueOf(number6, FastMoney6.SCALE).toString();
   }
 
   static long pow10(long base, int exponent) {

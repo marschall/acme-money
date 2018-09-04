@@ -68,7 +68,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   /**
    * Maximum possible numeric value supported.
    */
-  private static final BigDecimal MAX_BD = MAX_VALUE.getBigDecimal();
+  static final BigDecimal MAX_BD = MAX_VALUE.getBigDecimal();
   /**
    * Minimum possible value supported, using XX (no currency).
    */
@@ -77,7 +77,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   /**
    * Minimum possible numeric value supported.
    */
-  private static final BigDecimal MIN_BD = MIN_VALUE.getBigDecimal();
+  static final BigDecimal MIN_BD = MIN_VALUE.getBigDecimal();
+
+  static final double MAX_DOUBLE = (double) Long.MAX_VALUE / DIVISOR;
+
+  static final double MIN_DOUBLE = (double) Long.MIN_VALUE / DIVISOR;
 
 
   /**
@@ -394,14 +398,14 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public String toString() {
-    return this.currency.toString() + ' ' + this.getBigDecimal();
+    return this.currency.toString() + ' ' + DecimalMath.fastNumber6ToString(this.value);
   }
 
   void toStringOn(Appendable appendable) throws IOException {
     appendable.append(this.currency.toString());
     appendable.append(' ');
     // TODO maybe decimal format
-    appendable.append(this.getBigDecimal().toString());
+    appendable.append(DecimalMath.fastNumber6ToString(this.value));
   }
 
   // Internal helper methods
@@ -491,6 +495,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   private BigDecimal getBigDecimal() {
     return BigDecimal.valueOf(this.value, SCALE);
+  }
+
+  private double getDouble() {
+    return (double) this.value / DIVISOR;
   }
 
   @Override

@@ -5,13 +5,19 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
+import javax.money.NumberValue;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +41,139 @@ class FastMoney6Test {
 
     assertEquals(CHF.getCurrencyCode(), money.getCurrency().getCurrencyCode());
     assertThat(money.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("-1.23")));
+  }
+
+  @Test
+  void ofByte() {
+    Byte value = Byte.valueOf((byte) 1);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValueExact(Byte.class));
+  }
+
+  @Test
+  void ofShort() {
+    Short value = Short.valueOf((short) 1);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValueExact(Short.class));
+  }
+
+  @Test
+  void ofInteger() {
+    Integer value = Integer.valueOf(1);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValueExact(Integer.class));
+  }
+
+  @Test
+  void ofAtomicInteger() {
+    AtomicInteger value = new AtomicInteger(1);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value.get(), money.getNumber().numberValueExact(AtomicInteger.class).get());
+  }
+
+  @Test
+  void ofLong() {
+    Long value = Long.valueOf(1L);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValueExact(Long.class));
+
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(Long.MAX_VALUE, CHF));
+  }
+
+  @Test
+  void ofAtomicLong() {
+    AtomicLong value = new AtomicLong(1L);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value.get(), money.getNumber().numberValueExact(AtomicLong.class).get());
+
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(new AtomicLong(Long.MAX_VALUE), CHF));
+  }
+
+  @Test
+  void ofFloat() {
+    Float value = Float.valueOf(1.5f);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValue(Float.class), 0.000001f);
+
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(Float.MAX_VALUE, CHF));
+  }
+
+  @Test
+  void ofDouble() {
+    Double value = Double.valueOf(1.5d);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValue(Double.class), 0.000001d);
+
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(Double.MAX_VALUE, CHF));
+  }
+
+  @Test
+  void ofBigDecimal() {
+    BigDecimal value = BigDecimal.valueOf(15, 1);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertThat(money.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(value));
+
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(BigDecimal.valueOf(Long.MAX_VALUE), CHF));
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(new BigDecimal("0.0000001"), CHF));
+  }
+
+  @Test
+  void ofBigInteger() {
+    BigInteger value = BigInteger.valueOf(1L);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    assertEquals(value, money.getNumber().numberValueExact(BigInteger.class));
+
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(BigInteger.valueOf(Long.MAX_VALUE), CHF));
+    assertThrows(ArithmeticException.class, () -> FastMoney6.of(BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE), CHF));
+  }
+
+  @Test
+  void ofFastNumber6() {
+    Long value = Long.valueOf(1L);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    FastNumber6 number = money.getNumber().numberValueExact(FastNumber6.class);
+
+    money = FastMoney6.of(number, CHF);
+
+    assertEquals(number, money.getNumber().numberValueExact(FastNumber6.class));
+  }
+
+  @Test
+  void ofFastNumberValue6() {
+    Long value = Long.valueOf(1L);
+    FastMoney6 money = FastMoney6.of(value, CHF);
+    NumberValue numberValue = money.getNumber();
+
+    money = FastMoney6.of(numberValue, CHF);
+
+    assertThat(money.getNumber(), comparesEqualTo(numberValue));
+  }
+
+  @Test
+  void ofFraction() {
+    FractionMoney fractionMoney = FractionMoney.of(3, 4, CHF);
+
+    FastMoney6 fastMoney = FastMoney6.of(fractionMoney.getNumber().numberValueExact(Fraction.class), CHF);
+
+    assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(75, 2)));
+  }
+
+  @Test
+  void ofFractionValue() {
+    FractionMoney fractionMoney = FractionMoney.of(3, 4, CHF);
+
+    FastMoney6 fastMoney = FastMoney6.of(fractionMoney.getNumber(), CHF);
+
+    assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(75, 2)));
+  }
+
+  @Test
+  void fromFractionMoney() {
+    FractionMoney fractionMoney = FractionMoney.of(3, 4, CHF);
+
+    FastMoney6 fastMoney = FastMoney6.from(fractionMoney);
+
+    assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(75, 2)));
   }
 
   @Test
@@ -127,17 +266,27 @@ class FastMoney6Test {
 
   @Test
   void remainderDouble() {
+    FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(5, 1), CHF);
+    assertEquals(0.1d, money.remainder(0.2d).getNumber().doubleValue(), 0.000001d);
 
+    money = FastMoney6.of(BigDecimal.valueOf(15, 1), CHF);
+    assertEquals(0.1d, money.remainder(0.2d).getNumber().doubleValue(), 0.000001d);
+
+    money = FastMoney6.of(BigDecimal.valueOf(-15, 1), CHF);
+    assertEquals(-0.1d, money.remainder(0.2d).getNumber().doubleValue(), 0.000001d);
+
+    money = FastMoney6.of(BigDecimal.valueOf(15, 1), CHF);
+    assertEquals(0.1d, money.remainder(-0.2d).getNumber().doubleValue(), 0.000001d);
   }
 
   @Test
   void divideAndRemainderDouble() {
-
+    fail("implement");
   }
 
   @Test
   void divideToIntegralValueDouble() {
-
+    fail("implement");
   }
 
   private static void validateContext(MonetaryContext context) {

@@ -115,6 +115,11 @@ final class FastNumberValue6 extends NumberValue {
     }
   }
 
+  @Override
+  public String toString() {
+    return DecimalMath.fastNumber6ToString(this.value);
+  }
+
   private Object writeReplace() throws ObjectStreamException {
     return new Ser(this);
   }
