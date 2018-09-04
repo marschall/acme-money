@@ -490,7 +490,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       .of(ToStringMonetaryAmountFormatStyle.FAST_MONEY_6);
 
   private BigDecimal getBigDecimal() {
-    return BigDecimal.valueOf(this.value).movePointLeft(SCALE);
+    return BigDecimal.valueOf(this.value, SCALE);
   }
 
   @Override
