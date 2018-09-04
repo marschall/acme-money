@@ -292,13 +292,13 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   @Override
-  public FastMoney6 subtract(MonetaryAmount subtrahend) {
-    this.checkAmountParameter(subtrahend);
-    if (subtrahend.isZero()) {
+  public FastMoney6 subtract(MonetaryAmount amount) {
+    this.checkAmountParameter(amount);
+    if (amount.isZero()) {
       return this;
     }
     // TODO fast path
-    long subtrahendAsLong = this.getInternalNumber(subtrahend.getNumber(), false);
+    long subtrahendAsLong = this.getInternalNumber(amount.getNumber(), false);
     return new FastMoney6(Math.addExact(this.value, negateExact(subtrahendAsLong)), this.getCurrency());
   }
 
@@ -324,12 +324,12 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   @Override
-  public FastMoney6 scaleByPowerOfTen(int n) {
+  public FastMoney6 scaleByPowerOfTen(int power) {
     // not really correct, different scale
-    if (n == 0) {
+    if (power == 0) {
       return this;
     }
-    return new FastMoney6(DecimalMath.pow10(this.value, n), this.currency);
+    return new FastMoney6(DecimalMath.pow10(this.value, power), this.currency);
   }
 
   @Override
@@ -494,50 +494,50 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   @Override
-  public FastMoney6 multiply(double amount) {
-    if (amount == 1.0) {
+  public FastMoney6 multiply(double multiplicand) {
+    if (multiplicand == 1.0) {
       return this;
     }
-    if (amount == 0.0) {
+    if (multiplicand == 0.0) {
       return new FastMoney6(0, this.currency);
     }
-    return new FastMoney6(Math.round(this.value * amount), this.currency);
+    return new FastMoney6(Math.round(this.value * multiplicand), this.currency);
   }
 
   @Override
-  public FastMoney6 divide(long amount) {
-    if (amount == 1L) {
+  public FastMoney6 divide(long divisor) {
+    if (divisor == 1L) {
       return this;
     }
-    return new FastMoney6(this.value / amount, this.currency);
+    return new FastMoney6(this.value / divisor, this.currency);
   }
 
   @Override
-  public FastMoney6 divide(double number) {
-    if (number == 1.0d) {
+  public FastMoney6 divide(double divisor) {
+    if (divisor == 1.0d) {
       return this;
     }
-    return new FastMoney6(Math.round(this.value / number), this.getCurrency());
+    return new FastMoney6(Math.round(this.value / divisor), this.getCurrency());
   }
 
   @Override
-  public FastMoney6 remainder(long number) {
-    return this.remainder(BigDecimal.valueOf(number));
+  public FastMoney6 remainder(long divisor) {
+    return this.remainder(BigDecimal.valueOf(divisor));
   }
 
   @Override
-  public FastMoney6 remainder(double amount) {
-    return this.remainder(new BigDecimal(String.valueOf(amount)));
+  public FastMoney6 remainder(double divisor) {
+    return this.remainder(new BigDecimal(String.valueOf(divisor)));
   }
 
   @Override
-  public FastMoney6[] divideAndRemainder(long amount) {
-    return this.divideAndRemainder(BigDecimal.valueOf(amount));
+  public FastMoney6[] divideAndRemainder(long divisor) {
+    return this.divideAndRemainder(BigDecimal.valueOf(divisor));
   }
 
   @Override
-  public FastMoney6[] divideAndRemainder(double amount) {
-    return this.divideAndRemainder(new BigDecimal(String.valueOf(amount)));
+  public FastMoney6[] divideAndRemainder(double divisor) {
+    return this.divideAndRemainder(new BigDecimal(String.valueOf(divisor)));
   }
 
   @Override
