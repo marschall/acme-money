@@ -107,6 +107,39 @@ class FastMoney6Test {
     assertThat(divided.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(-4L)));
   }
 
+  @Test
+  void multiplyDouble() {
+    FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(0.000001d, money.multiply(0.000001d).getNumber().doubleValue(), 0.000000000001d);
+
+    money = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(-1.5d, money.multiply(-1.5d).getNumber().doubleValue(), 0.000001d);
+  }
+
+  @Test
+  void divideDouble() {
+    FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(1, 6), CHF);
+    assertEquals(1d, money.divide(0.000001d).getNumber().doubleValue(), 0.000001d);
+
+    money = FastMoney6.of(BigDecimal.valueOf(-3.75), CHF);
+    assertEquals(-2.5d, money.divide(1.5d).getNumber().doubleValue(), 0.000001d);
+  }
+
+  @Test
+  void remainderDouble() {
+
+  }
+
+  @Test
+  void divideAndRemainderDouble() {
+
+  }
+
+  @Test
+  void divideToIntegralValueDouble() {
+
+  }
+
   private static void validateContext(MonetaryContext context) {
     assertEquals(19, context.getPrecision());
     assertEquals(6, context.getMaxScale());
