@@ -17,12 +17,12 @@ final class FastMoney6AmountFactory extends AbstractAmountFactory<FastMoney6>{
 
   @Override
   public NumberValue getMaxNumber(){
-    return FastMoney6.MAX_VALUE.getNumber();
+    return FastMoney6.MAX_VALUE;
   }
 
   @Override
   public NumberValue getMinNumber(){
-    return FastMoney6.MIN_VALUE.getNumber();
+    return FastMoney6.MIN_VALUE;
   }
 
   @Override

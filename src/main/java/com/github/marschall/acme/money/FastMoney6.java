@@ -61,23 +61,24 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
           .build();
 
   /**
-   * Maximum possible value supported, using XX (no currency).
+   * Maximum possible value supported.
    */
-  // REVIEW maybe replace with BigDecimal or similar
-  public static final FastMoney6 MAX_VALUE = new FastMoney6(Long.MAX_VALUE, Monetary.getCurrency("XXX"));
+  public static final NumberValue MAX_VALUE = new FastNumberValue6(Long.MAX_VALUE);
+
+  /**
+   * Minimum possible value supported.
+   */
+  public static final NumberValue MIN_VALUE = new FastNumberValue6(Long.MIN_VALUE);
+
   /**
    * Maximum possible numeric value supported.
    */
-  static final BigDecimal MAX_BD = MAX_VALUE.getBigDecimal();
-  /**
-   * Minimum possible value supported, using XX (no currency).
-   */
-  // REVIEW maybe replace with BigDecimal or similar
-  public static final FastMoney6 MIN_VALUE = new FastMoney6(Long.MIN_VALUE, Monetary.getCurrency("XXX"));
+  static final BigDecimal MAX_BD = MAX_VALUE.numberValueExact(BigDecimal.class);
+
   /**
    * Minimum possible numeric value supported.
    */
-  static final BigDecimal MIN_BD = MIN_VALUE.getBigDecimal();
+  static final BigDecimal MIN_BD = MIN_VALUE.numberValueExact(BigDecimal.class);
 
   static final double MAX_DOUBLE = (double) Long.MAX_VALUE / DIVISOR;
 

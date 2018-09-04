@@ -8,6 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -177,6 +183,15 @@ class FastMoney6Test {
   }
 
   @Test
+  void serialize() throws ClassNotFoundException, IOException {
+    FastMoney6 money = FastMoney6.of(1L, CHF);
+    assertSame(money, money.plus());
+
+    money = FastMoney6.of(-1L, CHF);
+    assertEquals(money, serializeCopy(money));
+  }
+
+  @Test
   void plus() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertSame(money, money.plus());
@@ -294,6 +309,17 @@ class FastMoney6Test {
     assertEquals(6, context.getMaxScale());
     assertEquals("acme", context.getProviderName());
     assertEquals(FastMoney6.class, context.getAmountType());
+  }
+
+  private static Object serializeCopy(Serializable s) throws IOException, ClassNotFoundException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+    try (ObjectOutputStream oos = new ObjectOutputStream(baos)) {
+      oos.writeObject(s);
+    }
+    try (ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+         ObjectInputStream ois = new ObjectInputStream(bais)) {
+      return ois.readObject();
+    }
   }
 
 }

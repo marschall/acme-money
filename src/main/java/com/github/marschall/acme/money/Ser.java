@@ -9,7 +9,7 @@ import java.util.Objects;
 import javax.money.CurrencyUnit;
 
 /**
- * Serialization proxy for all types in this package.
+ * Serialization proxy for all serializable types in this package.
  */
 final class Ser implements Externalizable {
 
@@ -23,6 +23,13 @@ final class Ser implements Externalizable {
 
   private int type;
   private Object value;
+
+  /**
+   * Default constructor for serialization.
+   */
+  public Ser() {
+    super();
+  }
 
   Ser(FastMoney6 money) {
     Objects.requireNonNull(money, "money");
@@ -101,8 +108,6 @@ final class Ser implements Externalizable {
         throw new IllegalStateException("unknown type tag: " + this.type);
     }
   }
-
-
 
   @Override
   public void readExternal(ObjectInput in)
