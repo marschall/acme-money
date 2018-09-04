@@ -25,7 +25,6 @@ class FractionMoneyTest {
 
   protected static final CurrencyUnit EUR = Monetary.getCurrency("EUR");
 
-
   @Test
   void zero() {
     FractionMoney money = FractionMoney.of(0, 5, CHF);
