@@ -75,4 +75,11 @@ class MoneyCompatibilityTest {
     assertThat(tenEur.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(dividend.divide(divisor)));
   }
 
+  @Test
+  void negate() {
+    FastMoney oneEur = FastMoney.of(-1L, "EUR");
+    oneEur.negate();
+    oneEur.abs();
+  }
+
 }

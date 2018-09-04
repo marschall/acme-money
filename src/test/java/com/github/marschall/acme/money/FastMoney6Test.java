@@ -38,6 +38,15 @@ class FastMoney6Test {
   }
 
   @Test
+  void plus() {
+    FastMoney6 money = FastMoney6.of(1L, CHF);
+    assertSame(money, money.plus());
+
+    money = FastMoney6.of(-1L, CHF);
+    assertSame(money, money.plus());
+  }
+
+  @Test
   void factory() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     MonetaryAmountFactory<FastMoney6> factory = money.getFactory();

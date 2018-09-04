@@ -288,10 +288,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 plus() {
-    if (this.value >= 0) {
-      return this;
-    }
-    return new FastMoney6(negateExact(this.value), this.getCurrency());
+    return this;
   }
 
   @Override
@@ -568,7 +565,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (divisor == 0L) {
       throw new ArithmeticException("division by zero");
     }
-    long result = (this.value / divisor) / DIVISOR * DIVISOR;
+    long result = ((this.value / divisor) / DIVISOR) * DIVISOR;
     return new FastMoney6(result, this.currency);
   }
 
@@ -577,7 +574,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (divisor == 1.0d) {
       return this;
     }
-    if (divisor == 0.0d || divisor == -0.0d) {
+    if ((divisor == 0.0d) || (divisor == -0.0d)) {
       throw new ArithmeticException("division by zero");
     }
     // TODO NaN infinity

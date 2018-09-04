@@ -319,10 +319,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount plus() {
-    if (this.numerator >= 0) {
-      return this;
-    }
-    return new FractionMoney(negateExact(this.numerator), this.denominator, this.getCurrency());
+    return this;
   }
 
   @Override

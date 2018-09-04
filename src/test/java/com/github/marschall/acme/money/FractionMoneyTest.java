@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -41,6 +42,15 @@ class FractionMoneyTest {
 
     money = FractionMoney.of(-1, 1, CHF);
     assertEquals(-1, money.signum());
+  }
+
+  @Test
+  void plus() {
+    FractionMoney money = FractionMoney.of(3, 4, CHF);
+    assertSame(money, money.plus());
+
+    money = FractionMoney.of(-3, 4, CHF);
+    assertSame(money, money.plus());
   }
 
   @Test
