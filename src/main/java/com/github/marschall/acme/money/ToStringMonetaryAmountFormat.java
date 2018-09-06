@@ -16,6 +16,8 @@ import javax.money.format.MonetaryParseException;
  */
 final class ToStringMonetaryAmountFormat implements MonetaryAmountFormat {
 
+  // TODO everything
+
   private final ToStringMonetaryAmountFormatStyle style;
 
   private ToStringMonetaryAmountFormat(ToStringMonetaryAmountFormatStyle style) {
