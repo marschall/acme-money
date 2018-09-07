@@ -86,6 +86,16 @@ final class FastNumberValue6 extends NumberValue {
   }
 
   @Override
+  public byte byteValue() {
+    return (byte) this.longValue();
+  }
+
+  @Override
+  public short shortValue() {
+    return (short) this.longValue();
+  }
+
+  @Override
   public int intValue() {
     return (int) this.longValue();
   }
@@ -97,12 +107,12 @@ final class FastNumberValue6 extends NumberValue {
 
   @Override
   public float floatValue() {
-    return this.value / (float) FastMoney6.DIVISOR;
+    return (float) this.doubleValue();
   }
 
   @Override
   public double doubleValue() {
-    return this.value / (double) FastMoney6.DIVISOR;
+    return DecimalMath.doubleValue(this.value);
   }
 
   @Override
