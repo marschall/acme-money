@@ -28,8 +28,15 @@ class FastNumber6ValueTest {
   @Test
   void round() {
     BigDecimal bigDecimal = new BigDecimal("123.456");
+    NumberValue numberValue = numberValue(bigDecimal);
     assertThat(bigDecimal.round(new MathContext(6, RoundingMode.UNNECESSARY)), comparesEqualTo(new BigDecimal("123.456")));
+    assertThat(numberValue.round(new MathContext(6, RoundingMode.UNNECESSARY)), comparesEqualTo(numberValue(new BigDecimal("123.456"))));
+
     assertThat(bigDecimal.round(new MathContext(5, RoundingMode.DOWN)), comparesEqualTo(new BigDecimal("123.45")));
+    assertThat(numberValue.round(new MathContext(5, RoundingMode.DOWN)), comparesEqualTo(numberValue(new BigDecimal("123.45"))));
+
+    assertThat(bigDecimal.round(new MathContext(1, RoundingMode.DOWN)), comparesEqualTo(new BigDecimal("100")));
+    assertThat(numberValue.round(new MathContext(1, RoundingMode.DOWN)), comparesEqualTo(numberValue(new BigDecimal("100"))));
   }
 
   @Test

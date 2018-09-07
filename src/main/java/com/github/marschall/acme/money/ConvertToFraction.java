@@ -155,7 +155,7 @@ final class ConvertToFraction {
   private static final Map<Class<? extends Number>, FranctionConverter> CONVERTER_MAP;
 
   static {
-    CONVERTER_MAP = new HashMap<>();
+    CONVERTER_MAP = new HashMap<>(16);
     CONVERTER_MAP.put(BigInteger.class, new ConvertBigInteger());
     CONVERTER_MAP.put(BigDecimal.class, new ConvertBigDecimal());
     CONVERTER_MAP.put(Float.class, new ConvertFloat());

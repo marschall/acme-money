@@ -119,7 +119,7 @@ final class ConvertToBigDecimal {
   private static final Map<Class<? extends Number>, BigDecimalConverter> CONVERTER_MAP;
 
   static {
-    CONVERTER_MAP = new HashMap<>(10);
+    CONVERTER_MAP = new HashMap<>(16);
     CONVERTER_MAP.put(BigInteger.class, new ConvertBigInteger());
     CONVERTER_MAP.put(Float.class, new ConvertFloat());
     CONVERTER_MAP.put(Double.class, new ConvertDouble());

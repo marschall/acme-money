@@ -24,6 +24,22 @@ final class ConvertToFastLong6 {
     return converter;
   }
 
+  static long fromBigDecimal(BigDecimal bigDecimal) {
+    if (bigDecimal.scale() > FastMoney6.SCALE) {
+      // strip trailing zeros only if we have to
+      bigDecimal = bigDecimal.stripTrailingZeros();
+      if (bigDecimal.scale() > FastMoney6.SCALE) {
+        throw scaleTooBig(bigDecimal);
+      }
+    }
+    if (bigDecimal.compareTo(FastMoney6.MIN_BD) < 0) {
+      throw valueTooSmall(bigDecimal);
+    } else if (bigDecimal.compareTo(FastMoney6.MAX_BD) > 0) {
+      throw valueTooLarge(bigDecimal);
+    }
+    return bigDecimal.movePointRight(FastMoney6.SCALE).longValue();
+  }
+
   static ArithmeticException scaleTooBig(Number number) {
     return new ArithmeticException(number + " can not be represented by this class, scale > " + FastMoney6.SCALE);
   }
@@ -82,20 +98,7 @@ final class ConvertToFastLong6 {
 
     @Override
     public long convert(Number number) {
-      BigDecimal bigDecimal = (BigDecimal) number;
-      if (bigDecimal.scale() > FastMoney6.SCALE) {
-        // strip trailing zeros only if we have to
-        bigDecimal = bigDecimal.stripTrailingZeros();
-        if (bigDecimal.scale() > FastMoney6.SCALE) {
-          throw scaleTooBig(number);
-        }
-      }
-      if (bigDecimal.compareTo(FastMoney6.MIN_BD) < 0) {
-        throw valueTooSmall(number);
-      } else if (bigDecimal.compareTo(FastMoney6.MAX_BD) > 0) {
-        throw valueTooLarge(number);
-      }
-      return bigDecimal.movePointRight(FastMoney6.SCALE).longValue();
+      return fromBigDecimal((BigDecimal) number);
     }
 
   }
@@ -112,7 +115,7 @@ final class ConvertToFastLong6 {
   private static final Map<Class<? extends Number>, FastLong6Converter> CONVERTER_MAP;
 
   static {
-    CONVERTER_MAP = new HashMap<>(10);
+    CONVERTER_MAP = new HashMap<>(16);
     CONVERTER_MAP.put(FastNumber6.class, new ConvertFastNumber6());
     CONVERTER_MAP.put(BigInteger.class, new ConvertBigInteger());
     CONVERTER_MAP.put(BigDecimal.class, new ConvertBigDecimal());

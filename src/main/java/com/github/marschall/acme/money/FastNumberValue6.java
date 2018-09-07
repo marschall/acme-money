@@ -1,6 +1,7 @@
 package com.github.marschall.acme.money;
 
 import java.io.ObjectStreamException;
+import java.math.BigDecimal;
 import java.math.MathContext;
 
 import javax.money.NumberValue;
@@ -43,8 +44,15 @@ final class FastNumberValue6 extends NumberValue {
 
   @Override
   public NumberValue round(MathContext mathContext) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO return instance of same class?
+    // TODO implement without BigDecimal
+    BigDecimal original = DecimalMath.bigDecimal(this.value);
+    BigDecimal rounded = original.round(mathContext);
+    if (rounded == original) {
+      return this;
+    } else {
+      return new FastNumberValue6(ConvertToFastLong6.fromBigDecimal(rounded));
+    }
   }
 
   @Override

@@ -245,7 +245,7 @@ final class ConvertFractionToNumber {
   private static final Map<Class<? extends Number>, FastNumber6Converter> CONVERTER_MAP;
 
   static {
-    CONVERTER_MAP = new HashMap<>(10);
+    CONVERTER_MAP = new HashMap<>(16);
     CONVERTER_MAP.put(BigDecimal.class, new ConvertToBigDecimal());
     CONVERTER_MAP.put(BigInteger.class, new ConvertToBigInteger());
     CONVERTER_MAP.put(Float.class, new ConvertToFloat());

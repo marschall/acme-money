@@ -2,12 +2,14 @@ package com.github.marschall.acme.money;
 
 import static java.lang.Math.abs;
 
+import java.math.BigDecimal;
+
 final class FractionMath {
 
   private FractionMath() {
     throw new AssertionError("not instantiable");
   }
-  
+
   static long toLongExact(double value) {
     if ((long) value != value) {
         throw new ArithmeticException("integer overflow");
@@ -31,7 +33,7 @@ final class FractionMath {
       if (k == 1 || m == 1) {
         return 1;
       }
-      
+
       if (k > m) {
         k = k - m;
       } else {
