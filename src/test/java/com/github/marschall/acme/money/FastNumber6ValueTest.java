@@ -220,7 +220,7 @@ class FastNumber6ValueTest {
   void testToString() {
     assertEquals("0.000000", numberValue(0).toString());
     assertEquals("0.000001", numberValue(new BigDecimal("0.000001")).toString());
-    assertEquals("-0.000001", numberValue(new BigDecimal("0.000001")).toString());
+    assertEquals("-0.000001", numberValue(new BigDecimal("-0.000001")).toString());
     assertEquals("1.000000", numberValue(1).toString());
     assertEquals("-1.000000", numberValue(-1).toString());
   }

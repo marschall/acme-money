@@ -126,6 +126,23 @@ final class FastNumberValue6 extends NumberValue {
   }
 
   @Override
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof FastNumberValue6)) {
+      return false;
+    }
+    FastNumberValue6 other = (FastNumberValue6) obj;
+    return this.value == other.value;
+  }
+
+  @Override
+  public int hashCode() {
+    return Long.hashCode(this.value);
+  }
+
+  @Override
   public String toString() {
     return DecimalMath.fastNumber6ToString(this.value);
   }
