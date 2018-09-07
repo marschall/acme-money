@@ -8,6 +8,14 @@ final class DecimalMath {
     throw new AssertionError("not instantiable");
   }
 
+  static double doubleValue(long number6) {
+    return (double) number6 / FastMoney6.DIVISOR;
+  }
+
+  static BigDecimal bigDecimal(long number6) {
+    return BigDecimal.valueOf(number6, FastMoney6.SCALE);
+  }
+
   static String fastNumber6ToString(long number6) {
     // TODO
     return BigDecimal.valueOf(number6, FastMoney6.SCALE).toString();

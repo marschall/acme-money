@@ -13,27 +13,33 @@ public final class FastNumber6 extends Number implements Comparable<FastNumber6>
   }
 
   @Override
+  public byte byteValue() {
+    return (byte) this.longValue();
+  }
+
+  @Override
+  public short shortValue() {
+    return (short) this.longValue();
+  }
+
+  @Override
   public int intValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (int) this.longValue();
   }
 
   @Override
   public long longValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return this.value / FastMoney6.DIVISOR;
   }
 
   @Override
   public float floatValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return (float) this.doubleValue();
   }
 
   @Override
   public double doubleValue() {
-    // TODO Auto-generated method stub
-    return 0;
+    return DecimalMath.doubleValue(this.value);
   }
 
   @Override
