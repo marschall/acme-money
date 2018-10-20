@@ -93,9 +93,29 @@ public final class Fraction extends Number implements Comparable<Fraction> {
         && (this.denominator == other.denominator);
   }
 
+  long fastNumberValue6() {
+    return numeratorWithDenominator(FastMoney6.DIVISOR);
+  }
+
+  private long numeratorWithDenominator(long base) {
+    if (this.denominator > base) {
+      throw new ArithmeticException("precision exceeded");
+    }
+    if (this.denominator == base) {
+      return denominator;
+    }
+    boolean divisible = base % denominator == 0;
+    if (!divisible) {
+      throw new ArithmeticException("not terminating expression");
+    }
+    // 1/2 -> 50_000/100_000
+    return Math.multiplyExact(this.numerator, base / denominator);
+    
+  }
+
   @Override
   public String toString() {
-    return Long.toString(this.numerator) + '/' + this.denominator;
+    return "" + this.numerator + '/' + this.denominator;
   }
 
   private Object writeReplace() throws ObjectStreamException {

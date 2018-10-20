@@ -92,8 +92,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * @param currency the currency, not null
    */
   private FastMoney6(Number number, CurrencyUnit currency) {
-    Objects.requireNonNull(currency, "Currency is required.");
-    Objects.requireNonNull(number, "Number is required.");
+    Objects.requireNonNull(currency, "currency");
+    Objects.requireNonNull(number, "number");
     this.currency = currency;
     this.value = getInternalNumber(number);
   }
@@ -105,9 +105,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * @param currency    the currency, not null
    */
   private FastMoney6(NumberValue numberValue, CurrencyUnit currency) {
-    Objects.requireNonNull(currency, "Currency is required.");
-    Objects.requireNonNull(numberValue, "Number is required.");
+    Objects.requireNonNull(currency, "currency");
+    Objects.requireNonNull(numberValue, "number");
     this.currency = currency;
+    // TODO fast path, less conversion
     this.value = getInternalNumber(numberValue.numberValue(BigDecimal.class));
   }
 
@@ -118,7 +119,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * @param currency the currency, not null.
    */
   FastMoney6(long number, CurrencyUnit currency) {
-    Objects.requireNonNull(currency, "Currency is required.");
+    Objects.requireNonNull(currency, "currency");
     this.currency = currency;
     this.value = number;
   }

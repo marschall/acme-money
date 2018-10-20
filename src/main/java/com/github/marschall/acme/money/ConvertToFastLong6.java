@@ -92,7 +92,14 @@ final class ConvertToFastLong6 {
 
   }
 
-  // TODO Fraction
+  static final class ConvertFraction implements FastLong6Converter {
+
+    @Override
+    public long convert(Number number) {
+      return ((Fraction) number).fastNumberValue6();
+    }
+
+  }
 
   static final class ConvertBigDecimal implements FastLong6Converter {
 
@@ -127,6 +134,7 @@ final class ConvertToFastLong6 {
     CONVERTER_MAP.put(Byte.class, new ConvertLong());
     CONVERTER_MAP.put(AtomicInteger.class, new ConvertLong());
     CONVERTER_MAP.put(AtomicLong.class, new ConvertLong());
+    CONVERTER_MAP.put(Fraction.class, new ConvertFraction());
   }
 
 }
