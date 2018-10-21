@@ -110,8 +110,26 @@ final class FractionValue extends NumberValue {
   }
 
   @Override
+  public int hashCode() {
+    return FractionMath.hashCode(this.numerator, this.denominator);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof FractionValue)) {
+      return false;
+    }
+    FractionValue other = (FractionValue) obj;
+    return (this.numerator == other.numerator)
+        && (this.denominator == other.denominator);
+  }
+
+  @Override
   public String toString() {
-    return Long.toString(this.numerator) + '/' + this.denominator;
+    return FractionMath.toString(this.numerator, this.denominator);
   }
 
   private Object writeReplace() throws ObjectStreamException {

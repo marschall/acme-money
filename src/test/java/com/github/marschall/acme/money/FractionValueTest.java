@@ -6,7 +6,9 @@ import static com.github.marschall.acme.money.HasNumberValue.hasNumberValue;
 import static com.github.marschall.acme.money.HasNumberValueExact.hasNumberValueExcat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -16,6 +18,26 @@ import org.javamoney.moneta.spi.DefaultNumberValue;
 import org.junit.jupiter.api.Test;
 
 class FractionValueTest {
+
+  @Test
+  void testEquals() {
+    assertEquals(new FractionValue(1, 2), new FractionValue(1, 2));
+    assertNotEquals(new FractionValue(-1, 2), new FractionValue(1, 2));
+    assertNotEquals(new FractionValue(1, 2), null);
+    assertNotEquals(new FractionValue(1, 2), Fraction.of(1, 2));
+    assertNotEquals(new FractionValue(1, 2), BigDecimal.valueOf(5, 1));
+  }
+
+  @Test
+  void serialize() throws ClassNotFoundException, IOException {
+    FractionValue value = new FractionValue(10, 1);
+    assertEquals(value, SerializationUtil.serializeCopy(value));
+  }
+
+  @Test
+  void testToString() {
+    assertEquals("1/2", new FractionValue(1, 2).toString());
+  }
 
   @Test
   void convertToInteger() {

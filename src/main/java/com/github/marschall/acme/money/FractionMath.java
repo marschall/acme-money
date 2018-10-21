@@ -43,4 +43,15 @@ final class FractionMath {
     return k;
   }
 
+  static int hashCode(long numerator, long denominator) {
+    int result = 17;
+    result = (31 * result) + Long.hashCode(numerator);
+    result = (31 * result) + Long.hashCode(denominator);
+    return result;
+  }
+
+  static String toString(long numerator, long denominator) {
+    return Long.toString(numerator) + '/' + denominator;
+  }
+
 }

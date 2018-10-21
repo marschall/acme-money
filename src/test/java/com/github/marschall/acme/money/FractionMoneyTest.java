@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import javax.money.CurrencyUnit;
@@ -24,6 +25,12 @@ class FractionMoneyTest {
   protected static final CurrencyUnit CHF = Monetary.getCurrency("CHF");
 
   protected static final CurrencyUnit EUR = Monetary.getCurrency("EUR");
+
+  @Test
+  void serialize() throws ClassNotFoundException, IOException {
+    FractionMoney money = FractionMoney.of(140_000, 1, CHF);
+    assertEquals(money, SerializationUtil.serializeCopy(money));
+  }
 
   @Test
   void zero() {

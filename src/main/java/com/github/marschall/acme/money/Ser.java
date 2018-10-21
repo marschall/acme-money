@@ -69,37 +69,33 @@ final class Ser implements Externalizable {
 
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
+    out.writeByte(this.type);
     switch (this.type) {
       case TYPE_FAST_MONEY_6:
-        out.writeByte(TYPE_FAST_NUMBER_6);
         out.writeLong(((FastMoney6) this.value).value);
         out.writeObject(((FastMoney6) this.value).currency);
         break;
 
       case TYPE_FAST_NUMBER_6:
-        out.writeByte(TYPE_FAST_NUMBER_6);
         out.writeLong(((FastNumber6) this.value).value);
         break;
 
       case TYPE_FAST_NUMBER_VALUE_6:
-        out.writeByte(TYPE_FAST_NUMBER_VALUE_6);
         out.writeLong(((FastNumberValue6) this.value).value);
         break;
 
       case TYPE_FRACTION_MONEY:
-        out.writeByte(TYPE_FRACTION_MONEY);
         out.writeLong(((FractionMoney) this.value).numerator);
         out.writeLong(((FractionMoney) this.value).denominator);
+        out.writeObject(((FractionMoney) this.value).currency);
         break;
 
       case TYPE_FRACTION:
-        out.writeByte(TYPE_FRACTION);
         out.writeLong(((Fraction) this.value).numerator);
         out.writeLong(((Fraction) this.value).denominator);
         break;
 
       case TYPE_FRACTION_VALUE:
-        out.writeByte(TYPE_FRACTION_VALUE);
         out.writeLong(((FractionValue) this.value).numerator);
         out.writeLong(((FractionValue) this.value).denominator);
         break;
