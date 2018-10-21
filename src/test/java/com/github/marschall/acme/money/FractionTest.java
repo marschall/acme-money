@@ -1,6 +1,10 @@
 package com.github.marschall.acme.money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.junit.jupiter.api.Test;
 
@@ -9,10 +13,25 @@ class FractionTest {
   @Test
   void testEquals() {
     assertEquals(Fraction.of(1, 2), Fraction.of(1, 2));
+    assertNotEquals(Fraction.of(-1, 2), Fraction.of(1, 2));
+    assertNotEquals(Fraction.of(1, 2), null);
+    assertNotEquals(Fraction.of(1, 2), new FractionValue(1, 2));
+    assertNotEquals(Fraction.of(1, 2), BigDecimal.valueOf(5, 1));
   }
 
   @Test
-  void normalizatin() {
+  void serialize() throws ClassNotFoundException, IOException {
+    Fraction fraction = Fraction.of(1, 2);
+    assertEquals(fraction, SerializationUtil.serializeCopy(fraction));
+  }
+
+  @Test
+  void testToString() {
+    assertEquals("1/2", Fraction.of(1, 2).toString());
+  }
+
+  @Test
+  void normalization() {
     Fraction f = Fraction.of(-1, -2);
     assertEquals(1L, f.getNumerator());
     assertEquals(2L, f.getDenominator());

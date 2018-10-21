@@ -74,10 +74,7 @@ public final class Fraction extends Number implements Comparable<Fraction> {
 
   @Override
   public int hashCode() {
-    int result = 17;
-    result = (31 * result) + Long.hashCode(this.numerator);
-    result = (31 * result) + Long.hashCode(this.denominator);
-    return result;
+    return FractionMath.hashCode(this.numerator, this.denominator);
   }
 
   @Override
@@ -115,7 +112,7 @@ public final class Fraction extends Number implements Comparable<Fraction> {
 
   @Override
   public String toString() {
-    return "" + this.numerator + '/' + this.denominator;
+    return FractionMath.toString(this.numerator, this.denominator);
   }
 
   private Object writeReplace() throws ObjectStreamException {

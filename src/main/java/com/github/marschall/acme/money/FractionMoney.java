@@ -32,7 +32,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
       .setProviderName(AcmeMoneyConstants.PROVIDER_NAME)
       .build();
 
-  private final CurrencyUnit currency;
+  final CurrencyUnit currency;
 
   final long numerator;
   final long denominator;
