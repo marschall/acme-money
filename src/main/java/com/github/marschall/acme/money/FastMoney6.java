@@ -487,10 +487,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     return DecimalMath.bigDecimal(this.value);
   }
 
-  private double getDouble() {
-    return DecimalMath.doubleValue(this.value);
-  }
-
   @Override
   public FastMoney6 multiply(double multiplicand) {
     if (multiplicand == 1.0) {
