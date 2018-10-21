@@ -243,6 +243,21 @@ class FastMoney6Test {
   }
 
   @Test
+  void add() {
+    FastMoney6 original = FastMoney6.of(new BigDecimal("3.3"), CHF);
+    FastMoney6 sum = original.add(FastMoney6.of(new BigDecimal("5.5"), CHF));
+    assertThat(sum.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("8.8")));
+  }
+
+  @Test
+  void subtract() {
+    FastMoney6 minuend = FastMoney6.of(new BigDecimal("8.8"), CHF);
+    FastMoney6 subtrahend = FastMoney6.of(new BigDecimal("5.5"), CHF);
+    FastMoney6 difference = minuend.subtract(subtrahend);
+    assertThat(difference.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("3.3")));
+  }
+
+  @Test
   void divideToIntegralValue() {
     FastMoney6 original = FastMoney6.of(new BigDecimal("8.4"), "EUR");
     FastMoney6 divided = original.divideToIntegralValue(2L);

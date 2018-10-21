@@ -17,6 +17,12 @@ import org.openjdk.jmh.annotations.State;
 
 import com.github.marschall.acme.money.FastMoney6;
 
+/**
+ * Micro benchmarks for various money operations.
+ *
+ * <p>
+ * Adapted from org.javamoney.moneta.PerformanceTest
+ */
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Benchmark)

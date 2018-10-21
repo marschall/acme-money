@@ -92,6 +92,15 @@ final class ConvertToFastLong6 {
 
   }
 
+  static final class ConvertFastNumberValue6 implements FastLong6Converter {
+
+    @Override
+    public long convert(Number number) {
+      return ((FastNumberValue6) number).value;
+    }
+
+  }
+
   static final class ConvertFraction implements FastLong6Converter {
 
     @Override
@@ -124,6 +133,7 @@ final class ConvertToFastLong6 {
   static {
     CONVERTER_MAP = new HashMap<>(16);
     CONVERTER_MAP.put(FastNumber6.class, new ConvertFastNumber6());
+    CONVERTER_MAP.put(FastNumberValue6.class, new ConvertFastNumberValue6());
     CONVERTER_MAP.put(BigInteger.class, new ConvertBigInteger());
     CONVERTER_MAP.put(BigDecimal.class, new ConvertBigDecimal());
     CONVERTER_MAP.put(Float.class, new ConvertDouble());
