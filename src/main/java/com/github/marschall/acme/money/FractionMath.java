@@ -2,8 +2,6 @@ package com.github.marschall.acme.money;
 
 import static java.lang.Math.abs;
 
-import java.math.BigDecimal;
-
 final class FractionMath {
 
   private FractionMath() {
@@ -30,7 +28,7 @@ final class FractionMath {
     long k = abs(initialK);
     long m = abs(initialM);
     while (k != m) {
-      if (k == 1 || m == 1) {
+      if ((k == 1) || (m == 1)) {
         return 1;
       }
 

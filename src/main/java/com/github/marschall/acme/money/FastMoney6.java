@@ -30,8 +30,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   private static final long serialVersionUID = 2L;
 
-  private static final String PROVIDER_NAME = "acme";
-
   /**
    * The currency of this amount.
    */
@@ -57,7 +55,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
           .setMaxScale(SCALE)
           .setFixedScale(true)
           .setPrecision(19)
-          .setProviderName(PROVIDER_NAME)
+          .setProviderName(AcmeMoneyConstants.PROVIDER_NAME)
           .build();
 
   /**

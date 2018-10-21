@@ -29,6 +29,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   static final MonetaryContext MONETARY_CONTEXT =
       MonetaryContextBuilder.of(FractionMoney.class)
       .setFixedScale(false)
+      .setProviderName(AcmeMoneyConstants.PROVIDER_NAME)
       .build();
 
   private final CurrencyUnit currency;
