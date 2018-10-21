@@ -571,7 +571,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if ((divisor == 0.0d) || (divisor == -0.0d)) {
       throw new ArithmeticException("division by zero");
     }
-    // TODO NaN infinity
     if (Double.isNaN(divisor)|| Double.isInfinite(divisor)) {
         throw new IllegalArgumentException();
     }
