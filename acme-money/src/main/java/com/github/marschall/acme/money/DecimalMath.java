@@ -51,21 +51,51 @@ final class DecimalMath {
     return result;
   }
 
-  private static int log10if(int i) {
-    return (i >= 1000000000) ? 9
-            : (i >= 100000000) ? 8
-                    : (i >= 10000000) ? 7
-                            : (i >= 1000000) ? 6
-                                    : (i >= 100000) ? 5
-                                            : (i >= 10000) ? 4
-                                                    : (i >= 1000) ? 3
-                                                            : (i >= 100) ? 2
-                                                                    : (i >= 10)
-                                                                            ? 1
-                                                                            : 0;
+  static int log10if(int i) {
+    if (i >= 100_000) {
+      // 5 or more
+      if (i >= 10_000_000) {
+        // 7 or more
+        if (i >= 1_000_000_000) {
+          return 9;
+        } else if (i >= 100_000_000) {
+          return 8;
+        } else {
+          return 7;
+        }
+      } else {
+        // 5 or 6
+        if (i >= 1_000_000) {
+          return 6;
+        } else {
+          return 5;
+        }
+      }
+    } else {
+      // 4 or less
+      if (i >= 100) {
+        // 3 or 4
+        if (i >= 1_000) {
+          return 4;
+        } else {
+          return 3;
+        }
+      } else {
+        // 0 or 1
+        if (i >= 10) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    }
   }
 
-  private static int log10loop(int i) {
+  static int log10double(int i) {
+    return (int) Math.log10(i);
+  }
+
+  static int log10loop(int i) {
     return 0;
   }
 
