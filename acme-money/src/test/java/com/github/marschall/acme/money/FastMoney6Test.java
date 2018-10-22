@@ -281,6 +281,24 @@ class FastMoney6Test {
   }
 
   @Test
+  void multiplyGreaterScale() {
+    BigDecimal multiplier = new BigDecimal("10000000");
+    BigDecimal multiplicand = new BigDecimal("0.0000001");
+    assertThat(multiplier.multiply(multiplicand), comparesEqualTo(BigDecimal.ONE));
+    FastMoney6 money = FastMoney6.of(multiplier, CHF);
+    assertEquals(1, money.multiply(multiplicand).getNumber().intValueExact());
+  }
+
+  @Test
+  void divideGreaterScale() {
+    BigDecimal dividend = BigDecimal.ONE;
+    BigDecimal divisor = new BigDecimal("0.0000001");
+    assertThat(dividend.divide(divisor), comparesEqualTo(new BigDecimal("10000000")));
+    FastMoney6 money = FastMoney6.of(dividend, CHF);
+    assertThat(money.divide(divisor).getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("10000000")));
+  }
+
+  @Test
   void divideDouble() {
     FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(1, 6), CHF);
     assertEquals(1d, money.divide(0.000001d).getNumber().doubleValue(), 0.000001d);
