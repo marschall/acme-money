@@ -8,22 +8,17 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.money.NumberValue;
+final class NumberComparisons {
 
-final class ConvertToFastLong6 {
-
-  static long convert(Number number) {
+  static boolean isOne(Number number) {
     Objects.requireNonNull(number, "number");
-    FastLong6Converter converter = getConverter(number.getClass());
-    return converter.convert(number);
+    NumberChecker converter = getConverter(number.getClass());
+    return converter.isOne(number);
   }
 
-  private static FastLong6Converter getConverter(Class<?> numberType) {
-    FastLong6Converter converter = CONVERTER_MAP.get(numberType);
+  private static NumberChecker getConverter(Class<?> numberType) {
+    NumberChecker converter = CONVERTER_MAP.get(numberType);
     if (converter == null) {
-      if (NumberValue.class.isAssignableFrom(numberType)) {
-        return ConvertNumberValue.INSTANCE;
-      }
       throw new IllegalArgumentException("Unsupported numeric type: " + numberType);
     }
     return converter;
@@ -57,94 +52,82 @@ final class ConvertToFastLong6 {
     return new ArithmeticException("Overflow: " + number + " < " + FastMoney6.MIN_BD);
   }
 
-  interface FastLong6Converter {
+  interface NumberChecker {
 
-    long convert(Number number);
+    boolean isOne(Number number);
 
   }
 
-  static final class ConvertDouble implements FastLong6Converter {
+  static final class ConvertDouble implements NumberChecker {
 
     @Override
-    public long convert(Number number) {
-      double doubleValue = number.doubleValue() * FastMoney6.DIVISOR;
-      if (doubleValue > FastMoney6.MAX_DOUBLE) {
-        throw valueTooLarge(number);
-      }
-      if (doubleValue < FastMoney6.MIN_DOUBLE) {
-        throw valueTooSmall(number);
-      }
-      return Math.round(doubleValue);
+    public boolean isOne(Number number) {
+      return number.doubleValue() == 1.0d;
     }
 
   }
 
-  static final class ConvertLong implements FastLong6Converter {
+  static final class ConvertLong implements NumberChecker {
 
     @Override
-    public long convert(Number number) {
-      return Math.multiplyExact(number.longValue(), FastMoney6.DIVISOR);
+    public boolean isOne(Number number) {
+      return number.longValue() == 1L;
     }
 
   }
 
-  static final class ConvertFastNumber6 implements FastLong6Converter {
+  static final class ConvertFastNumber6 implements NumberChecker {
+
+    private static final long ONE = DecimalMath.pow10(1, FastMoney6.SCALE);
 
     @Override
-    public long convert(Number number) {
-      return ((FastNumber6) number).value;
+    public boolean isOne(Number number) {
+      return ((FastNumber6) number).value == ONE;
     }
 
   }
 
-  static final class ConvertFastNumberValue6 implements FastLong6Converter {
+  static final class ConvertFastNumberValue6 implements NumberChecker {
+
+    private static final long ONE = DecimalMath.pow10(1, FastMoney6.SCALE);
 
     @Override
-    public long convert(Number number) {
-      return ((FastNumberValue6) number).value;
+    public boolean isOne(Number number) {
+      return ((FastNumberValue6) number).value == ONE;
     }
 
   }
 
-  static final class ConvertFraction implements FastLong6Converter {
+  static final class ConvertFraction implements NumberChecker {
+
+    private static final Fraction ONE = Fraction.of(1L, 1L);
 
     @Override
-    public long convert(Number number) {
-      return ((Fraction) number).fastNumberValue6();
+    public boolean isOne(Number number) {
+      return number.equals(ONE);
     }
 
   }
 
-  static final class ConvertBigDecimal implements FastLong6Converter {
+  static final class ConvertBigDecimal implements NumberChecker {
 
     @Override
-    public long convert(Number number) {
-      return fromBigDecimal((BigDecimal) number);
+    public boolean isOne(Number number) {
+      return ((BigDecimal) number).compareTo(BigDecimal.ONE) == 0;
     }
 
   }
 
-  static final class ConvertBigInteger implements FastLong6Converter {
+  static final class ConvertBigInteger implements NumberChecker {
 
     @Override
-    public long convert(Number number) {
-      return Math.multiplyExact(((BigInteger) number).longValueExact(), FastMoney6.DIVISOR);
+    public boolean isOne(Number number) {
+      return ((BigInteger) number).longValueExact() == 1L;
     }
 
   }
 
-  static final class ConvertNumberValue implements FastLong6Converter {
-
-    static final FastLong6Converter INSTANCE = new ConvertNumberValue();
-
-    @Override
-    public long convert(Number number) {
-      return fromBigDecimal(((NumberValue) number).numberValueExact(BigDecimal.class));
-    }
-
-  }
-
-  private static final Map<Class<? extends Number>, FastLong6Converter> CONVERTER_MAP;
+  private static final Map<Class<? extends Number>, NumberChecker> CONVERTER_MAP;
 
   static {
     CONVERTER_MAP = new HashMap<>(16);

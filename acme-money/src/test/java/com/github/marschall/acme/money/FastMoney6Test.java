@@ -24,9 +24,9 @@ import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
 
-  protected static final CurrencyUnit CHF = Monetary.getCurrency("CHF");
+  private static final CurrencyUnit CHF = Monetary.getCurrency("CHF");
 
-  protected static final CurrencyUnit EUR = Monetary.getCurrency("EUR");
+  private static final CurrencyUnit EUR = Monetary.getCurrency("EUR");
 
   @Test
   void money() {

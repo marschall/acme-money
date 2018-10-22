@@ -132,6 +132,13 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     return MONETARY_CONTEXT;
   }
 
+  private static long getInternalNumber(MonetaryAmount amount) {
+    if (amount instanceof FastMoney6) {
+      return ((FastMoney6) amount).value;
+    }
+    return getInternalNumber(amount.getNumber());
+  }
+
   private static long getInternalNumber(Number number) {
     return ConvertToFastLong6.convert(number);
   }
@@ -185,16 +192,20 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     }
   }
 
-  private int compareAmountTo(MonetaryAmount o) {
-    Objects.requireNonNull(o);
-    CurrencyUnit amountCurrency = o.getCurrency();
+  private int compareAmountTo(MonetaryAmount amount) {
+    this.requireSameCurrency(amount);
+    if (amount instanceof FastMoney6) {
+      return Long.compare(this.value, ((FastMoney6) amount).value);
+    } else {
+      return this.getBigDecimal().compareTo(amount.getNumber().numberValue(BigDecimal.class));
+    }
+  }
+
+  private void requireSameCurrency(MonetaryAmount amount) {
+    Objects.requireNonNull(amount, "amount");
+    CurrencyUnit amountCurrency = amount.getCurrency();
     if (!this.currency.equals(amountCurrency)) {
         throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
-    }
-    if (o instanceof FastMoney6) {
-      return Long.compare(this.value, ((FastMoney6) o).value);
-    } else {
-      return this.getBigDecimal().compareTo(o.getNumber().numberValue(BigDecimal.class));
     }
   }
 
@@ -227,12 +238,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 add(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
+    this.requireSameCurrency(amount);
     if (amount.isZero()) {
       return this;
     }
-    // TODO fast path
-    return new FastMoney6(Math.addExact(this.value, getInternalNumber(amount.getNumber())), this.currency);
+    return new FastMoney6(Math.addExact(this.value, getInternalNumber(amount)), this.currency);
   }
   @Override
   public FastMoney6 divide(Number divisor) {
@@ -287,13 +297,11 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 subtract(MonetaryAmount amount) {
-    this.checkAmountParameter(amount);
+    this.requireSameCurrency(amount);
     if (amount.isZero()) {
       return this;
     }
-    // TODO fast path
-    long subtrahendAsLong = getInternalNumber(amount.getNumber());
-    return new FastMoney6(Math.addExact(this.value, negateExact(subtrahendAsLong)), this.currency);
+    return new FastMoney6(Math.subtractExact(this.value, getInternalNumber(amount)), this.currency);
   }
 
   @Override
@@ -306,15 +314,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   private boolean isOne(Number number) {
-    // TODO
-    BigDecimal bigDecimal = ConvertToBigDecimal.convert(number);
-    try {
-      return (bigDecimal.scale() == 0) && (bigDecimal.longValueExact() == 1L);
-    } catch (ArithmeticException e) {
-      // The only way to end up here is that longValueExact throws an ArithmeticException,
-      // so the amount is definitively not equal to 1.
-      return false;
-    }
+    return NumberComparisons.isOne(number);
   }
 
   @Override
@@ -399,21 +399,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   // Internal helper methods
-
-  private void checkAmountParameter(MonetaryAmount amount) {
-    Objects.requireNonNull(amount, "amount");
-    CurrencyUnit amountCurrency = amount.getCurrency();
-    if (!this.currency.equals(amountCurrency)) {
-        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
-    }
-    // TODO why
-    if (amount.getNumber().getScale() > SCALE) {
-      throw new ArithmeticException("Parameter exceeds maximal scale: " + SCALE);
-    }
-    if (amount.getNumber().getPrecision() > MAX_BD.precision()) {
-      throw new ArithmeticException("Parameter exceeds maximal precision: " + SCALE);
-    }
-  }
 
   /**
    * Internal method to check for correct number parameter.
