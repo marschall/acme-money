@@ -51,7 +51,7 @@ final class FastNumberValue6 extends NumberValue {
     if (rounded == original) {
       return this;
     } else {
-      return new FastNumberValue6(ConvertToFastLong6.fromBigDecimal(rounded));
+      return new FastNumberValue6(FastNumber6Math.fromBigDecimal(rounded));
     }
   }
 

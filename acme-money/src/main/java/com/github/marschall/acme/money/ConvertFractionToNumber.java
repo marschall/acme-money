@@ -225,11 +225,15 @@ final class ConvertFractionToNumber {
 
   static final class ConvertToBigDecimal implements FastNumber6Converter {
 
+    static final FastNumber6Converter INSTANCE = new ConvertToBigDecimal();
+
     @Override
     public BigDecimal convert(long numerator, long denominator) {
       BigDecimal divisor = BigDecimal.valueOf(denominator);
       BigDecimal dividend = BigDecimal.valueOf(numerator);
-      RoundingMode roundingMode = RoundingMode.HALF_EVEN;  //FIXME
+      //FIXME rounding
+      RoundingMode roundingMode = RoundingMode.HALF_EVEN;
+      //FIXME scale
       return dividend.divide(divisor, FastMoney6.SCALE, roundingMode);
     }
 
