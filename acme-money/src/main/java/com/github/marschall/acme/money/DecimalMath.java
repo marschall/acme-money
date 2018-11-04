@@ -51,7 +51,49 @@ final class DecimalMath {
     return result;
   }
 
-  static int log10if(int i) {
+  static int lenghtIf(int i) {
+    if (i >= 100_000) {
+      // 6 or more
+      if (i >= 10_000_000) {
+        // 8 or more
+        if (i >= 1_000_000_000) {
+          return 10;
+        } else if (i >= 100_000_000) {
+          return 9;
+        } else {
+          return 8;
+        }
+      } else {
+        // 6 or 7
+        if (i >= 1_000_000) {
+          return 7;
+        } else {
+          return 6;
+        }
+      }
+    } else {
+      // 5 or less
+      if (i >= 100) {
+        // 3 or 4 or 5
+        if (i >= 10_000) {
+          return 5;
+        } else if (i >= 1_000) {
+          return 4;
+        } else {
+          return 3;
+        }
+      } else {
+        // 1 or 2
+        if (i >= 10) {
+          return 2;
+        } else {
+          return 1;
+        }
+      }
+    }
+  }
+
+  private static int log10If(int i) {
     if (i >= 100_000) {
       // 5 or more
       if (i >= 10_000_000) {
@@ -91,12 +133,15 @@ final class DecimalMath {
     }
   }
 
-  static int log10double(int i) {
-    return (int) Math.log10(i);
-  }
-
-  static int log10loop(int i) {
-    return 0;
+  static int lenghtLoop(int i) {
+    int maxVal = 10;
+    for (int j = 1; j <= 10; j++) {
+      if (i < maxVal) {
+        return j;
+      }
+      maxVal *= 10;
+    }
+    return 10;
   }
 
 }

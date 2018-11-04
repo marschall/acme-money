@@ -1,7 +1,11 @@
 package com.github.marschall.acme.money.benchmark;
 
+import static java.util.concurrent.TimeUnit.MICROSECONDS;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openjdk.jmh.annotations.Mode.Throughput;
+import static org.openjdk.jmh.annotations.Scope.Benchmark;
+
 import java.math.BigDecimal;
-import java.util.concurrent.TimeUnit;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
@@ -9,11 +13,12 @@ import javax.money.Monetary;
 import org.javamoney.moneta.FastMoney;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.marschall.acme.money.FastMoney6;
 
@@ -23,9 +28,12 @@ import com.github.marschall.acme.money.FastMoney6;
  * <p>
  * Adapted from org.javamoney.moneta.PerformanceTest
  */
-@BenchmarkMode(Mode.Throughput)
-@OutputTimeUnit(TimeUnit.MICROSECONDS)
-@State(Scope.Benchmark)
+@Warmup(iterations = 5, time = 1, timeUnit = SECONDS)
+@Measurement(iterations = 5, time = 1, timeUnit = SECONDS)
+@Fork(3)
+@BenchmarkMode(Throughput)
+@OutputTimeUnit(MICROSECONDS)
+@State(Benchmark)
 public class MoneyOperationsBenchmark {
 
   private static final CurrencyUnit EURO = Monetary.getCurrency("EUR");
