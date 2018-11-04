@@ -22,7 +22,7 @@ final class ConvertFastNumber6ToNumber {
     return numberType.cast(converter.convert(numberValue, value6));
   }
 
-  static <T extends Number>  T convertExact(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
+  static <T extends Number> T convertExact(Class<T> numberType, FastNumberValue6 numberValue, long value6) {
     FastNumber6Converter converter = getConverter(numberType);
     return numberType.cast(converter.convertExact(numberValue, value6));
   }
@@ -190,7 +190,7 @@ final class ConvertFastNumber6ToNumber {
 
     @Override
     public BigDecimal convert(FastNumberValue6 numberValue, long value6) {
-      return BigDecimal.valueOf(value6, FastMoney6.SCALE);
+      return DecimalMath.bigDecimal(value6);
     }
 
     @Override
