@@ -106,8 +106,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     Objects.requireNonNull(currency, "currency");
     Objects.requireNonNull(numberValue, "number");
     this.currency = currency;
-    // TODO fast path, less conversion
-    this.value = getInternalNumber(numberValue.numberValue(BigDecimal.class));
+    this.value = getInternalNumber(numberValue);
   }
 
   /**
@@ -137,6 +136,14 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return ((FastMoney6) amount).value;
     }
     return getInternalNumber(amount.getNumber());
+  }
+
+  private static long getInternalNumber(NumberValue numberValue) {
+    if (numberValue instanceof FastNumberValue6) {
+      return ((FastNumberValue6) numberValue).value;
+    }
+    Number number = numberValue.numberValueExact(numberValue.getNumberType().asSubclass(Number.class));
+    return getInternalNumber(number);
   }
 
   private static long getInternalNumber(Number number) {
