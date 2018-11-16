@@ -11,6 +11,7 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 
 import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.Money;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -39,18 +40,24 @@ public class MoneyOperationsBenchmark {
   private static final CurrencyUnit EURO = Monetary.getCurrency("EUR");
   private static final BigDecimal ONE_POINT_FIVE = BigDecimal.valueOf(15, 1);
 
-
+  private Money money1;
   private FastMoney fastMoney1;
   private FastMoney6 acmeMoney1;
 
   @Setup
   public void setup() {
+    this.money1 = Money.of(BigDecimal.ONE, EURO);
     this.fastMoney1 = FastMoney.of(BigDecimal.ONE, EURO);
     this.acmeMoney1 = FastMoney6.of(BigDecimal.ONE, EURO);
   }
 
   @Benchmark
-  public FastMoney createMoneta() {
+  public Money createMoneta() {
+    return Money.of(BigDecimal.ONE, EURO);
+  }
+
+  @Benchmark
+  public FastMoney createMonetaFast() {
     return FastMoney.of(BigDecimal.ONE, EURO);
   }
 
@@ -60,7 +67,12 @@ public class MoneyOperationsBenchmark {
   }
 
   @Benchmark
-  public FastMoney addMoneta() {
+  public Money addMoneta() {
+    return this.money1.add(this.fastMoney1);
+  }
+
+  @Benchmark
+  public FastMoney addMonetaFast() {
     return this.fastMoney1.add(this.fastMoney1);
   }
 
@@ -70,7 +82,12 @@ public class MoneyOperationsBenchmark {
   }
 
   @Benchmark
-  public FastMoney subtractMoneta() {
+  public Money subtractMoneta() {
+    return this.money1.subtract(this.fastMoney1);
+  }
+
+  @Benchmark
+  public FastMoney subtractMonetaFase() {
     return this.fastMoney1.subtract(this.fastMoney1);
   }
 
@@ -80,7 +97,12 @@ public class MoneyOperationsBenchmark {
   }
 
   @Benchmark
-  public FastMoney multiplyMoneta() {
+  public Money multiplyMoneta() {
+    return this.money1.multiply(ONE_POINT_FIVE);
+  }
+
+  @Benchmark
+  public FastMoney multiplyMonetaFast() {
     return this.fastMoney1.multiply(ONE_POINT_FIVE);
   }
 
@@ -90,7 +112,12 @@ public class MoneyOperationsBenchmark {
   }
 
   @Benchmark
-  public FastMoney divideMoneta() {
+  public Money divideMoneta() {
+    return this.money1.divide(ONE_POINT_FIVE);
+  }
+
+  @Benchmark
+  public FastMoney divideMonetaFast() {
     return this.fastMoney1.divide(ONE_POINT_FIVE);
   }
 

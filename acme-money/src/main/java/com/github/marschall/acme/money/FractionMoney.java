@@ -17,6 +17,8 @@ import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.MonetaryContextBuilder;
 import javax.money.MonetaryException;
+import javax.money.MonetaryOperator;
+import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
 
 public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
@@ -64,6 +66,28 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   }
 
   @Override
+  public FractionMoney with(MonetaryOperator operator) {
+    Objects.requireNonNull(operator, "operator");
+    MonetaryAmount result = operator.apply(this);
+    Objects.requireNonNull(result, "result");
+    return FractionMoney.class.cast(result);
+  }
+
+  @Override
+  public <R> R query(MonetaryQuery<R> query) {
+    Objects.requireNonNull(query);
+    return query.queryFrom(this);
+  }
+
+  private void requireSameCurrency(MonetaryAmount amount) {
+    Objects.requireNonNull(amount, "amount");
+    CurrencyUnit amountCurrency = amount.getCurrency();
+    if (!this.currency.equals(amountCurrency)) {
+        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+    }
+  }
+
+  @Override
   public CurrencyUnit getCurrency() {
     return this.currency;
   }
@@ -76,7 +100,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public int compareTo(MonetaryAmount o) {
     Objects.requireNonNull(o);
-    int compare = this.getCurrency().compareTo(o.getCurrency());
+    int compare = this.currency.compareTo(o.getCurrency());
     if (compare != 0) {
       return compare;
     }
@@ -160,6 +184,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount add(MonetaryAmount amount) {
+    this.requireSameCurrency(amount);
     long n;
     long d;
     if (amount instanceof FractionMoney) {
@@ -178,6 +203,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount subtract(MonetaryAmount amount) {
+    this.requireSameCurrency(amount);
     long n;
     long d;
     if (amount instanceof FractionMoney) {

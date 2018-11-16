@@ -153,19 +153,23 @@ class FastMoney6Test {
   @Test
   void ofFraction() {
     FractionMoney fractionMoney = FractionMoney.of(3, 4, CHF);
-
     FastMoney6 fastMoney = FastMoney6.of(fractionMoney.getNumber().numberValueExact(Fraction.class), CHF);
-
     assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(75, 2)));
+
+    fractionMoney = FractionMoney.of(1, 3, CHF);
+    fastMoney = FastMoney6.of(fractionMoney.getNumber().numberValueExact(Fraction.class), CHF);
+    assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("0.333333")));
   }
 
   @Test
   void ofFractionValue() {
     FractionMoney fractionMoney = FractionMoney.of(3, 4, CHF);
-
     FastMoney6 fastMoney = FastMoney6.of(fractionMoney.getNumber(), CHF);
-
     assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(BigDecimal.valueOf(75, 2)));
+
+    fractionMoney = FractionMoney.of(1, 3, CHF);
+    fastMoney = FastMoney6.of(fractionMoney.getNumber(), CHF);
+    assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("0.333333")));
   }
 
   @Test
@@ -320,6 +324,25 @@ class FastMoney6Test {
 
     money = FastMoney6.of(BigDecimal.valueOf(15, 1), CHF);
     assertEquals(0.1d, money.remainder(-0.2d).getNumber().doubleValue(), 0.000001d);
+  }
+
+  @Test
+  public void multiplyNonTerminating() {
+    FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(money.multiply(Fraction.of(1L, 3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
+  }
+
+  @Test
+  public void multiplyRounding() {
+    FastMoney6 money = FastMoney6.of(new BigDecimal("0.000003"), CHF);
+    assertEquals(money.multiply(new BigDecimal("0.5")).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.000001"));
+  }
+
+  @Test
+  public void divideNonTerminating() {
+    FastMoney6 money = FastMoney6.of(1L, CHF);
+    assertEquals(money.divide(BigDecimal.valueOf(3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
+    assertEquals(money.divide(3L).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
   }
 
   @Test

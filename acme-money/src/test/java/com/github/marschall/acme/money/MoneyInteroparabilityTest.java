@@ -2,6 +2,8 @@ package com.github.marschall.acme.money;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 
@@ -14,7 +16,9 @@ import org.junit.jupiter.api.Test;
 
 class MoneyInteroparabilityTest {
 
-  protected static final CurrencyUnit CHF = Monetary.getCurrency("CHF");
+  private static final CurrencyUnit CHF = Monetary.getCurrency("CHF");
+
+  private static final CurrencyUnit EUR = Monetary.getCurrency("EUR");
 
   @Test
   void addFast6() {
@@ -62,6 +66,16 @@ class MoneyInteroparabilityTest {
 
     difference = monetaMoney.subtract(acmeMoney);
     assertThat(difference.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2.2")));
+  }
+
+  @Test
+  void compareToDifferentCurrency() {
+    FastMoney monetaMoney = FastMoney.of(BigDecimal.valueOf(2L), CHF);
+    assertTrue(monetaMoney.compareTo(FastMoney.of(BigDecimal.valueOf(1L), EUR)) < 0);
+//    assertTrue(monetaMoney.isLessThan(FastMoney.of(BigDecimal.valueOf(1L), EUR)));
+
+    FastMoney6 acmeMoney = FastMoney6.of(BigDecimal.valueOf(2L), CHF);
+    assertThat(acmeMoney, lessThan(FastMoney6.of(BigDecimal.valueOf(1L), EUR)));
   }
 
 }

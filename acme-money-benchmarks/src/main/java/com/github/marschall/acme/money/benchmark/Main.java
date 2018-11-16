@@ -11,7 +11,7 @@ public class Main {
 
   public static void main(String[] args) throws RunnerException {
     Options options = new OptionsBuilder()
-            .include("com.github.marschall.acme.money.benchmark.*")
+            .include("com.github.marschall.acme.money.benchmark.MoneyOperationsBenchmark")
             .resultFormat(TEXT)
             .output(args[0])
             .build();
