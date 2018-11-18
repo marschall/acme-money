@@ -67,6 +67,27 @@ class MoneyInteroparabilityTest {
     difference = monetaMoney.subtract(acmeMoney);
     assertThat(difference.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2.2")));
   }
+  
+  @Test
+  void multiply() {
+    FastMoney monetaMoney = FastMoney.of(new BigDecimal("0.00005"), CHF);
+
+    MonetaryAmount monetaProduct = monetaMoney.multiply(new BigDecimal("0.5"));
+    assertThat(monetaProduct.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("0.00002")));
+  }
+  
+  @Test
+  void multiplyLarge() {
+    // TODO report test
+//    FastMoney monetaMoney = FastMoney.of(new BigDecimal("11111111111111.11111"), CHF);
+//    
+//    MonetaryAmount monetaProduct = monetaMoney.multiply(new BigDecimal("2"));
+//    assertThat(monetaProduct.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("22222222222222.22222")));
+    FastMoney monetaMoney = FastMoney.of(new BigDecimal("1111111111.11111"), CHF);
+    
+    MonetaryAmount monetaProduct = monetaMoney.multiply(new BigDecimal("2"));
+    assertThat(monetaProduct.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2222222222.22222")));
+  }
 
   @Test
   void compareToDifferentCurrency() {

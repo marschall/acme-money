@@ -16,10 +16,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
+import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.NumberValue;
 
+import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -334,8 +336,16 @@ class FastMoney6Test {
 
   @Test
   public void multiplyRounding() {
-    FastMoney6 money = FastMoney6.of(new BigDecimal("0.000003"), CHF);
-    assertEquals(money.multiply(new BigDecimal("0.5")).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.000001"));
+    FastMoney6 money = FastMoney6.of(new BigDecimal("0.000005"), CHF);
+    assertEquals(money.multiply(new BigDecimal("0.5")).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.000002"));
+  }
+  
+  @Test
+  void multiplyLarge() {
+    FastMoney6 money = FastMoney6.of(new BigDecimal("1111111111111.111111"), CHF);
+    
+    FastMoney6 product = money.multiply(new BigDecimal("2"));
+    assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2222222222222.222222")));
   }
 
   @Test

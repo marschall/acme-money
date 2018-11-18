@@ -12,7 +12,7 @@ import javax.money.MonetaryOperator;
 import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
 
-public final class DoubleMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
+final class DoubleMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
   private static final long serialVersionUID = 2L;
 
