@@ -28,7 +28,7 @@ public class AcmeFormatProviderSpi implements MonetaryAmountFormatProviderSpi {
 
   @Override
   public Set<String> getAvailableFormatNames() {
-    return Collections.emptySet();
+    return Collections.singleton(FastMoney6AmountFormat.NAME);
   }
 
 }

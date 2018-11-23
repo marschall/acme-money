@@ -7,10 +7,15 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmount;
 import javax.money.format.AmountFormatContext;
+import javax.money.format.AmountFormatContextBuilder;
+import javax.money.format.AmountFormatQuery;
+import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.format.MonetaryParseException;
 
 final class FastMoney6AmountFormat implements MonetaryAmountFormat {
+  
+  static final String NAME = "fast6";
   
   private static final long INTEGER_PART_MULTIPLIER = DecimalMath.pow10(1, FastMoney6.SCALE);
 
@@ -24,9 +29,8 @@ final class FastMoney6AmountFormat implements MonetaryAmountFormat {
 
   @Override
   public AmountFormatContext getContext() {
-    // TODO
-    throw new UnsupportedOperationException(
-        "FastMoney6AmountFormat does not the method suport getAmountFormatContext()");
+    AmountFormatQuery query = AmountFormatQueryBuilder.of(NAME).build();
+    return AmountFormatContextBuilder.create(query).build();
   }
 
   @Override

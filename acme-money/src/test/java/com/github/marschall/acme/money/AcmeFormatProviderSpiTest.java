@@ -1,5 +1,7 @@
 package com.github.marschall.acme.money;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import javax.money.format.AmountFormatQuery;
 import javax.money.format.AmountFormatQueryBuilder;
 import javax.money.format.MonetaryAmountFormat;
@@ -7,17 +9,17 @@ import javax.money.format.MonetaryFormats;
 
 import org.junit.jupiter.api.Test;
 
-class ToStringMonetaryAmountFormatTest {
+class AcmeFormatProviderSpiTest {
 
   @Test
-  void getAmountFormat() {
+  void fast6Format() {
     AmountFormatQuery query = AmountFormatQueryBuilder
-      .of("test")
+      .of(FastMoney6AmountFormat.NAME)
       .setMonetaryAmountFactory(new FastMoney6AmountFactory())
-//      .setMonetaryQuery(null)
       .setProviderName(AcmeMoneyConstants.PROVIDER_NAME)
       .build();
     MonetaryAmountFormat format = MonetaryFormats.getAmountFormat(query);
+    assertNotNull(format);
   }
 
 }
