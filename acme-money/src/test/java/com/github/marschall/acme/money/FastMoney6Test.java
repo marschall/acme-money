@@ -2,11 +2,12 @@ package com.github.marschall.acme.money;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,13 +17,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.money.CurrencyUnit;
 import javax.money.Monetary;
-import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.NumberValue;
 import javax.money.format.MonetaryParseException;
 
-import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -371,6 +370,40 @@ class FastMoney6Test {
     money = FastMoney6.of(BigDecimal.valueOf(15, 1), CHF);
     assertEquals(0.1d, money.remainder(-0.2d).getNumber().doubleValue(), 0.000001d);
   }
+  
+  @Test
+  void remainderNumber() {
+    FastMoney6 money = FastMoney6.of(10L, CHF);
+    FastMoney6 remainder = money.remainder(BigDecimal.valueOf(3L));
+    assertEquals(remainder, FastMoney6.of(1L, CHF));
+  }
+  
+  @Test
+  void isMethods() {
+    FastMoney6 money = FastMoney6.of(0L, CHF);
+    assertTrue(money.isZero());
+    assertFalse(money.isPositive());
+    assertTrue(money.isPositiveOrZero());
+    assertFalse(money.isNegative());
+    assertTrue(money.isNegativeOrZero());
+    assertEquals(0, money.signum());
+    
+    money = FastMoney6.of(1L, CHF);
+    assertFalse(money.isZero());
+    assertTrue(money.isPositive());
+    assertTrue(money.isPositiveOrZero());
+    assertFalse(money.isNegative());
+    assertFalse(money.isNegativeOrZero());
+    assertEquals(1, money.signum());
+    
+    money = FastMoney6.of(-1L, CHF);
+    assertFalse(money.isZero());
+    assertFalse(money.isPositive());
+    assertFalse(money.isPositiveOrZero());
+    assertTrue(money.isNegative());
+    assertTrue(money.isNegativeOrZero());
+    assertEquals(-1, money.signum());
+  }
 
   @Test
   public void multiplyNonTerminating() {
@@ -416,13 +449,20 @@ class FastMoney6Test {
   }
 
   @Test
-  void divideAndRemainderDouble() {
-    fail("implement");
+  void divideAndRemainder() {
+    FastMoney6 money = FastMoney6.of(10L, CHF);
+    FastMoney6[] divideAndRemainder = money.divideAndRemainder(BigDecimal.valueOf(3L));
+    FastMoney6 quotient = divideAndRemainder[0];
+    FastMoney6 remainder = divideAndRemainder[1];
+    assertEquals(quotient, FastMoney6.of(3L, CHF));
+    assertEquals(remainder, FastMoney6.of(1L, CHF));
   }
 
   @Test
   void divideToIntegralValueDouble() {
-    fail("implement");
+    FastMoney6 money = FastMoney6.of(10L, CHF);
+    FastMoney6 quotient = money.divideToIntegralValue(BigDecimal.valueOf(3L));
+    assertEquals(quotient, FastMoney6.of(3L, CHF));
   }
 
   private static void validateContext(MonetaryContext context) {
