@@ -20,6 +20,7 @@ import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
 import javax.money.NumberValue;
+import javax.money.format.MonetaryParseException;
 
 import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
@@ -38,9 +39,9 @@ class FastMoney6Test {
   @Test
   void monetary() {
     FastMoney6 money = Monetary.getAmountFactory(FastMoney6.class)
-      .setCurrency(CHF)
-      .setNumber(new BigDecimal("-1.23"))
-      .create();
+        .setCurrency(CHF)
+        .setNumber(new BigDecimal("-1.23"))
+        .create();
 
     assertEquals(CHF.getCurrencyCode(), money.getCurrency().getCurrencyCode());
     assertThat(money.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("-1.23")));
@@ -172,6 +173,39 @@ class FastMoney6Test {
     fractionMoney = FractionMoney.of(1, 3, CHF);
     fastMoney = FastMoney6.of(fractionMoney.getNumber(), CHF);
     assertThat(fastMoney.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("0.333333")));
+  }
+
+  @Test
+  void parse() {
+    FastMoney6 fastMoney = FastMoney6.parse("CHF 1");
+    assertEquals(FastMoney6.of(Integer.valueOf(1), Monetary.getCurrency("CHF")), fastMoney);
+    
+    fastMoney = FastMoney6.parse("CHF 1.0");
+    assertEquals(FastMoney6.of(Integer.valueOf(1), Monetary.getCurrency("CHF")), fastMoney);
+
+    fastMoney = FastMoney6.parse("CHF -1");
+    assertEquals(FastMoney6.of(Integer.valueOf(-1), Monetary.getCurrency("CHF")), fastMoney);
+
+    fastMoney = FastMoney6.parse("CHF -1.123456");
+    assertEquals(FastMoney6.of(new BigDecimal("-1.123456"), Monetary.getCurrency("CHF")), fastMoney);
+
+    fastMoney = FastMoney6.parse("CHF 1.123456");
+    assertEquals(FastMoney6.of(new BigDecimal("1.123456"), Monetary.getCurrency("CHF")), fastMoney);
+    
+    fastMoney = FastMoney6.parse("CHF 1.123");
+    assertEquals(FastMoney6.of(new BigDecimal("1.123"), Monetary.getCurrency("CHF")), fastMoney);
+  }
+  
+  @Test
+  void parseError() {
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF"));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF "));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF a"));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF 1."));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF 1.a"));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF 1.1234567"));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF 1.1234567"));
+    assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF 12345678901234"));
   }
 
   @Test
@@ -339,11 +373,11 @@ class FastMoney6Test {
     FastMoney6 money = FastMoney6.of(new BigDecimal("0.000005"), CHF);
     assertEquals(money.multiply(new BigDecimal("0.5")).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.000002"));
   }
-  
+
   @Test
   void multiplyLarge() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("1111111111111.111111"), CHF);
-    
+
     FastMoney6 product = money.multiply(new BigDecimal("2"));
     assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2222222222222.222222")));
   }

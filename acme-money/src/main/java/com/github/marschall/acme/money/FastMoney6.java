@@ -21,8 +21,6 @@ import javax.money.NumberValue;
 import javax.money.UnknownCurrencyException;
 import javax.money.format.MonetaryAmountFormat;
 
-import com.github.marschall.acme.money.ToStringMonetaryAmountFormat.ToStringMonetaryAmountFormatStyle;
-
 /**
  * Like FastMoney but has 6 decimal places and does not silently overflow.
  */
@@ -39,6 +37,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
    * The numeric part of this amount.
    */
   final long value;
+  
+  static final int PRECISION = 19;
 
   /**
    * The current scale represented by the number.
@@ -54,7 +54,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
           MonetaryContextBuilder.of(FastMoney6.class)
           .setMaxScale(SCALE)
           .setFixedScale(true)
-          .setPrecision(19)
+          .setPrecision(PRECISION)
           .setProviderName(AcmeMoneyConstants.PROVIDER_NAME)
           .build();
 
@@ -453,16 +453,16 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   /**
-   * Obtains an instance of FastMoney from a text string such as 'EUR 25.25'.
+   * Obtains an instance of {@link FastMoney6} from a text string such as 'EUR 25.25'.
    *
    * @param text the text to parse not null
    * @return FastMoney instance
    * @throws NullPointerException
-   * @throws NumberFormatException
+   * @throws MonetaryParseException
    * @throws UnknownCurrencyException
    */
   public static FastMoney6 parse(CharSequence text) {
-    return parse(text, DEFAULT_FORMATTER);
+    return parse(text, FastMoney6AmountFormat.INSTANCE);
   }
 
   /**
@@ -475,9 +475,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   public static FastMoney6 parse(CharSequence text, MonetaryAmountFormat formatter) {
     return from(formatter.parse(text));
   }
-
-  private static ToStringMonetaryAmountFormat DEFAULT_FORMATTER = ToStringMonetaryAmountFormat
-      .of(ToStringMonetaryAmountFormatStyle.FAST_MONEY_6);
 
   private BigDecimal getBigDecimal() {
     return DecimalMath.bigDecimal(this.value);

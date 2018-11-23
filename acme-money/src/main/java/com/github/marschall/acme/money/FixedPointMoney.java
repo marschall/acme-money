@@ -20,5 +20,7 @@ abstract class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmo
   /* final */ BigDecimal number;
   
   private /* final */ MathContext mathContext;
+  
+  private /* final */ int scale;
 
 }
