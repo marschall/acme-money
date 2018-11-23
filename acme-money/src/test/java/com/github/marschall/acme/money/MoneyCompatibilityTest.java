@@ -62,7 +62,7 @@ class MoneyCompatibilityTest {
     FastMoney expected = FastMoney.of(multiplier.multiply(multiplicand), "EUR");
 
     FastMoney tenCent = FastMoney.of(multiplicand, "EUR");
-    assertEquals(expected, tenCent.multiply(multiplicand));
+    assertEquals(expected, tenCent.multiply(multiplier));
   }
 
   @Test

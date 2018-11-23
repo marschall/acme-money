@@ -101,10 +101,11 @@ public final class Fraction extends Number implements Comparable<Fraction> {
     if (this.denominator == base) {
       return denominator;
     }
-    boolean divisible = base % denominator == 0;
-    if (!divisible) {
-      throw new ArithmeticException("not terminating expression");
-    }
+    // we want to round here
+//    boolean divisible = base % denominator == 0;
+//    if (!divisible) {
+//      throw new ArithmeticException("not terminating expression");
+//    }
     // 1/2 -> 50_000/100_000
     return Math.multiplyExact(this.numerator, base / denominator);
     

@@ -296,6 +296,16 @@ class FastMoney6Test {
     FastMoney6 difference = minuend.subtract(subtrahend);
     assertThat(difference.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("3.3")));
   }
+  
+  @Test
+  void testDivideNumberAvoidsDouble() {
+    BigDecimal baseValue = new BigDecimal("1000000");
+    BigDecimal divisor = new BigDecimal("0.000001");
+
+    FastMoney6 money = FastMoney6.of(baseValue, CHF);
+    BigDecimal expectedValue = baseValue.divide(divisor);
+    assertEquals(FastMoney6.of(expectedValue, CHF), money.divide(divisor));
+  }
 
   @Test
   void divideToIntegralValue() {
@@ -380,6 +390,22 @@ class FastMoney6Test {
 
     FastMoney6 product = money.multiply(new BigDecimal("2"));
     assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2222222222222.222222")));
+  }
+  
+  @Test
+  void multiplyMultiplier() {
+    FastMoney6 money = FastMoney6.of(new BigDecimal("0.000001"), CHF);
+    
+    FastMoney6 product = money.multiply(new BigInteger("1000000000000000000"));
+    assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("1000000000000")));
+  }
+  
+  @Test
+  void multiplyLongMaxValue() {
+    FastMoney6 money = FastMoney6.of(new BigDecimal("0.000001"), CHF);
+    
+    FastMoney6 product = money.multiply(BigDecimal.valueOf(Long.MAX_VALUE));
+    assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("9223372036854.775807")));
   }
 
   @Test

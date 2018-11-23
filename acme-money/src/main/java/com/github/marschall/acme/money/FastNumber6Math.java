@@ -32,6 +32,8 @@ final class FastNumber6Math {
 
     boolean isOne(Number number);
 
+    long multiply(long fastNumber6, Number number);
+
     long convertToNumber6(Number number);
 
     BigDecimal convertToBigDecimal(Number number);
@@ -70,12 +72,25 @@ final class FastNumber6Math {
 
     @Override
     public long convertToNumber6(Number number) {
-      double doubleValue = number.doubleValue() * FastMoney6.DIVISOR;
+      double original = number.doubleValue();
+      double doubleValue = original * FastMoney6.DIVISOR;
+      return fromDouble(doubleValue, original);
+    }
+    
+    @Override
+    public long multiply(long fastNumber6, Number number) {
+      double base = DecimalMath.doubleValue(fastNumber6);
+      double multiplier = number.doubleValue();
+      double product = base * multiplier;
+      return fromDouble(product, product);
+    }
+
+    private static long fromDouble(double doubleValue, double original) {
       if (doubleValue > FastMoney6.MAX_DOUBLE) {
-        throw valueTooLarge(number);
+        throw valueTooLarge(original);
       }
       if (doubleValue < FastMoney6.MIN_DOUBLE) {
-        throw valueTooSmall(number);
+        throw valueTooSmall(original);
       }
       return Math.round(doubleValue);
     }
@@ -105,6 +120,11 @@ final class FastNumber6Math {
     }
 
     @Override
+    public long multiply(long fastNumber6, Number number) {
+      return Math.multiplyExact(fastNumber6, number.longValue());
+    }
+
+    @Override
     public BigDecimal convertToBigDecimal(Number number) {
       return BigDecimal.valueOf(number.longValue());
     }
@@ -123,6 +143,11 @@ final class FastNumber6Math {
     @Override
     public boolean isOne(Number number) {
       return ((FastNumber6) number).value == ONE;
+    }
+
+    @Override
+    public long multiply(long fastNumber6, Number number) {
+      return Math.multiplyExact(fastNumber6, ((FastNumber6) number).value);
     }
 
     @Override
@@ -147,6 +172,11 @@ final class FastNumber6Math {
     }
 
     @Override
+    public long multiply(long fastNumber6, Number number) {
+      return Math.multiplyExact(fastNumber6, ((FastNumberValue6) number).value);
+    }
+
+    @Override
     public BigDecimal convertToBigDecimal(Number number) {
       return DecimalMath.bigDecimal(((FastNumberValue6) number).value);
     }
@@ -165,6 +195,16 @@ final class FastNumber6Math {
     @Override
     public boolean isOne(Number number) {
       return number.equals(ONE);
+    }
+    
+    @Override
+    public long multiply(long fastNumber6, Number number) {
+      Fraction fraction = (Fraction) number;
+      long numerator = Math.multiplyExact(fraction.numerator, fastNumber6);
+      long denominator = Math.multiplyExact(fraction.denominator, FastMoney6.DIVISOR);
+      FastNumber6Converter converter = ConvertFractionToNumber.ConvertToBigDecimal.INSTANCE;
+      BigDecimal bigDecimal = (BigDecimal) converter.convert(numerator, denominator);
+      return fromBigDecimal(bigDecimal);
     }
 
     @Override
@@ -189,6 +229,17 @@ final class FastNumber6Math {
     }
 
     @Override
+    public long multiply(long fastNumber6, Number number) {
+      BigDecimal bigDecimal = (BigDecimal) number;
+      try {
+        long fastBigDecimal6 = fromBigDecimal(bigDecimal);
+        return Math.multiplyExact(fastNumber6, fastBigDecimal6) / FastMoney6.DIVISOR;
+      } catch (ArithmeticException e) {
+        return fromBigDecimal(bigDecimal.multiply(DecimalMath.bigDecimal(fastNumber6)));
+      }
+    }
+
+    @Override
     public BigDecimal convertToBigDecimal(Number number) {
       return (BigDecimal) number;
     }
@@ -210,6 +261,19 @@ final class FastNumber6Math {
     }
 
     @Override
+    public long multiply(long fastNumber6, Number number) {
+      BigInteger bigInteger = (BigInteger) number;
+      long longValue;
+      try {
+        longValue = bigInteger.longValueExact();
+      } catch (ArithmeticException e) {
+        BigInteger product = bigInteger.multiply(BigInteger.valueOf(fastNumber6));
+        return fromBigDecimal(new BigDecimal(product, FastMoney6.SCALE));
+      }
+      return Math.multiplyExact(fastNumber6, longValue);
+    }
+
+    @Override
     public BigDecimal convertToBigDecimal(Number number) {
       return new BigDecimal((BigInteger) number);
     }
@@ -222,16 +286,25 @@ final class FastNumber6Math {
 
     @Override
     public long convertToNumber6(Number number) {
-      return fromBigDecimal(((NumberValue) number).numberValueExact(BigDecimal.class));
+      return fromBigDecimal(asBigDecimal(number));
     }
 
     @Override
     public boolean isOne(Number number) {
-      return ((NumberValue) number).intValueExact() == 1;
+      return asBigDecimal(number).compareTo(BigDecimal.ONE) == 0;
+    }
+
+    @Override
+    public long multiply(long fastNumber6, Number number) {
+      return fromBigDecimal(asBigDecimal(number).multiply(BigDecimal.valueOf(fastNumber6)));
     }
 
     @Override
     public BigDecimal convertToBigDecimal(Number number) {
+      return asBigDecimal(number);
+    }
+
+    private static BigDecimal asBigDecimal(Number number) {
       return ((NumberValue) number).numberValueExact(BigDecimal.class);
     }
 

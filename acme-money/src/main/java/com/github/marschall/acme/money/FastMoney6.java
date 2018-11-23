@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 import javax.money.CurrencyUnit;
@@ -21,10 +22,14 @@ import javax.money.NumberValue;
 import javax.money.UnknownCurrencyException;
 import javax.money.format.MonetaryAmountFormat;
 
+import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
+
 /**
  * Like FastMoney but has 6 decimal places and does not silently overflow.
  */
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
+
+  private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
   private static final long serialVersionUID = 2L;
 
@@ -251,19 +256,20 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     }
     return new FastMoney6(Math.addExact(this.value, getInternalNumber(amount)), this.currency);
   }
+  
   @Override
   public FastMoney6 divide(Number divisor) {
-    this.checkNumber(divisor);
+    Objects.requireNonNull(divisor, "divisor");
     if (isOne(divisor)) {
       return this;
     }
     BigDecimal bigDecimalDivisor = convertToBigDecimal(divisor);
-    return new FastMoney6(this.getBigDecimal().divide(bigDecimalDivisor), this.currency);
+    return new FastMoney6(this.getBigDecimal().divide(bigDecimalDivisor, SCALE, ROUNDING_MODE), this.currency);
   }
 
   @Override
   public FastMoney6[] divideAndRemainder(Number divisor) {
-    this.checkNumber(divisor);
+    Objects.requireNonNull(divisor, "divisor");
     if (isOne(divisor)) {
       return new FastMoney6[]{this, FastMoney6.of(0, this.currency)};
     }
@@ -274,7 +280,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 divideToIntegralValue(Number divisor) {
-    this.checkNumber(divisor);
+    Objects.requireNonNull(divisor, "divisor");
     if (isOne(divisor)) {
       return this;
     }
@@ -284,12 +290,13 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 multiply(Number multiplicand) {
-    this.checkNumber(multiplicand);
-    if (isOne(multiplicand)) {
+    Objects.requireNonNull(multiplicand, "multiplicand");
+    long product = getAccessor(multiplicand).multiply(this.value, multiplicand);
+    if (product == this.value) {
       return this;
+    } else {
+      return new FastMoney6(product, this.currency);
     }
-    // FIXME
-    return new FastMoney6(Math.round(this.value * multiplicand.doubleValue()), this.currency);
   }
 
   @Override
@@ -313,19 +320,23 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 remainder(Number divisor) {
-    this.checkNumber(divisor);
+    Objects.requireNonNull(divisor, "divisor");
     if (isOne(divisor)) {
       return new FastMoney6(0L, this.currency);
     }
     return new FastMoney6(this.value % getInternalNumber(divisor), this.currency);
   }
+  
+  private static NumberAccessor getAccessor(Number number) {
+    return FastNumber6Math.getAccessor(number.getClass());
+  }
 
   private static boolean isOne(Number number) {
-    return FastNumber6Math.getAccessor(number.getClass()).isOne(number);
+    return getAccessor(number).isOne(number);
   }
 
   private static BigDecimal convertToBigDecimal(Number number) {
-    return FastNumber6Math.getAccessor(number.getClass()).convertToBigDecimal(number);
+    return getAccessor(number).convertToBigDecimal(number);
   }
 
   @Override
@@ -410,27 +421,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   }
 
   // Internal helper methods
-
-  /**
-   * Internal method to check for correct number parameter.
-   *
-   * @param number the number to be checked, including null
-   * @throws NullPointerException if the number is null
-   * @throws ArithmeticException  if the number exceeds the capabilities of this class
-   */
-  private void checkNumber(Number number) {
-    // TODO why
-    Objects.requireNonNull(number, "Number is required.");
-    // numeric check for overflow...
-    if (number.longValue() > MAX_BD.longValue()) {
-      throw new ArithmeticException("Value exceeds maximal value: " + MAX_BD);
-    }
-    BigDecimal bigDecimal = convertToBigDecimal(number);
-    if (bigDecimal.precision() > MAX_BD.precision()) {
-      throw new ArithmeticException("Precision exceeds maximal precision: " + MAX_BD.precision());
-    }
-  }
-
   @Override
   public FastMoney6 with(MonetaryOperator operator) {
     Objects.requireNonNull(operator, "operator");
