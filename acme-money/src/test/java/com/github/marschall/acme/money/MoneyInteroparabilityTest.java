@@ -3,6 +3,7 @@ package com.github.marschall.acme.money;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.lessThan;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -30,6 +31,18 @@ class MoneyInteroparabilityTest {
 
     sum = monetaMoney.add(acmeMoney);
     assertThat(sum.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("8.8")));
+  }
+
+  @Test
+  void compareMethods() {
+    FastMoney6 money6 = FastMoney6.of(2L, CHF);
+    FastMoney money = FastMoney.of(3L, CHF);
+
+    assertTrue(money6.isLessThan(money));
+    assertTrue(money6.isLessThanOrEqualTo(money));
+    assertFalse(money6.isEqualTo(money));
+    assertFalse(money6.isGreaterThan(money));
+    assertFalse(money6.isGreaterThanOrEqualTo(money));
   }
 
   @Test
@@ -67,7 +80,7 @@ class MoneyInteroparabilityTest {
     difference = monetaMoney.subtract(acmeMoney);
     assertThat(difference.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2.2")));
   }
-  
+
   @Test
   void multiply() {
     FastMoney monetaMoney = FastMoney.of(new BigDecimal("0.00005"), CHF);
@@ -75,16 +88,11 @@ class MoneyInteroparabilityTest {
     MonetaryAmount monetaProduct = monetaMoney.multiply(new BigDecimal("0.5"));
     assertThat(monetaProduct.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("0.00002")));
   }
-  
+
   @Test
   void multiplyLarge() {
-    // TODO report test
-//    FastMoney monetaMoney = FastMoney.of(new BigDecimal("11111111111111.11111"), CHF);
-//    
-//    MonetaryAmount monetaProduct = monetaMoney.multiply(new BigDecimal("2"));
-//    assertThat(monetaProduct.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("22222222222222.22222")));
     FastMoney monetaMoney = FastMoney.of(new BigDecimal("1111111111.11111"), CHF);
-    
+
     MonetaryAmount monetaProduct = monetaMoney.multiply(new BigDecimal("2"));
     assertThat(monetaProduct.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2222222222.22222")));
   }
@@ -93,7 +101,7 @@ class MoneyInteroparabilityTest {
   void compareToDifferentCurrency() {
     FastMoney monetaMoney = FastMoney.of(BigDecimal.valueOf(2L), CHF);
     assertTrue(monetaMoney.compareTo(FastMoney.of(BigDecimal.valueOf(1L), EUR)) < 0);
-//    assertTrue(monetaMoney.isLessThan(FastMoney.of(BigDecimal.valueOf(1L), EUR)));
+    //    assertTrue(monetaMoney.isLessThan(FastMoney.of(BigDecimal.valueOf(1L), EUR)));
 
     FastMoney6 acmeMoney = FastMoney6.of(BigDecimal.valueOf(2L), CHF);
     assertThat(acmeMoney, lessThan(FastMoney6.of(BigDecimal.valueOf(1L), EUR)));

@@ -19,9 +19,11 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
+import javax.money.MonetaryException;
 import javax.money.NumberValue;
 import javax.money.format.MonetaryParseException;
 
+import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -178,7 +180,7 @@ class FastMoney6Test {
   void parse() {
     FastMoney6 fastMoney = FastMoney6.parse("CHF 1");
     assertEquals(FastMoney6.of(Integer.valueOf(1), Monetary.getCurrency("CHF")), fastMoney);
-    
+
     fastMoney = FastMoney6.parse("CHF 1.0");
     assertEquals(FastMoney6.of(Integer.valueOf(1), Monetary.getCurrency("CHF")), fastMoney);
 
@@ -190,11 +192,11 @@ class FastMoney6Test {
 
     fastMoney = FastMoney6.parse("CHF 1.123456");
     assertEquals(FastMoney6.of(new BigDecimal("1.123456"), Monetary.getCurrency("CHF")), fastMoney);
-    
+
     fastMoney = FastMoney6.parse("CHF 1.123");
     assertEquals(FastMoney6.of(new BigDecimal("1.123"), Monetary.getCurrency("CHF")), fastMoney);
   }
-  
+
   @Test
   void parseError() {
     assertThrows(MonetaryParseException.class, () -> FastMoney6.parse("CHF"));
@@ -232,6 +234,42 @@ class FastMoney6Test {
 
     money = FastMoney6.of(-1L, CHF);
     assertSame(money, money.plus());
+  }
+  
+  @Test
+  void stripTrailingZeros() {
+    FastMoney6 money = FastMoney6.of(new BigDecimal("1.000000"), CHF);
+    assertSame(money, money.stripTrailingZeros());
+  }
+  
+  @Test
+  void abs() {
+    FastMoney6 money = FastMoney6.of(1L, CHF);
+    assertSame(money, money.abs());
+    
+    money = FastMoney6.of(0L, CHF);
+    assertSame(money, money.abs());
+    
+    money = FastMoney6.of(-1L, CHF);
+    assertEquals(FastMoney6.of(1L, CHF), money.abs());
+    
+    money = FastMoney6.of(FastMoney6.MIN_VALUE, CHF);
+    assertThrows(ArithmeticException.class, money::abs);
+  }
+  
+  @Test
+  void negate() {
+    FastMoney6 money = FastMoney6.of(1L, CHF);
+    assertEquals(FastMoney6.of(-1L, CHF), money.negate());
+    
+    money = FastMoney6.of(0L, CHF);
+    assertSame(money, money.negate());
+    
+    money = FastMoney6.of(-1L, CHF);
+    assertEquals(FastMoney6.of(1L, CHF), money.negate());
+    
+    money = FastMoney6.of(FastMoney6.MIN_VALUE, CHF);
+    assertThrows(ArithmeticException.class, money::negate);
   }
 
   @Test
@@ -295,7 +333,7 @@ class FastMoney6Test {
     FastMoney6 difference = minuend.subtract(subtrahend);
     assertThat(difference.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("3.3")));
   }
-  
+
   @Test
   void testDivideNumberAvoidsDouble() {
     BigDecimal baseValue = new BigDecimal("1000000");
@@ -370,14 +408,14 @@ class FastMoney6Test {
     money = FastMoney6.of(BigDecimal.valueOf(15, 1), CHF);
     assertEquals(0.1d, money.remainder(-0.2d).getNumber().doubleValue(), 0.000001d);
   }
-  
+
   @Test
   void remainderNumber() {
     FastMoney6 money = FastMoney6.of(10L, CHF);
     FastMoney6 remainder = money.remainder(BigDecimal.valueOf(3L));
     assertEquals(remainder, FastMoney6.of(1L, CHF));
   }
-  
+
   @Test
   void isMethods() {
     FastMoney6 money = FastMoney6.of(0L, CHF);
@@ -387,7 +425,7 @@ class FastMoney6Test {
     assertFalse(money.isNegative());
     assertTrue(money.isNegativeOrZero());
     assertEquals(0, money.signum());
-    
+
     money = FastMoney6.of(1L, CHF);
     assertFalse(money.isZero());
     assertTrue(money.isPositive());
@@ -395,7 +433,7 @@ class FastMoney6Test {
     assertFalse(money.isNegative());
     assertFalse(money.isNegativeOrZero());
     assertEquals(1, money.signum());
-    
+
     money = FastMoney6.of(-1L, CHF);
     assertFalse(money.isZero());
     assertFalse(money.isPositive());
@@ -403,6 +441,27 @@ class FastMoney6Test {
     assertTrue(money.isNegative());
     assertTrue(money.isNegativeOrZero());
     assertEquals(-1, money.signum());
+  }
+
+  @Test
+  void compareMethods() {
+    FastMoney6 smaller = FastMoney6.of(2L, CHF);
+    FastMoney6 greater = FastMoney6.of(3L, CHF);
+
+    assertTrue(smaller.isLessThan(greater));
+    assertTrue(smaller.isLessThanOrEqualTo(greater));
+    assertFalse(greater.isLessThan(smaller));
+    assertFalse(greater.isLessThanOrEqualTo(smaller));
+
+    assertFalse(smaller.isEqualTo(greater));
+    assertTrue(smaller.isEqualTo(smaller));
+    assertTrue(smaller.isLessThanOrEqualTo(smaller));
+    assertTrue(smaller.isGreaterThanOrEqualTo(smaller));
+
+    assertFalse(smaller.isGreaterThan(greater));
+    assertFalse(smaller.isGreaterThanOrEqualTo(greater));
+    assertTrue(greater.isGreaterThan(smaller));
+    assertTrue(greater.isGreaterThanOrEqualTo(smaller));
   }
 
   @Test
@@ -424,19 +483,19 @@ class FastMoney6Test {
     FastMoney6 product = money.multiply(new BigDecimal("2"));
     assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("2222222222222.222222")));
   }
-  
+
   @Test
   void multiplyMultiplier() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("0.000001"), CHF);
-    
+
     FastMoney6 product = money.multiply(new BigInteger("1000000000000000000"));
     assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("1000000000000")));
   }
-  
+
   @Test
   void multiplyLongMaxValue() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("0.000001"), CHF);
-    
+
     FastMoney6 product = money.multiply(BigDecimal.valueOf(Long.MAX_VALUE));
     assertThat(product.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("9223372036854.775807")));
   }

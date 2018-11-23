@@ -28,6 +28,8 @@ import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
  * Like FastMoney but has 6 decimal places and does not silently overflow.
  */
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
+  
+  // TODO infinity and NaN
 
   private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
@@ -301,6 +303,9 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 negate() {
+    if (this.value == 0L) {
+      return this;
+    }
     return new FastMoney6(negateExact(this.value), this.currency);
   }
 
