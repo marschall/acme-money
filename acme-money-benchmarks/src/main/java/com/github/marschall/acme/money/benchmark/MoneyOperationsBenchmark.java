@@ -22,6 +22,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import com.github.marschall.acme.money.FastMoney6;
+import com.github.marschall.acme.money.FastNumber6;
 
 /**
  * Micro benchmarks for various money operations.
@@ -39,6 +40,7 @@ public class MoneyOperationsBenchmark {
 
   private static final CurrencyUnit EURO = Monetary.getCurrency("EUR");
   private static final BigDecimal ONE_POINT_FIVE = BigDecimal.valueOf(15, 1);
+  private static final FastNumber6 ONE_POINT_FIVE_FAST_NUMBER = FastNumber6.parse("1.5");
 
   private Money money1;
   private FastMoney fastMoney1;
@@ -110,6 +112,11 @@ public class MoneyOperationsBenchmark {
   public FastMoney6 multiplyAcme() {
     return this.acmeMoney1.multiply(ONE_POINT_FIVE);
   }
+  
+  @Benchmark
+  public FastMoney6 multiplyAcmeFastNumber() {
+	  return this.acmeMoney1.multiply(ONE_POINT_FIVE_FAST_NUMBER);
+  }
 
   @Benchmark
   public Money divideMoneta() {
@@ -124,6 +131,11 @@ public class MoneyOperationsBenchmark {
   @Benchmark
   public FastMoney6 divideAcme() {
     return this.acmeMoney1.divide(ONE_POINT_FIVE);
+  }
+  
+  @Benchmark
+  public FastMoney6 divideAcmeFastNumber() {
+	  return this.acmeMoney1.divide(ONE_POINT_FIVE_FAST_NUMBER);
   }
 
 }
