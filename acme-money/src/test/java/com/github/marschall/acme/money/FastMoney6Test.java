@@ -195,6 +195,9 @@ class FastMoney6Test {
 
     fastMoney = FastMoney6.parse("CHF 1.123");
     assertEquals(FastMoney6.of(new BigDecimal("1.123"), Monetary.getCurrency("CHF")), fastMoney);
+    
+    fastMoney = FastMoney6.parse("CHF -9223372036854.775808");
+    assertEquals(FastMoney6.of(new BigDecimal("-9223372036854.775808"), Monetary.getCurrency("CHF")), fastMoney);
   }
 
   @Test
