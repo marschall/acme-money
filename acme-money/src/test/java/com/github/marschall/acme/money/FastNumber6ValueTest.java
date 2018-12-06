@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.comparesEqualTo;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -230,6 +231,13 @@ class FastNumber6ValueTest {
     assertEquals("-0.000001", numberValue(new BigDecimal("-0.000001")).toString());
     assertEquals("1.000000", numberValue(1).toString());
     assertEquals("-1.000000", numberValue(-1).toString());
+  }
+
+  @Test
+  void parse() {
+    String s = "123.456";
+    BigDecimal bigDecimal = new BigDecimal(s);
+    assertThat(FastNumberValue6.parse(s).numberValueExact(BigDecimal.class), comparesEqualTo(bigDecimal));
   }
 
   @Test

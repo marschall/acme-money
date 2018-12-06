@@ -6,7 +6,7 @@ import java.math.MathContext;
 
 import javax.money.NumberValue;
 
-final class FastNumberValue6 extends NumberValue {
+public final class FastNumberValue6 extends NumberValue {
 
   private static final long serialVersionUID = 2L;
 
@@ -14,6 +14,17 @@ final class FastNumberValue6 extends NumberValue {
 
   FastNumberValue6(long value) {
     this.value = value;
+  }
+
+  /**
+   * Obtains an instance of {@link FastNumberValue6} from a text string such as '25.25'.
+   *
+   * @param text the text to parse not null
+   * @return FastNumber6 instance
+   * @throws NullPointerException
+   */
+  public static FastNumberValue6 parse(CharSequence text) {
+    return new FastNumberValue6(FastMoney6AmountFormat.parseFastValue6(text, 0, text.length()));
   }
 
   @Override

@@ -56,7 +56,7 @@ final class FastMoney6AmountFormat implements MonetaryAmountFormat {
     return new FastMoney6(fastValue6, currency);
   }
 
-  private static long parseFastValue6(CharSequence text, int start, int length) {
+  static long parseFastValue6(CharSequence text, int start, int length) {
     if (start + length > text.length()) {
       throw new IllegalArgumentException();
     }

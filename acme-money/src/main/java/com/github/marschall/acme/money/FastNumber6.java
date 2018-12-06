@@ -12,6 +12,17 @@ public final class FastNumber6 extends Number implements Comparable<FastNumber6>
     this.value = value;
   }
 
+  /**
+   * Obtains an instance of {@link FastNumber6} from a text string such as '25.25'.
+   *
+   * @param text the text to parse not null
+   * @return FastNumber6 instance
+   * @throws NullPointerException
+   */
+  public static FastNumber6 parse(CharSequence text) {
+    return new FastNumber6(FastMoney6AmountFormat.parseFastValue6(text, 0, text.length()));
+  }
+
   @Override
   public byte byteValue() {
     return (byte) this.longValue();

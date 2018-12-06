@@ -174,4 +174,11 @@ class FastNumber6Test {
     assertEquals(number, SerializationUtil.serializeCopy(number));
   }
 
+  @Test
+  void parse() {
+    String s = "123.456";
+    BigDecimal bigDecimal = new BigDecimal(s);
+    assertThat(FastNumberValue6.parse(s).numberValueExact(BigDecimal.class), comparesEqualTo(bigDecimal));
+  }
+
 }
