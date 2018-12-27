@@ -516,7 +516,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return new FastMoney6(0L, this.currency);
     }
     if (divisor == 0.0d) {
-      throw new ArithmeticException("Division by zero");
+      throw divisionByZero();
     }
     if (divisor == 1.0d) {
       return this;
@@ -542,7 +542,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
   @Override
   public FastMoney6[] divideAndRemainder(double divisor) {
     if (divisor == 0.0d) {
-      throw new ArithmeticException("Division by zero");
+      throw divisionByZero();
     }
     return this.divideAndRemainder(new BigDecimal(divisor));
   }
@@ -567,7 +567,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     if (divisor == 0L) {
-      throw new ArithmeticException("Division by zero");
+      throw divisionByZero();
     }
     long result = ((this.value / divisor) / DIVISOR) * DIVISOR;
     return new FastMoney6(result, this.currency);
@@ -579,13 +579,17 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     if (divisor == 0.0d) {
-      throw new ArithmeticException("Division by zero");
+      throw divisionByZero();
     }
     if (Double.isNaN(divisor)|| Double.isInfinite(divisor)) {
         throw new IllegalArgumentException();
     }
     long result = (long) (Math.floor(this.value / divisor) * DIVISOR);
     return new FastMoney6(result, this.currency);
+  }
+
+  private RuntimeException divisionByZero() {
+    return new ArithmeticException("Division by zero");
   }
 
   @Override

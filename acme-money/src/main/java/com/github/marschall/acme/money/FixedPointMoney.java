@@ -14,6 +14,8 @@ import javax.money.MonetaryOperator;
 import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
 
+import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
+
 final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
   /**
@@ -39,6 +41,18 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
   
   private RoundingMode getRoundingMode() {
     return this.mathContext.getRoundingMode();
+  }
+  
+  private static NumberAccessor getAccessor(Number number) {
+    return FastNumber6Math.getAccessor(number.getClass());
+  }
+
+  private static boolean isOne(Number number) {
+    return getAccessor(number).isOne(number);
+  }
+
+  private static BigDecimal convertToBigDecimal(Number number) {
+    return getAccessor(number).convertToBigDecimal(number);
   }
 
   @Override
@@ -158,74 +172,74 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
 
   @Override
   public FixedPointMoney multiply(long multiplicand) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.multiply(Long.valueOf(multiplicand));
   }
 
   @Override
   public FixedPointMoney multiply(double multiplicand) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.multiply(Double.valueOf(multiplicand));
   }
 
   @Override
   public FixedPointMoney multiply(Number multiplicand) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO max precision?
+    BigDecimal product = this.number.multiply(convertToBigDecimal(multiplicand), mathContext);
+    product = product.setScale(this.scale);
+    return new FixedPointMoney(product, this.currency, this.mathContext, this.scale);
   }
 
   @Override
   public FixedPointMoney divide(long divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return divide(Long.valueOf(divisor));
   }
 
   @Override
   public FixedPointMoney divide(double divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return divide(Double.valueOf(divisor));
   }
 
   @Override
   public FixedPointMoney divide(Number divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    BigDecimal divided = this.number.divide(convertToBigDecimal(divisor), this.scale, getRoundingMode());
+    return new FixedPointMoney(divided, this.currency, this.mathContext, this.scale);
   }
 
   @Override
   public FixedPointMoney remainder(long divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.remainder(Long.valueOf(divisor));
   }
 
   @Override
   public FixedPointMoney remainder(double divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.remainder(Double.valueOf(divisor));
   }
 
   @Override
   public FixedPointMoney remainder(Number divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO max precision?
+    BigDecimal remainder = this.number.remainder(convertToBigDecimal(divisor), this.mathContext);
+    return new FixedPointMoney(remainder, this.currency, this.mathContext, this.scale);
   }
 
   @Override
   public FixedPointMoney[] divideAndRemainder(long divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.divideAndRemainder(Long.valueOf(divisor));
   }
 
   @Override
   public FixedPointMoney[] divideAndRemainder(double divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    return this.divideAndRemainder(Double.valueOf(divisor));
   }
 
   @Override
   public FixedPointMoney[] divideAndRemainder(Number divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO max precision?
+    BigDecimal[] quotientAndRemainder = this.number.divideAndRemainder(convertToBigDecimal(divisor), this.mathContext);
+    BigDecimal quotient = quotientAndRemainder[0];
+    BigDecimal remainder = quotientAndRemainder[1];
+    // TODO make sure scale is correct
+    return new FixedPointMoney[]{new FixedPointMoney(quotient, this.currency, this.mathContext, this.scale),
+        new FixedPointMoney(remainder, this.currency, this.mathContext, this.scale)};
   }
 
   @Override
@@ -242,8 +256,9 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
 
   @Override
   public FixedPointMoney divideToIntegralValue(Number divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    // TODO max precision?
+    BigDecimal integerPart = this.number.divideToIntegralValue(number, this.mathContext);
+    return new FixedPointMoney(integerPart, this.currency, this.mathContext, this.scale);
   }
 
   @Override
@@ -251,6 +266,7 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
     if (power == 0) {
       return this;
     }
+    // TODO max scale
     BigDecimal scaled = this.number.scaleByPowerOfTen(power);
     if (scaled.scale() > this.scale) {
       scaled = scaled.setScale(power, this.getRoundingMode());

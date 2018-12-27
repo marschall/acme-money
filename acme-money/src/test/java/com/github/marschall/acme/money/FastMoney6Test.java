@@ -193,7 +193,7 @@ class FastMoney6Test {
 
     fastMoney = FastMoney6.parse("CHF 1.123");
     assertEquals(FastMoney6.of(new BigDecimal("1.123"), Monetary.getCurrency("CHF")), fastMoney);
-    
+
     fastMoney = FastMoney6.parse("CHF -9223372036854.775808");
     assertEquals(FastMoney6.of(new BigDecimal("-9223372036854.775808"), Monetary.getCurrency("CHF")), fastMoney);
   }
@@ -236,39 +236,39 @@ class FastMoney6Test {
     money = FastMoney6.of(-1L, CHF);
     assertSame(money, money.plus());
   }
-  
+
   @Test
   void stripTrailingZeros() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("1.000000"), CHF);
     assertSame(money, money.stripTrailingZeros());
   }
-  
+
   @Test
   void abs() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertSame(money, money.abs());
-    
+
     money = FastMoney6.of(0L, CHF);
     assertSame(money, money.abs());
-    
+
     money = FastMoney6.of(-1L, CHF);
     assertEquals(FastMoney6.of(1L, CHF), money.abs());
-    
+
     money = FastMoney6.of(FastMoney6.MIN_VALUE, CHF);
     assertThrows(ArithmeticException.class, money::abs);
   }
-  
+
   @Test
   void negate() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertEquals(FastMoney6.of(-1L, CHF), money.negate());
-    
+
     money = FastMoney6.of(0L, CHF);
     assertSame(money, money.negate());
-    
+
     money = FastMoney6.of(-1L, CHF);
     assertEquals(FastMoney6.of(1L, CHF), money.negate());
-    
+
     money = FastMoney6.of(FastMoney6.MIN_VALUE, CHF);
     assertThrows(ArithmeticException.class, money::negate);
   }
@@ -524,6 +524,14 @@ class FastMoney6Test {
     FastMoney6 remainder = divideAndRemainder[1];
     assertEquals(quotient, FastMoney6.of(3L, CHF));
     assertEquals(remainder, FastMoney6.of(1L, CHF));
+  }
+
+  @Test
+  void divideAndRemainderByZero() {
+    FastMoney6 money = FastMoney6.of(10L, CHF);
+    assertThrows(ArithmeticException.class, () -> money.divideAndRemainder(0.0d));
+    assertThrows(ArithmeticException.class, () -> money.divideAndRemainder(-0.0d));
+    assertThrows(ArithmeticException.class, () -> money.divideAndRemainder(Double.NaN));
   }
 
   @Test
