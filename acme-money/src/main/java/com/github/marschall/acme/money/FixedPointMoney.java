@@ -62,8 +62,7 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
 
   @Override
   public NumberValue getNumber() {
-    // TODO Auto-generated method stub
-    return null;
+    return new FixedPointNumberValue(this.number);
   }
 
   @Override
