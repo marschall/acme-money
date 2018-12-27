@@ -11,6 +11,13 @@ import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class MoneyCompatibilityTest {
+  
+  @Test
+  void testToString() {
+    FastMoney monetaMoney = FastMoney.of(new BigDecimal("-1.12345"), "EUR");
+    FastMoney6 acmeMoney = FastMoney6.of(new BigDecimal("-1.12345"), "EUR");
+    assertEquals(monetaMoney.toString() + '0', acmeMoney.toString());
+  }
 
   @Test
   void multiply() {

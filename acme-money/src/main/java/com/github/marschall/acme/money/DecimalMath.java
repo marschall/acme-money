@@ -1,5 +1,6 @@
 package com.github.marschall.acme.money;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 final class DecimalMath {
@@ -17,8 +18,41 @@ final class DecimalMath {
   }
 
   static String fastNumber6ToString(long number6) {
-    // TODO
-    return BigDecimal.valueOf(number6, FastMoney6.SCALE).toString();
+    StringBuilder buffer = new StringBuilder(21); // 19 + sign + decimal point
+    try {
+      fastNumber6ToStringOn(number6, buffer);
+    } catch (IOException e) {
+      // should not happen
+      throw new RuntimeException("could not write to StringBuilder", e);
+    }
+    return buffer.toString();
+  }
+  
+  static void fastNumber6ToStringOn(long number6, Appendable appendable) throws IOException {
+    if (number6 < 0L) {
+      appendable.append('-');
+    }
+    boolean print = false;
+    long current = number6;
+    long divider = 1000000000000000000L;
+    for (int i = 0; i < 13; i++) {
+      long number = current / divider;
+      current = current - (number * divider);
+      divider = divider / 10L;
+      if (number != 0 || print || i == 12) {
+        char c = (char) ('0' + Math.abs(number));
+        appendable.append(c);
+        print = true;
+      }
+    }
+    appendable.append('.');
+    for (int i = 0; i < 6; i++) {
+      long number = current / divider;
+      current = current - (number * divider);
+      divider = divider / 10L;
+      char c = (char) ('0' + Math.abs(number));
+      appendable.append(c);
+    }
   }
 
   static long pow10(long base, int exponent) {
@@ -49,6 +83,10 @@ final class DecimalMath {
       result = result / 10L;
     }
     return result;
+  }
+  
+  static int length(int i) {
+    return lenghtIf(i);
   }
 
   static int lenghtIf(int i) {

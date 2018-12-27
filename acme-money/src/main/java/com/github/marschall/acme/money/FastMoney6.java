@@ -415,14 +415,22 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public String toString() {
-    return this.currency.toString() + ' ' + DecimalMath.fastNumber6ToString(this.value);
+    StringBuilder buffer = new StringBuilder(25); // currency code (3) + space + 19 (numbers) + sign + decimal point
+    buffer.append(this.currency.toString());
+    buffer.append(' ');
+    try {
+      DecimalMath.fastNumber6ToStringOn(this.value, buffer);
+    } catch (IOException e) {
+      // should not happen
+      throw new RuntimeException("could not write to StringBuilder", e);
+    }
+    return buffer.toString(); 
   }
 
   void toStringOn(Appendable appendable) throws IOException {
     appendable.append(this.currency.toString());
     appendable.append(' ');
-    // TODO maybe decimal format
-    appendable.append(DecimalMath.fastNumber6ToString(this.value));
+    DecimalMath.fastNumber6ToStringOn(this.value, appendable);
   }
 
   @Override
