@@ -425,7 +425,6 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     appendable.append(DecimalMath.fastNumber6ToString(this.value));
   }
 
-  // Internal helper methods
   @Override
   public FastMoney6 with(MonetaryOperator operator) {
     Objects.requireNonNull(operator, "operator");
