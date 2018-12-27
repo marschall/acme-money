@@ -1,11 +1,11 @@
 package com.github.marschall.acme.money;
 
+import static com.github.marschall.acme.money.NumberEquality.numberEquals;
+
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-
-import static com.github.marschall.acme.money.NumberEquality.numberEquals;
 
 final class HasNumberValue extends TypeSafeMatcher<FractionValue> {
   

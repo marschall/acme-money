@@ -2,12 +2,12 @@ package com.github.marschall.acme.money;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -19,11 +19,9 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
-import javax.money.MonetaryException;
 import javax.money.NumberValue;
 import javax.money.format.MonetaryParseException;
 
-import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -363,11 +361,14 @@ class FastMoney6Test {
 
   @Test
   void multiplyDouble() {
-    FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
-    assertEquals(0.000001d, money.multiply(0.000001d).getNumber().doubleValue(), 0.000000000001d);
+    FastMoney6 oneMicro = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(0.000001d, oneMicro.multiply(0.000001d).getNumber().doubleValue(), 0.000000000001d);
 
-    money = FastMoney6.of(BigDecimal.ONE, CHF);
-    assertEquals(-1.5d, money.multiply(-1.5d).getNumber().doubleValue(), 0.000001d);
+    FastMoney6 one = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(-1.5d, oneMicro.multiply(-1.5d).getNumber().doubleValue(), 0.000001d);
+    assertThrows(ArithmeticException.class, () -> one.multiply(Double.POSITIVE_INFINITY));
+    assertThrows(ArithmeticException.class, () -> one.multiply(Double.NEGATIVE_INFINITY));
+    assertThrows(ArithmeticException.class, () -> one.multiply(Double.NaN));
   }
 
   @Test
@@ -390,11 +391,16 @@ class FastMoney6Test {
 
   @Test
   void divideDouble() {
-    FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(1, 6), CHF);
-    assertEquals(1d, money.divide(0.000001d).getNumber().doubleValue(), 0.000001d);
+    FastMoney6 oneMicro = FastMoney6.of(BigDecimal.valueOf(1, 6), CHF);
+    assertEquals(1d, oneMicro.divide(0.000001d).getNumber().doubleValue(), 0.000001d);
 
-    money = FastMoney6.of(BigDecimal.valueOf(-3.75), CHF);
-    assertEquals(-2.5d, money.divide(1.5d).getNumber().doubleValue(), 0.000001d);
+    FastMoney6 one = FastMoney6.of(BigDecimal.valueOf(-3.75), CHF);
+    assertEquals(-2.5d, one.divide(1.5d).getNumber().doubleValue(), 0.000001d);
+    assertTrue(one.divide(Double.POSITIVE_INFINITY).isZero());
+    assertTrue(one.divide(Double.NEGATIVE_INFINITY).isZero());
+    assertThrows(ArithmeticException.class, () -> one.divide(0.0d));
+    assertThrows(ArithmeticException.class, () -> one.divide(-0.0d));
+    assertThrows(ArithmeticException.class, () -> one.divide(Double.NaN));
   }
 
   @Test

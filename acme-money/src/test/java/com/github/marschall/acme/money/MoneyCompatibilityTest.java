@@ -11,7 +11,7 @@ import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class MoneyCompatibilityTest {
-  
+
   @Test
   void testToString() {
     FastMoney monetaMoney = FastMoney.of(new BigDecimal("-1.12345"), "EUR");
@@ -83,6 +83,12 @@ class MoneyCompatibilityTest {
   }
 
   @Test
+  void divisionByZero() {
+    FastMoney one = FastMoney.of(1L, "EUR");
+    one.divide(Double.valueOf(0.0d));
+  }
+
+  @Test
   void negate() {
     FastMoney oneEur = FastMoney.of(-1L, "EUR");
     oneEur.negate();
@@ -106,8 +112,8 @@ class MoneyCompatibilityTest {
     FastMoney quotient = result[0];
     FastMoney remainder = result[1];
     assertThat(quotient.getNumber().numberValueExact(BigDecimal.class)
-            .multiply(divisor)
-            .add(remainder.getNumber().numberValueExact(BigDecimal.class)), comparesEqualTo(original));
+        .multiply(divisor)
+        .add(remainder.getNumber().numberValueExact(BigDecimal.class)), comparesEqualTo(original));
   }
 
 }

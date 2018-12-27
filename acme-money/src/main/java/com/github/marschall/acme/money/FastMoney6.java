@@ -21,6 +21,7 @@ import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
 import javax.money.UnknownCurrencyException;
 import javax.money.format.MonetaryAmountFormat;
+import javax.money.format.MonetaryParseException;
 
 import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
 
@@ -30,6 +31,7 @@ import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
   
   // TODO infinity and NaN
+  // TODO constants for zero or one
 
   private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
@@ -484,13 +486,20 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 multiply(double multiplicand) {
+    checkFinite(multiplicand);
     if (multiplicand == 1.0) {
       return this;
     }
-    if (multiplicand == 0.0) {
+    if (multiplicand == 0.0 || multiplicand == -0.0) {
       return new FastMoney6(0, this.currency);
     }
     return new FastMoney6(Math.round(this.value * multiplicand), this.currency);
+  }
+
+  private static void checkFinite(double multiplicand) {
+    if (!Double.isFinite(multiplicand)) {
+      throw new ArithmeticException("invalid multiplicand: " + multiplicand);
+    }
   }
 
   @Override
@@ -503,10 +512,16 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 divide(double divisor) {
+    if (Double.isInfinite(divisor)) {
+      return new FastMoney6(0L, this.currency);
+    }
+    if (divisor == 0.0d) {
+      throw new ArithmeticException("division by zero");
+    }
     if (divisor == 1.0d) {
       return this;
     }
-    return new FastMoney6(Math.round(this.value / divisor), this.getCurrency());
+    return new FastMoney6(Math.round(this.value / divisor), this.currency);
   }
 
   @Override
@@ -560,7 +575,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (divisor == 1.0d) {
       return this;
     }
-    if ((divisor == 0.0d) || (divisor == -0.0d)) {
+    if (divisor == 0.0d) {
       throw new ArithmeticException("division by zero");
     }
     if (Double.isNaN(divisor)|| Double.isInfinite(divisor)) {
@@ -572,6 +587,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public MonetaryAmountFactory<FastMoney6> getFactory() {
+    // TODO look at
     return new FastMoney6AmountFactory().setAmount(this);
   }
 
