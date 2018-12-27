@@ -112,10 +112,10 @@ public class MoneyOperationsBenchmark {
   public FastMoney6 multiplyAcme() {
     return this.acmeMoney1.multiply(ONE_POINT_FIVE);
   }
-  
+
   @Benchmark
   public FastMoney6 multiplyAcmeFastNumber() {
-	  return this.acmeMoney1.multiply(ONE_POINT_FIVE_FAST_NUMBER);
+    return this.acmeMoney1.multiply(ONE_POINT_FIVE_FAST_NUMBER);
   }
 
   @Benchmark
@@ -132,10 +132,25 @@ public class MoneyOperationsBenchmark {
   public FastMoney6 divideAcme() {
     return this.acmeMoney1.divide(ONE_POINT_FIVE);
   }
-  
+
   @Benchmark
   public FastMoney6 divideAcmeFastNumber() {
-	  return this.acmeMoney1.divide(ONE_POINT_FIVE_FAST_NUMBER);
+    return this.acmeMoney1.divide(ONE_POINT_FIVE_FAST_NUMBER);
+  }
+
+  @Benchmark
+  public String toStringMoneta() {
+    return this.money1.toString();
+  }
+
+  @Benchmark
+  public String toStringMonetaFast() {
+    return this.fastMoney1.toString();
+  }
+
+  @Benchmark
+  public String toStringAcme() {
+    return this.acmeMoney1.toString();
   }
 
 }

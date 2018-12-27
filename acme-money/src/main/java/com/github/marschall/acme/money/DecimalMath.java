@@ -18,6 +18,7 @@ final class DecimalMath {
   }
 
   static String fastNumber6ToString(long number6) {
+    // TODO better length estimation
     StringBuilder buffer = new StringBuilder(21); // 19 + sign + decimal point
     try {
       fastNumber6ToStringOn(number6, buffer);
