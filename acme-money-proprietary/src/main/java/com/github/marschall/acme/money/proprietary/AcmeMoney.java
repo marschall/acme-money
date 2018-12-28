@@ -2,13 +2,16 @@ package com.github.marschall.acme.money.proprietary;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import javax.money.MonetaryAmount;
+import javax.money.MonetaryOperator;
+import javax.money.MonetaryQuery;
 
 import com.github.marschall.acme.money.FixedPointMoney;
 
 final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
-  
+
   // TODO should comparison methods round?
 
   private final /* final */ byte scale;
@@ -29,7 +32,7 @@ final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Ser
     // TODO implement
     return null;
   }
-  
+
 
   private AcmeMoney adapt(MonetaryAmount newDelegate) {
     if (newDelegate == this.delegate) {
@@ -79,6 +82,21 @@ final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Ser
   }
 
   @Override
+  public MonetaryAmount remainder(long divisor) {
+    return adapt(this.asRational().remainder(divisor));
+  }
+
+  @Override
+  public MonetaryAmount remainder(double divisor) {
+    return adapt(this.asRational().remainder(divisor));
+  }
+
+  @Override
+  public MonetaryAmount remainder(Number divisor) {
+    return adapt(this.asRational().remainder(divisor));
+  }
+
+  @Override
   public AcmeMoney[] divideAndRemainder(long divisor) {
     MonetaryAmount[] quotientAndRemainder = this.asRational().divideAndRemainder(divisor);
     MonetaryAmount quotient = quotientAndRemainder[0];
@@ -116,7 +134,17 @@ final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Ser
   public AcmeMoney divideToIntegralValue(Number divisor) {
     return adapt(this.asRational().divideToIntegralValue(divisor));
   }
-  
+
+  @Override
+  public int signum() {
+    return this.delegate.signum();
+  }
+
+  @Override
+  public MonetaryAmount abs() {
+    return adapt(this.delegate.abs());
+  }
+
   @Override
   public MonetaryAmount negate() {
     return adapt(this.delegate.negate());
@@ -178,10 +206,17 @@ final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Ser
   }
 
   @Override
-  public int signum() {
-    return this.delegate.signum();
+  public <R> R query(MonetaryQuery<R> query) {
+    Objects.requireNonNull(query);
+    return query.queryFrom(this);
   }
 
-
+  @Override
+  public AcmeMoney with(MonetaryOperator operator) {
+    Objects.requireNonNull(operator, "operator");
+    MonetaryAmount result = operator.apply(this);
+    Objects.requireNonNull(result, "result");
+    return AcmeMoney.class.cast(result);
+  }
 
 }
