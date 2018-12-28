@@ -474,13 +474,13 @@ class FastMoney6Test {
   }
 
   @Test
-  public void multiplyNonTerminating() {
+  void multiplyNonTerminating() {
     FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
     assertEquals(money.multiply(Fraction.of(1L, 3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
   }
 
   @Test
-  public void multiplyRounding() {
+  void multiplyRounding() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("0.000005"), CHF);
     assertEquals(money.multiply(new BigDecimal("0.5")).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.000002"));
   }
@@ -510,7 +510,7 @@ class FastMoney6Test {
   }
 
   @Test
-  public void divideNonTerminating() {
+  void divideNonTerminating() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertEquals(money.divide(BigDecimal.valueOf(3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
     assertEquals(money.divide(3L).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
