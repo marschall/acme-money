@@ -204,6 +204,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (o instanceof FastMoney6) {
       return Long.compare(this.value, ((FastMoney6) o).value);
     } else {
+      // numberValueExact may be better but will fail for some RactionMoney
       return this.getBigDecimal().compareTo(o.getNumber().numberValue(BigDecimal.class));
     }
   }

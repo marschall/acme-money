@@ -1,14 +1,11 @@
 package com.github.marschall.acme.money.proprietary;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryOperator;
 import javax.money.MonetaryQuery;
-
-import com.github.marschall.acme.money.FixedPointMoney;
 
 final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
 
@@ -32,7 +29,6 @@ final class AcmeMoney implements MonetaryAmount, Comparable<MonetaryAmount>, Ser
     // TODO implement
     return null;
   }
-
 
   private AcmeMoney adapt(MonetaryAmount newDelegate) {
     if (newDelegate == this.delegate) {

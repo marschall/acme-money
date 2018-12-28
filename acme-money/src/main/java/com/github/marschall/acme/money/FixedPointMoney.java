@@ -10,6 +10,7 @@ import javax.money.CurrencyUnit;
 import javax.money.MonetaryAmount;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
+import javax.money.MonetaryException;
 import javax.money.MonetaryOperator;
 import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
@@ -67,8 +68,32 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
 
   @Override
   public int compareTo(MonetaryAmount o) {
-    // TODO Auto-generated method stub
-    return 0;
+    Objects.requireNonNull(o);
+    int compare = this.currency.compareTo(o.getCurrency());
+    if (compare != 0) {
+      return compare;
+    }
+    return this.compareAmountTo(o);
+  }
+
+  private void requireSameCurrency(MonetaryAmount amount) {
+    Objects.requireNonNull(amount, "amount");
+    CurrencyUnit amountCurrency = amount.getCurrency();
+    if (!this.currency.equals(amountCurrency)) {
+        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+    }
+  }
+
+  private int compareAmountTo(MonetaryAmount o) {
+    this.requireSameCurrency(o);
+    BigDecimal other;
+    if (o instanceof FixedPointMoney) {
+      other = ((FixedPointMoney) o).number;
+    } else {
+      // numberValueExact may be better but will fail for some RactionMoney
+      other = o.getNumber().numberValue(BigDecimal.class);
+    }
+    return this.number.compareTo(other);
   }
 
   @Override
@@ -98,33 +123,28 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
   }
 
   @Override
+  public boolean isLessThan(MonetaryAmount amount) {
+    return this.compareAmountTo(amount) < 0;
+  }
+
+  @Override
+  public boolean isLessThanOrEqualTo(MonetaryAmount amount) {
+    return this.compareAmountTo(amount) <= 0;
+  }
+
+  @Override
   public boolean isGreaterThan(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareAmountTo(amount) > 0;
   }
 
   @Override
   public boolean isGreaterThanOrEqualTo(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean isLessThan(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean isLessThanOrEqualTo(MonetaryAmount amt) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareAmountTo(amount) >= 0;
   }
 
   @Override
   public boolean isEqualTo(MonetaryAmount amount) {
-    // TODO Auto-generated method stub
-    return false;
+    return this.compareAmountTo(amount) == 0;
   }
 
   @Override
@@ -302,14 +322,21 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
 
   @Override
   public int hashCode() {
-    // TODO Auto-generated method stub
-    return super.hashCode();
+    return Objects.hash(this.currency, this.scale, this.number.stripTrailingZeros());
   }
 
   @Override
   public boolean equals(Object obj) {
-    // TODO Auto-generated method stub
-    return super.equals(obj);
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof FixedPointMoney)) {
+      return false;
+    }
+    FixedPointMoney other = (FixedPointMoney) obj;
+    return this.currency.equals(other.currency)
+        && this.scale == other.scale
+        && this.number.compareTo(other.number) == 0;
   }
 
   @Override
