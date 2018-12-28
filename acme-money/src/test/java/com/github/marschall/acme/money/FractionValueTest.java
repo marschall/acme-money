@@ -5,16 +5,19 @@ import static com.github.marschall.acme.money.HasNoNumberValueExact.hasNoNumberV
 import static com.github.marschall.acme.money.HasNumberValue.hasNumberValue;
 import static com.github.marschall.acme.money.HasNumberValueExact.hasNumberValueExcat;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.javamoney.moneta.spi.DefaultNumberValue;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class FractionValueTest {
@@ -178,6 +181,14 @@ class FractionValueTest {
     assertThat(value, hasNoNumberValueExact(BigDecimal.class));
   }
 
+  @Test
+  @Disabled
+  void maxBigDecimal() {
+    int MAX_MAG_LENGTH = 67_108_864 * 4; // 16_777_216
+    BigDecimal onethird = BigDecimal.valueOf(1L)
+      .divide(BigDecimal.valueOf(3L), 1000, RoundingMode.HALF_EVEN);
+    assertThat(onethird, comparesEqualTo(new BigDecimal("0.333333")));
+  }
 
 
   @Test

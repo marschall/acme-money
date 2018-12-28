@@ -206,6 +206,7 @@ final class FastNumber6Math {
         long numerator = Math.multiplyExact(fraction.numerator, fastNumber6);
         long denominator = Math.multiplyExact(fraction.denominator, FastMoney6.DIVISOR);
         FastNumber6Converter converter = ConvertFractionToNumber.ConvertToBigDecimal.INSTANCE;
+        // FIXME pass scale
         result = (BigDecimal) converter.convert(numerator, denominator);
       } catch (ArithmeticException e) {
         // integer overflow
