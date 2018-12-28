@@ -474,6 +474,14 @@ class FastMoney6Test {
   }
 
   @Test
+  void multiplyFraction() {
+    FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(5000000000000L), CHF);
+    Fraction multiplier = Fraction.of(2L, 5L);
+    BigDecimal expected = BigDecimal.valueOf(2000000000000L);
+    assertThat(money.multiply(multiplier).getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(expected));
+  }
+
+  @Test
   void multiplyNonTerminating() {
     FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
     assertEquals(money.multiply(Fraction.of(1L, 3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));

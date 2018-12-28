@@ -2,6 +2,7 @@ package com.github.marschall.acme.money;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -200,11 +201,19 @@ final class FastNumber6Math {
     @Override
     public long multiply(long fastNumber6, Number number) {
       Fraction fraction = (Fraction) number;
-      long numerator = Math.multiplyExact(fraction.numerator, fastNumber6);
-      long denominator = Math.multiplyExact(fraction.denominator, FastMoney6.DIVISOR);
-      FastNumber6Converter converter = ConvertFractionToNumber.ConvertToBigDecimal.INSTANCE;
-      BigDecimal bigDecimal = (BigDecimal) converter.convert(numerator, denominator);
-      return fromBigDecimal(bigDecimal);
+      BigDecimal result;
+      try {
+        long numerator = Math.multiplyExact(fraction.numerator, fastNumber6);
+        long denominator = Math.multiplyExact(fraction.denominator, FastMoney6.DIVISOR);
+        FastNumber6Converter converter = ConvertFractionToNumber.ConvertToBigDecimal.INSTANCE;
+        result = (BigDecimal) converter.convert(numerator, denominator);
+      } catch (ArithmeticException e) {
+        // integer overflow
+        result = DecimalMath.bigDecimal(fastNumber6)
+          .multiply(BigDecimal.valueOf(fraction.numerator))
+          .divide(BigDecimal.valueOf(fraction.denominator), FastMoney6.SCALE, RoundingMode.HALF_EVEN);
+      }
+      return fromBigDecimal(result);
     }
 
     @Override
