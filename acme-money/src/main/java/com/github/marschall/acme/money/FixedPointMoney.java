@@ -28,9 +28,9 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
    * The numeric part of this amount.
    */
   /* final */ BigDecimal number;
-  
+
   private /* final */ MathContext mathContext;
-  
+
   private /* final */ int scale;
 
   private FixedPointMoney(BigDecimal number, CurrencyUnit currency, MathContext mathContext, int scale) {
@@ -39,11 +39,11 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
     this.mathContext = mathContext;
     this.scale = scale;
   }
-  
+
   private RoundingMode getRoundingMode() {
     return this.mathContext.getRoundingMode();
   }
-  
+
   private static NumberAccessor getAccessor(Number number) {
     return FastNumber6Math.getAccessor(number.getClass());
   }
@@ -80,7 +80,7 @@ final class FixedPointMoney implements MonetaryAmount, Comparable<MonetaryAmount
     Objects.requireNonNull(amount, "amount");
     CurrencyUnit amountCurrency = amount.getCurrency();
     if (!this.currency.equals(amountCurrency)) {
-        throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
+      throw new MonetaryException("Currency mismatch: " + this.currency + '/' + amountCurrency);
     }
   }
 

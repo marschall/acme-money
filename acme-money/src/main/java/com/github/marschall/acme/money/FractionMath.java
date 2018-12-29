@@ -8,7 +8,24 @@ final class FractionMath {
     throw new AssertionError("not instantiable");
   }
 
+  static int intValue(long numerator, long denominator) {
+    return (int) (numerator / denominator);
+  }
+
+  static long longValue(long numerator, long denominator) {
+    return numerator / denominator;
+  }
+
+  static float floatValue(long numerator, long denominator) {
+    return (float) numerator / (float) denominator;
+  }
+
+  static double doubleValue(long numerator, long denominator) {
+    return (double) numerator / (double) denominator;
+  }
+
   static long toLongExact(double value) {
+    // TODO users probably not ok
     if ((long) value != value) {
         throw new ArithmeticException("integer overflow");
     }

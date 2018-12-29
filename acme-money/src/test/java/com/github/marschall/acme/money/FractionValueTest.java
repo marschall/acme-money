@@ -8,6 +8,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -186,7 +187,7 @@ class FractionValueTest {
   void maxBigDecimal() {
     int MAX_MAG_LENGTH = 67_108_864 * 4; // 16_777_216
     BigDecimal onethird = BigDecimal.valueOf(1L)
-      .divide(BigDecimal.valueOf(3L), 1000, RoundingMode.HALF_EVEN);
+        .divide(BigDecimal.valueOf(3L), 1000, RoundingMode.HALF_EVEN);
     assertThat(onethird, comparesEqualTo(new BigDecimal("0.333333")));
   }
 
@@ -239,6 +240,42 @@ class FractionValueTest {
     f = new FractionValue(-3, 2);
     assertEquals(-1L, f.getAmountFractionNumerator());
     assertEquals(2L, f.getAmountFractionDenominator());
+  }
+
+  @Test
+  void intValue() {
+    FractionValue value = new FractionValue(5, 2);
+    assertEquals(2, value.intValue());
+  }
+
+  @Test
+  void intValueExact() {
+    FractionValue value = new FractionValue(5, 2);
+    assertThrows(ArithmeticException.class, value::intValueExact);
+  }
+
+  @Test
+  void longValue() {
+    FractionValue value = new FractionValue(5, 2);
+    assertEquals(2, value.longValue());
+  }
+
+  @Test
+  void longValueExact() {
+    FractionValue value = new FractionValue(5, 2);
+    assertThrows(ArithmeticException.class, value::longValueExact);
+  }
+
+  @Test
+  void doubleValue() {
+    FractionValue value = new FractionValue(5, 2);
+    assertEquals(2.5d, value.doubleValue(), 0.0000001d);
+  }
+
+  @Test
+  void floatValue() {
+    FractionValue value = new FractionValue(5, 2);
+    assertEquals(2.5f, value.floatValue(), 0.0000001f);
   }
 
 }
