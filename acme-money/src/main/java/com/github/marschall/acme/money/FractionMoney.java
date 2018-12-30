@@ -260,8 +260,12 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
 
   @Override
   public MonetaryAmount remainder(long divisor) {
-    // TODO Auto-generated method stub
-    return null;
+    // 5/2 2 -> 1/2
+    // 7/3 2/1  -> 2/3 : 7/3 - 6/3 -> 1/3
+    // 11/2 2/1 -> 3/2
+    // 11/2 4/2 -> 3/2
+    long n = this.numerator % (Math.multiplyExact(divisor, this.denominator));
+    return FractionMoney.of(n, this.denominator, this.currency);
   }
 
   @Override
@@ -273,6 +277,7 @@ public final class FractionMoney implements MonetaryAmount, Comparable<MonetaryA
   @Override
   public MonetaryAmount remainder(Number divisor) {
     // TODO Auto-generated method stub
+    // 33/10 3/2 -> 3/10
     return null;
   }
 

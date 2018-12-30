@@ -165,12 +165,62 @@ class FractionMoneyTest {
   @Test
   void monetary() {
     FractionMoney money = Monetary.getAmountFactory(FractionMoney.class)
-      .setCurrency(CHF)
-      .setNumber(new BigDecimal("-1.23"))
-      .create();
+        .setCurrency(CHF)
+        .setNumber(new BigDecimal("-1.23"))
+        .create();
 
     assertEquals(CHF.getCurrencyCode(), money.getCurrency().getCurrencyCode());
     assertThat(money.getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(new BigDecimal("-1.23")));
+  }
+
+  @Test
+  void remainderLong() {
+    FractionMoney money = FractionMoney.of(5, 2, CHF); // 2.5
+    assertEquals(FractionMoney.of(1, 2, CHF), money.remainder(2L));
+
+    money = FractionMoney.of(11, 2, CHF); // 5.5
+    assertEquals(FractionMoney.of(3, 2, CHF), money.remainder(2L));
+
+    money = FractionMoney.of(7, 3, CHF); // 2.3333
+    assertEquals(FractionMoney.of(1, 3, CHF), money.remainder(2L));
+
+    money = FractionMoney.of(8, 3, CHF); // 2.6666
+    assertEquals(FractionMoney.of(2, 3, CHF), money.remainder(2L));
+  }
+
+  @Test
+  void remainderLongSign() {
+    // positive, positive
+    FractionMoney money = FractionMoney.of(3, 1, CHF);
+    BigDecimal expected = BigDecimal.valueOf(3L).remainder(BigDecimal.valueOf(2L));
+    assertEquals(expected.signum(), money.remainder(2L).signum());
+
+    // positive, negative
+    money = FractionMoney.of(3, 1, CHF);
+    expected = BigDecimal.valueOf(3L).remainder(BigDecimal.valueOf(-2L));
+    assertEquals(expected.signum(), money.remainder(-2L).signum());
+
+    // negative, positive
+    money = FractionMoney.of(-3, 1, CHF);
+    expected = BigDecimal.valueOf(-3L).remainder(BigDecimal.valueOf(2L));
+    assertEquals(expected.signum(), money.remainder(2L).signum());
+
+    // negative, negative
+    money = FractionMoney.of(-3, 1, CHF);
+    expected = BigDecimal.valueOf(-3L).remainder(BigDecimal.valueOf(-2L));
+    assertEquals(expected.signum(), money.remainder(-2L).signum());
+  }
+
+  @Test
+  void remainderFraction() {
+    FractionMoney money = FractionMoney.of(31, 10, CHF); // 3.1
+    assertEquals(FractionMoney.of(1, 10, CHF), money.remainder(Fraction.of(3L, 2L)));
+
+    money = FractionMoney.of(32, 10, CHF); // 3.2
+    assertEquals(FractionMoney.of(1, 5, CHF), money.remainder(Fraction.of(3L, 2L)));
+
+    money = FractionMoney.of(33, 10, CHF); // 3.2
+    assertEquals(FractionMoney.of(3, 10, CHF), money.remainder(Fraction.of(3L, 2L)));
   }
 
 }
