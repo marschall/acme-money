@@ -90,6 +90,9 @@ final class IsoCurrencyParser {
   }
 
   private static void parseCurrencyEntry(XMLStreamReader streamReader) throws XMLStreamException {
+    String currencyCode = null;
+    int currencyNumber = -1;
+    int minorUnits = -1;
     while (streamReader.hasNext()) {
       int event = streamReader.nextTag();
       if (event == XMLStreamConstants.START_ELEMENT) {
@@ -102,18 +105,24 @@ final class IsoCurrencyParser {
           parseCurrencyName(streamReader);
           break;
         case "Ccy":
-          parseCurrencyCode(streamReader);
+          currencyCode = parseCurrencyCode(streamReader);
           break;
         case "CcyNbr":
-          parseCurrencyNumber(streamReader);
+          currencyNumber = parseCurrencyNumber(streamReader);
           break;
         case "CcyMnrUnts":
-          parseMinorUnits(streamReader);
+          minorUnits = parseMinorUnits(streamReader);
           break;
         default:
           throw new IllegalArgumentException("unknown tag");
         }
       } else if (event == XMLStreamConstants.END_ELEMENT) {
+        // ANTARCTICA
+        // PALESTINE, STATE OF
+        // SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS
+        if (currencyCode != null) {
+          System.out.println(currencyCode + '(' + currencyNumber + ')' + minorUnits);
+        }
         return;
       } else {
         throw new IllegalStateException("unknown event: " + event);
