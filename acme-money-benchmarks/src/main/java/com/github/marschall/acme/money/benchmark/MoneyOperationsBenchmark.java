@@ -69,6 +69,21 @@ public class MoneyOperationsBenchmark {
   }
 
   @Benchmark
+  public Money parseMoneta() {
+    return Money.parse("EUR 25.25");
+  }
+
+  @Benchmark
+  public FastMoney parseMonetaFast() {
+    return FastMoney.parse("EUR 25.25");
+  }
+
+  @Benchmark
+  public FastMoney6 parseAcme() {
+    return FastMoney6.parse("EUR 25.25");
+  }
+
+  @Benchmark
   public Money addMoneta() {
     return this.money1.add(this.fastMoney1);
   }
