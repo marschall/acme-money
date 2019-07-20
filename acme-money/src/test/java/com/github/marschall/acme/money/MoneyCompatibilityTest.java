@@ -6,11 +6,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.javamoney.moneta.FastMoney;
+import org.javamoney.moneta.Money;
 import org.junit.jupiter.api.Test;
 
 class MoneyCompatibilityTest {
+
+  @Test
+  void moneyThrows() {
+    byte[] twosComplement = new byte[67_108_864 * 4];
+    twosComplement[0] = 0b01111111;
+    Arrays.fill(twosComplement, 1, twosComplement.length, (byte) 0b11111111);
+
+    Money money = Money.of(new BigInteger(twosComplement), "EUR");
+    money.negate();
+  }
 
   @Test
   void multiply() {
