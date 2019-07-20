@@ -21,6 +21,7 @@ import javax.money.MonetaryQuery;
 import javax.money.NumberValue;
 import javax.money.UnknownCurrencyException;
 import javax.money.format.MonetaryAmountFormat;
+import javax.money.format.MonetaryParseException;
 
 import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
 
@@ -30,6 +31,7 @@ import com.github.marschall.acme.money.FastNumber6Math.NumberAccessor;
 public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmount>, Serializable {
   
   // TODO infinity and NaN
+  // TODO constants for zero or one
 
   private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
@@ -202,6 +204,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (o instanceof FastMoney6) {
       return Long.compare(this.value, ((FastMoney6) o).value);
     } else {
+      // numberValueExact may be better but will fail for some RactionMoney
       return this.getBigDecimal().compareTo(o.getNumber().numberValue(BigDecimal.class));
     }
   }
@@ -415,17 +418,24 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public String toString() {
-    return this.currency.toString() + ' ' + DecimalMath.fastNumber6ToString(this.value);
+    StringBuilder buffer = new StringBuilder(25); // currency code (3) + space + 19 (numbers) + sign + decimal point
+    buffer.append(this.currency.toString());
+    buffer.append(' ');
+    try {
+      DecimalMath.fastNumber6ToStringOn(this.value, buffer);
+    } catch (IOException e) {
+      // should not happen
+      throw new RuntimeException("could not write to StringBuilder", e);
+    }
+    return buffer.toString(); 
   }
 
   void toStringOn(Appendable appendable) throws IOException {
     appendable.append(this.currency.toString());
     appendable.append(' ');
-    // TODO maybe decimal format
-    appendable.append(DecimalMath.fastNumber6ToString(this.value));
+    DecimalMath.fastNumber6ToStringOn(this.value, appendable);
   }
 
-  // Internal helper methods
   @Override
   public FastMoney6 with(MonetaryOperator operator) {
     Objects.requireNonNull(operator, "operator");
@@ -477,13 +487,20 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 multiply(double multiplicand) {
+    checkFinite(multiplicand);
     if (multiplicand == 1.0) {
       return this;
     }
-    if (multiplicand == 0.0) {
+    if (multiplicand == 0.0 || multiplicand == -0.0) {
       return new FastMoney6(0, this.currency);
     }
     return new FastMoney6(Math.round(this.value * multiplicand), this.currency);
+  }
+
+  private static void checkFinite(double multiplicand) {
+    if (!Double.isFinite(multiplicand)) {
+      throw new ArithmeticException("invalid multiplicand: " + multiplicand);
+    }
   }
 
   @Override
@@ -496,10 +513,16 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6 divide(double divisor) {
+    if (Double.isInfinite(divisor)) {
+      return new FastMoney6(0L, this.currency);
+    }
+    if (divisor == 0.0d) {
+      throw divisionByZero();
+    }
     if (divisor == 1.0d) {
       return this;
     }
-    return new FastMoney6(Math.round(this.value / divisor), this.getCurrency());
+    return new FastMoney6(Math.round(this.value / divisor), this.currency);
   }
 
   @Override
@@ -519,7 +542,10 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
 
   @Override
   public FastMoney6[] divideAndRemainder(double divisor) {
-    return this.divideAndRemainder(new BigDecimal(String.valueOf(divisor)));
+    if (divisor == 0.0d) {
+      throw divisionByZero();
+    }
+    return this.divideAndRemainder(new BigDecimal(divisor));
   }
 
   @Override
@@ -542,7 +568,7 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
       return this;
     }
     if (divisor == 0L) {
-      throw new ArithmeticException("division by zero");
+      throw divisionByZero();
     }
     long result = ((this.value / divisor) / DIVISOR) * DIVISOR;
     return new FastMoney6(result, this.currency);
@@ -553,8 +579,8 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     if (divisor == 1.0d) {
       return this;
     }
-    if ((divisor == 0.0d) || (divisor == -0.0d)) {
-      throw new ArithmeticException("division by zero");
+    if (divisor == 0.0d) {
+      throw divisionByZero();
     }
     if (Double.isNaN(divisor)|| Double.isInfinite(divisor)) {
         throw new IllegalArgumentException();
@@ -563,8 +589,13 @@ public final class FastMoney6 implements MonetaryAmount, Comparable<MonetaryAmou
     return new FastMoney6(result, this.currency);
   }
 
+  private RuntimeException divisionByZero() {
+    return new ArithmeticException("Division by zero");
+  }
+
   @Override
   public MonetaryAmountFactory<FastMoney6> getFactory() {
+    // TODO look at
     return new FastMoney6AmountFactory().setAmount(this);
   }
 

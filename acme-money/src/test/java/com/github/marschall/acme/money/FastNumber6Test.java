@@ -6,7 +6,8 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -172,6 +173,13 @@ class FastNumber6Test {
   void serialize() throws ClassNotFoundException, IOException {
     FastNumber6 number = new FastNumber6(123456789L);
     assertEquals(number, SerializationUtil.serializeCopy(number));
+  }
+
+  @Test
+  void parse() {
+    String s = "123.456";
+    BigDecimal bigDecimal = new BigDecimal(s);
+    assertThat(FastNumberValue6.parse(s).numberValueExact(BigDecimal.class), comparesEqualTo(bigDecimal));
   }
 
 }

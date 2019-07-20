@@ -39,22 +39,22 @@ public final class Fraction extends Number implements Comparable<Fraction> {
 
   @Override
   public int intValue() {
-    return (int) (this.numerator / this.denominator);
+    return FractionMath.intValue(this.numerator, this.denominator);
   }
 
   @Override
   public long longValue() {
-    return this.numerator / this.denominator;
+    return FractionMath.longValue(this.numerator, this.denominator);
   }
 
   @Override
   public float floatValue() {
-    return (float) this.numerator / (float) this.denominator;
+    return FractionMath.floatValue(this.numerator, this.denominator);
   }
 
   @Override
   public double doubleValue() {
-    return (double) this.numerator / (double) this.denominator;
+    return FractionMath.doubleValue(this.numerator, this.denominator);
   }
 
   long getNumerator() {

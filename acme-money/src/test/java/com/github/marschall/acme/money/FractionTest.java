@@ -76,4 +76,28 @@ class FractionTest {
     assertEquals(-1, f5.compareTo(f4));
   }
 
+  @Test
+  void intValue() {
+    Fraction fraction = Fraction.of(5, 2);
+    assertEquals(2, fraction.intValue());
+  }
+
+  @Test
+  void longValue() {
+    Fraction fraction = Fraction.of(5, 2);
+    assertEquals(2, fraction.longValue());
+  }
+
+  @Test
+  void doubleValue() {
+    Fraction fraction = Fraction.of(5, 2);
+    assertEquals(2.5d, fraction.doubleValue(), 0.0000001d);
+  }
+
+  @Test
+  void floatValue() {
+    Fraction fraction = Fraction.of(5, 2);
+    assertEquals(2.5f, fraction.floatValue(), 0.0000001f);
+  }
+
 }

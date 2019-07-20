@@ -2,12 +2,12 @@ package com.github.marschall.acme.money;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.comparesEqualTo;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -19,11 +19,9 @@ import javax.money.CurrencyUnit;
 import javax.money.Monetary;
 import javax.money.MonetaryAmountFactory;
 import javax.money.MonetaryContext;
-import javax.money.MonetaryException;
 import javax.money.NumberValue;
 import javax.money.format.MonetaryParseException;
 
-import org.javamoney.moneta.FastMoney;
 import org.junit.jupiter.api.Test;
 
 class FastMoney6Test {
@@ -195,6 +193,9 @@ class FastMoney6Test {
 
     fastMoney = FastMoney6.parse("CHF 1.123");
     assertEquals(FastMoney6.of(new BigDecimal("1.123"), Monetary.getCurrency("CHF")), fastMoney);
+
+    fastMoney = FastMoney6.parse("CHF -9223372036854.775808");
+    assertEquals(FastMoney6.of(new BigDecimal("-9223372036854.775808"), Monetary.getCurrency("CHF")), fastMoney);
   }
 
   @Test
@@ -235,39 +236,39 @@ class FastMoney6Test {
     money = FastMoney6.of(-1L, CHF);
     assertSame(money, money.plus());
   }
-  
+
   @Test
   void stripTrailingZeros() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("1.000000"), CHF);
     assertSame(money, money.stripTrailingZeros());
   }
-  
+
   @Test
   void abs() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertSame(money, money.abs());
-    
+
     money = FastMoney6.of(0L, CHF);
     assertSame(money, money.abs());
-    
+
     money = FastMoney6.of(-1L, CHF);
     assertEquals(FastMoney6.of(1L, CHF), money.abs());
-    
+
     money = FastMoney6.of(FastMoney6.MIN_VALUE, CHF);
     assertThrows(ArithmeticException.class, money::abs);
   }
-  
+
   @Test
   void negate() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertEquals(FastMoney6.of(-1L, CHF), money.negate());
-    
+
     money = FastMoney6.of(0L, CHF);
     assertSame(money, money.negate());
-    
+
     money = FastMoney6.of(-1L, CHF);
     assertEquals(FastMoney6.of(1L, CHF), money.negate());
-    
+
     money = FastMoney6.of(FastMoney6.MIN_VALUE, CHF);
     assertThrows(ArithmeticException.class, money::negate);
   }
@@ -360,11 +361,14 @@ class FastMoney6Test {
 
   @Test
   void multiplyDouble() {
-    FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
-    assertEquals(0.000001d, money.multiply(0.000001d).getNumber().doubleValue(), 0.000000000001d);
+    FastMoney6 oneMicro = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(0.000001d, oneMicro.multiply(0.000001d).getNumber().doubleValue(), 0.000000000001d);
 
-    money = FastMoney6.of(BigDecimal.ONE, CHF);
-    assertEquals(-1.5d, money.multiply(-1.5d).getNumber().doubleValue(), 0.000001d);
+    FastMoney6 one = FastMoney6.of(BigDecimal.ONE, CHF);
+    assertEquals(-1.5d, oneMicro.multiply(-1.5d).getNumber().doubleValue(), 0.000001d);
+    assertThrows(ArithmeticException.class, () -> one.multiply(Double.POSITIVE_INFINITY));
+    assertThrows(ArithmeticException.class, () -> one.multiply(Double.NEGATIVE_INFINITY));
+    assertThrows(ArithmeticException.class, () -> one.multiply(Double.NaN));
   }
 
   @Test
@@ -387,11 +391,16 @@ class FastMoney6Test {
 
   @Test
   void divideDouble() {
-    FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(1, 6), CHF);
-    assertEquals(1d, money.divide(0.000001d).getNumber().doubleValue(), 0.000001d);
+    FastMoney6 oneMicro = FastMoney6.of(BigDecimal.valueOf(1, 6), CHF);
+    assertEquals(1d, oneMicro.divide(0.000001d).getNumber().doubleValue(), 0.000001d);
 
-    money = FastMoney6.of(BigDecimal.valueOf(-3.75), CHF);
-    assertEquals(-2.5d, money.divide(1.5d).getNumber().doubleValue(), 0.000001d);
+    FastMoney6 one = FastMoney6.of(BigDecimal.valueOf(-3.75), CHF);
+    assertEquals(-2.5d, one.divide(1.5d).getNumber().doubleValue(), 0.000001d);
+    assertTrue(one.divide(Double.POSITIVE_INFINITY).isZero());
+    assertTrue(one.divide(Double.NEGATIVE_INFINITY).isZero());
+    assertThrows(ArithmeticException.class, () -> one.divide(0.0d));
+    assertThrows(ArithmeticException.class, () -> one.divide(-0.0d));
+    assertThrows(ArithmeticException.class, () -> one.divide(Double.NaN));
   }
 
   @Test
@@ -465,13 +474,21 @@ class FastMoney6Test {
   }
 
   @Test
-  public void multiplyNonTerminating() {
+  void multiplyFraction() {
+    FastMoney6 money = FastMoney6.of(BigDecimal.valueOf(5000000000000L), CHF);
+    Fraction multiplier = Fraction.of(2L, 5L);
+    BigDecimal expected = BigDecimal.valueOf(2000000000000L);
+    assertThat(money.multiply(multiplier).getNumber().numberValueExact(BigDecimal.class), comparesEqualTo(expected));
+  }
+
+  @Test
+  void multiplyNonTerminating() {
     FastMoney6 money = FastMoney6.of(BigDecimal.ONE, CHF);
     assertEquals(money.multiply(Fraction.of(1L, 3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
   }
 
   @Test
-  public void multiplyRounding() {
+  void multiplyRounding() {
     FastMoney6 money = FastMoney6.of(new BigDecimal("0.000005"), CHF);
     assertEquals(money.multiply(new BigDecimal("0.5")).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.000002"));
   }
@@ -501,7 +518,7 @@ class FastMoney6Test {
   }
 
   @Test
-  public void divideNonTerminating() {
+  void divideNonTerminating() {
     FastMoney6 money = FastMoney6.of(1L, CHF);
     assertEquals(money.divide(BigDecimal.valueOf(3L)).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
     assertEquals(money.divide(3L).getNumber().numberValueExact(BigDecimal.class), new BigDecimal("0.333333"));
@@ -515,6 +532,14 @@ class FastMoney6Test {
     FastMoney6 remainder = divideAndRemainder[1];
     assertEquals(quotient, FastMoney6.of(3L, CHF));
     assertEquals(remainder, FastMoney6.of(1L, CHF));
+  }
+
+  @Test
+  void divideAndRemainderByZero() {
+    FastMoney6 money = FastMoney6.of(10L, CHF);
+    assertThrows(ArithmeticException.class, () -> money.divideAndRemainder(0.0d));
+    assertThrows(ArithmeticException.class, () -> money.divideAndRemainder(-0.0d));
+    assertThrows(ArithmeticException.class, () -> money.divideAndRemainder(Double.NaN));
   }
 
   @Test
