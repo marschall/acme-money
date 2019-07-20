@@ -23,6 +23,7 @@ class MoneyCompatibilityTest {
 
     Money money = Money.of(new BigInteger(twosComplement), "EUR");
     money.negate();
+  }
 
   @Test
   void testToString() {
