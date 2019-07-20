@@ -89,7 +89,7 @@ public class MoneyOperationsBenchmark {
   }
 
   @Benchmark
-  public FastMoney subtractMonetaFase() {
+  public FastMoney subtractMonetaFast() {
     return this.fastMoney1.subtract(this.fastMoney1);
   }
 
