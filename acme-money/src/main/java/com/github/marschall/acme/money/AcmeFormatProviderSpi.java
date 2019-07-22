@@ -9,7 +9,17 @@ import javax.money.format.AmountFormatQuery;
 import javax.money.format.MonetaryAmountFormat;
 import javax.money.spi.MonetaryAmountFormatProviderSpi;
 
-public class AcmeFormatProviderSpi implements MonetaryAmountFormatProviderSpi {
+/**
+ * Registers all our {@link MonetaryAmountFormat} implementations.
+ */
+public final class AcmeFormatProviderSpi implements MonetaryAmountFormatProviderSpi {
+  
+  /**
+   * Not supposed to be called by user code.
+   */
+  public AcmeFormatProviderSpi() {
+    super();
+  }
   
   @Override
   public String getProviderName() {
