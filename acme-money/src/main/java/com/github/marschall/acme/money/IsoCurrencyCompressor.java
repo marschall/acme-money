@@ -31,7 +31,7 @@ final class IsoCurrencyCompressor {
     for (Entry<String, ParsedCurrrency> entry : parsedMap.entrySet()) {
       String currencyCode = entry.getKey();
       short key = compressCurrencyCode(currencyCode);
-      IsoCurrency currency = new IsoCurrency(currencyCode, key, entry.getValue().currencyNumber, entry.getValue().minorUnits);
+      IsoCurrencyUnit currency = new IsoCurrencyUnit(currencyCode, key, entry.getValue().currencyNumber, entry.getValue().minorUnits);
       currencyMap.put(key, currency);
     }
     return currencyMap;

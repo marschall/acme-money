@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -27,10 +26,6 @@ final class IsoCurrencyParser {
          BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
       XMLStreamReader streamReader = factory.createXMLStreamReader(bufferedInputStream);
       parseDocument(streamReader, parsed);
-    }
-    System.out.println(parsed.size());
-    for (Entry<String, ParsedCurrrency> entry : parsed.entrySet()) {
-      System.out.println(entry.getKey() + "(" + entry.getValue().currencyNumber + "):" + entry.getValue().minorUnits);
     }
     return parsed;
   }

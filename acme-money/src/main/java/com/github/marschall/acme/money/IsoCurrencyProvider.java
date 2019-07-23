@@ -9,11 +9,17 @@ import javax.money.CurrencyQuery;
 import javax.money.CurrencyUnit;
 import javax.money.spi.CurrencyProviderSpi;
 
-final class IsoCurrencyProvider implements CurrencyProviderSpi {
-
-  private static final int LETTERS_IN_ALPHABET = 26;
-
-  static final int ARRAY_SIZE = LETTERS_IN_ALPHABET * LETTERS_IN_ALPHABET * LETTERS_IN_ALPHABET;
+/**
+ * Implements an ISO currency list.
+ */
+public final class IsoCurrencyProvider implements CurrencyProviderSpi {
+  
+  /**
+   * Not supposed to be called by user code.
+   */
+  public IsoCurrencyProvider() {
+    super();
+  }
 
   private static final Map<Short, CurrencyUnit> CURRENCIES = IsoCurrencyCompressor.parse();
 

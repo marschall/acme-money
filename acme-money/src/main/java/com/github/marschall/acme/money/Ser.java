@@ -21,6 +21,8 @@ final class Ser implements Externalizable {
   private static final int TYPE_FRACTION = 5;
   private static final int TYPE_FRACTION_VALUE = 6;
 
+  private static final int TYPE_ISO_CURRENCY = 7;
+
   private int type;
   private Object value;
 
@@ -66,6 +68,12 @@ final class Ser implements Externalizable {
     this.type = TYPE_FRACTION_VALUE;
     this.value = numberValue;
   }
+  
+  Ser(IsoCurrencyUnit currency) {
+    Objects.requireNonNull(currency, "currency");
+    this.type = TYPE_ISO_CURRENCY;
+    this.value = currency;
+  }
 
   @Override
   public void writeExternal(ObjectOutput out) throws IOException {
@@ -98,6 +106,10 @@ final class Ser implements Externalizable {
       case TYPE_FRACTION_VALUE:
         out.writeLong(((FractionValue) this.value).numerator);
         out.writeLong(((FractionValue) this.value).denominator);
+        break;
+        
+      case TYPE_ISO_CURRENCY:
+        out.writeShort(((IsoCurrencyUnit) this.value).compressedCurrencyCode);
         break;
 
       default:
@@ -132,6 +144,10 @@ final class Ser implements Externalizable {
 
       case TYPE_FRACTION_VALUE:
         this.value = new FractionValue(in.readLong(), in.readLong());
+        break;
+        
+      case TYPE_ISO_CURRENCY:
+        this.value = IsoCurrencyProvider.getCurrency(in.readShort());
         break;
 
       default:
