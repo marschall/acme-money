@@ -9,6 +9,13 @@ import javax.money.spi.MonetaryAmountFactoryProviderSpi;
  * {@link FastMoney6}.
  */
 public final class FastMoney6AmountFactoryProvider implements MonetaryAmountFactoryProviderSpi<FastMoney6> {
+  
+  /**
+   * Not supposed to be called by user code.
+   */
+  public FastMoney6AmountFactoryProvider() {
+    super();
+  }
 
   @Override
   public Class<FastMoney6> getAmountType() {

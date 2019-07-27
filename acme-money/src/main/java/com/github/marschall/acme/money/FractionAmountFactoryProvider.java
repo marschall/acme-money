@@ -9,6 +9,13 @@ import javax.money.spi.MonetaryAmountFactoryProviderSpi;
  * {@link FractionMoney}.
  */
 public final class FractionAmountFactoryProvider implements MonetaryAmountFactoryProviderSpi<FractionMoney> {
+  
+  /**
+   * Not supposed to be called by user code.
+   */
+  public FractionAmountFactoryProvider() {
+    super();
+  }
 
   @Override
   public Class<FractionMoney> getAmountType() {

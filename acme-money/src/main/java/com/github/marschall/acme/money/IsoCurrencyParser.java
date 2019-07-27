@@ -3,6 +3,8 @@ package com.github.marschall.acme.money;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -12,27 +14,31 @@ import javax.xml.stream.XMLStreamReader;
 final class IsoCurrencyParser {
 
   // https://www.currency-iso.org/dam/downloads/lists/list_one.xml
+  
+  private IsoCurrencyParser() {
+    throw new AssertionError("not instantiable");
+  }
 
-
-  private static void parse() throws IOException, XMLStreamException {
+  static Map<String, ParsedCurrrency> parseToMap() throws IOException, XMLStreamException {
+    Map<String, ParsedCurrrency> parsed = new HashMap<>();
     XMLInputFactory factory = XMLInputFactory.newInstance();
     try (InputStream inputStream = IsoCurrencyParser.class.getClassLoader().getResourceAsStream("list_one.xml");
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
+         BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream)) {
       XMLStreamReader streamReader = factory.createXMLStreamReader(bufferedInputStream);
-      parseDocument(streamReader);
+      parseDocument(streamReader, parsed);
     }
-
+    return parsed;
   }
 
 
-  private static void parseDocument(XMLStreamReader streamReader) throws XMLStreamException {
+  private static void parseDocument(XMLStreamReader streamReader, Map<String, ParsedCurrrency> parsed) throws XMLStreamException {
     while (streamReader.hasNext()) {
       int event = streamReader.next();
       switch (event) {
         case XMLStreamConstants.START_ELEMENT:
           String localName = streamReader.getLocalName();
           if (localName.equals("ISO_4217")) {
-            parseIso4217(streamReader);
+            parseIso4217(streamReader, parsed);
           } else {
             throw new IllegalArgumentException("<ISO_4217> expected");
           }
@@ -51,14 +57,14 @@ final class IsoCurrencyParser {
     }
   }
 
-  private static void parseIso4217(XMLStreamReader streamReader) throws XMLStreamException {
+  private static void parseIso4217(XMLStreamReader streamReader, Map<String, ParsedCurrrency> parsed) throws XMLStreamException {
     while (streamReader.hasNext()) {
 
       int event = streamReader.nextTag();
       if (event == XMLStreamConstants.START_ELEMENT) {
         String localName = streamReader.getLocalName();
         if (localName.equals("CcyTbl")) {
-          parseCurrencyTable(streamReader);
+          parseCurrencyTable(streamReader, parsed);
         } else {
           throw new IllegalArgumentException("<CcyTbl> expected");
         }
@@ -70,14 +76,14 @@ final class IsoCurrencyParser {
     }
   }
 
-  private static void parseCurrencyTable(XMLStreamReader streamReader) throws XMLStreamException {
+  private static void parseCurrencyTable(XMLStreamReader streamReader, Map<String, ParsedCurrrency> parsed) throws XMLStreamException {
     while (streamReader.hasNext()) {
 
       int event = streamReader.nextTag();
       if (event == XMLStreamConstants.START_ELEMENT) {
         String localName = streamReader.getLocalName();
         if (localName.equals("CcyNtry")) {
-          parseCurrencyEntry(streamReader);
+          parseCurrencyEntry(streamReader, parsed);
         } else {
           throw new IllegalArgumentException("<CcyNtry> expected");
         }
@@ -89,7 +95,7 @@ final class IsoCurrencyParser {
     }
   }
 
-  private static void parseCurrencyEntry(XMLStreamReader streamReader) throws XMLStreamException {
+  private static void parseCurrencyEntry(XMLStreamReader streamReader, Map<String, ParsedCurrrency> parsed) throws XMLStreamException {
     String currencyCode = null;
     int currencyNumber = -1;
     int minorUnits = -1;
@@ -120,8 +126,8 @@ final class IsoCurrencyParser {
         // ANTARCTICA
         // PALESTINE, STATE OF
         // SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS
-        if (currencyCode != null) {
-          System.out.println(currencyCode + '(' + currencyNumber + ')' + minorUnits);
+        if (currencyCode != null && !parsed.containsKey(currencyCode)) {
+          parsed.put(currencyCode, new ParsedCurrrency(currencyNumber, minorUnits));
         }
         return;
       } else {
@@ -211,9 +217,20 @@ final class IsoCurrencyParser {
     return i;
   }
 
+  static final class ParsedCurrrency {
+    
+    final int currencyNumber;
+    final int minorUnits;
+    
+    ParsedCurrrency(int currencyNumber, int minorUnits) {
+      this.currencyNumber = currencyNumber;
+      this.minorUnits = minorUnits;
+    }
+    
+  }
 
   public static void main(String[] args) throws IOException, XMLStreamException {
-    parse();
+    parseToMap();
   }
 
 }
