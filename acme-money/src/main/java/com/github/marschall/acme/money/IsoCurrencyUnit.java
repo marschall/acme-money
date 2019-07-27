@@ -8,7 +8,10 @@ import javax.money.CurrencyContext;
 import javax.money.CurrencyContextBuilder;
 import javax.money.CurrencyUnit;
 
-final class IsoCurrencyUnit implements CurrencyUnit, Serializable {
+/**
+ * Ah simple ISO currency unit.
+ */
+public final class IsoCurrencyUnit implements CurrencyUnit, Serializable {
 
   private static final CurrencyContext CONTEXT = CurrencyContextBuilder.of(AcmeMoneyConstants.PROVIDER_NAME).build();
 
