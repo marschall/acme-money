@@ -89,5 +89,6 @@
     <module>acme-money-benchmarks</module>
     <module>acme-money-proprietary</module>
     <module>acme-money-tck</module>
+    <module>acme-money-spis</module>
   </modules>
 </project>
