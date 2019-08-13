@@ -55,7 +55,7 @@ class IsoCurrencyProviderTest {
   }
 
   @Test
-  void interoparability() {
+  void interoparabilityEqualsHashCode() {
     CurrencyUnit acmeEur = getAcmeCurrency("EUR");
     CurrencyUnit jdkEur = getJdkCurrency("EUR");
 
@@ -63,6 +63,26 @@ class IsoCurrencyProviderTest {
     assertTrue(acmeEur.equals(jdkEur));
     assertTrue(jdkEur.equals(acmeEur));
     assertEquals(jdkEur.hashCode(), acmeEur.hashCode());
+  }
+
+  @Test
+  void interoparabilityCompareTo() {
+    CurrencyUnit acmeEur = getAcmeCurrency("EUR");
+    CurrencyUnit jdkEur = getJdkCurrency("EUR");
+    CurrencyUnit acmeUsd = getAcmeCurrency("USD");
+    CurrencyUnit jdkUsd = getJdkCurrency("USD");
+    
+    assertTrue(0 < jdkUsd.compareTo(jdkEur));
+    assertTrue(0 > jdkEur.compareTo(jdkUsd));
+    
+    assertTrue(0 < jdkUsd.compareTo(acmeEur));
+    assertTrue(0 > acmeEur.compareTo(jdkUsd));
+    
+    assertTrue(0 < acmeUsd.compareTo(jdkEur));
+    assertTrue(0 > jdkEur.compareTo(acmeUsd));
+    
+    assertTrue(0 < acmeUsd.compareTo(acmeEur));
+    assertTrue(0 > acmeEur.compareTo(acmeUsd));
   }
 
   private static CurrencyUnit getAcmeCurrency(String currencyCode) {
