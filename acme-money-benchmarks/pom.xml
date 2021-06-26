@@ -29,13 +29,6 @@
       <artifactId>jmh-core</artifactId>
       <version>${jmh.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.openjdk.jmh</groupId>
-      <artifactId>jmh-generator-annprocess</artifactId>
-      <version>${jmh.version}</version>
-      <scope>provided</scope>
-    </dependency>
     
   </dependencies>
   
